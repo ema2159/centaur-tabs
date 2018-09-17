@@ -7,8 +7,12 @@ Every emacser will waste too much time to customize it.
 So this extension provide an out of box configuration to use tabbar in Emacs.
 
 ### Installation
-Put tabbar.el and awesome-tab.el to your load-path.
+You need install [projectile](https://github.com/bbatsov/projectile) first.
+
+Then put tabbar.el and awesome-tab.el to your load-path.
+
 The load-path is usually ~/elisp/.
+
 It's set in your ~/.emacs like this:
 
 ```Elisp
@@ -33,7 +37,7 @@ If you're helm fans, you need add below code in your helm config:
 (tabbar-build-helm-source)
 ```
 
-Then add `helm-source-tabbar-group' in `helm-source-list'
+Then add ```helm-source-tabbar-group``` in ```helm-source-list```
 
 ### Customize
 
