@@ -253,29 +253,39 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
   (setq helm-source-tabbar-group
         (when (featurep 'helm)
           (require 'helm)
-          (helm-build-sync-source "Tabbar Group"
-            :candidates #'tabbar-get-groups
-            :action '(("Switch to group" . tabbar-switch-group))))))
+          (helm-build-sync-source
+           "Tabbar Group"
+           :candidates #'tabbar-get-groups
+           :action '(("Switch to group" . tabbar-switch-group))))))
 
-(defvar awesome-tab-background (face-attribute 'default :background))
+(defvar awesome-tab-background-color (face-attribute 'default :background))
+(defvar awesome-tab-active-color "green3")
+(defvar awesome-tab-inactive-color "dark green")
 
 (custom-set-variables
- '(tabbar-background-color awesome-tab-background)
+ '(tabbar-background-color awesome-tab-background-color)
  )
 
 (custom-set-faces
  '(tabbar-default ((t (:height 1.3))))
- '(tabbar-selected ((t (:inherit tabbar-default :foreground "green3" :overline "green3" :weight ultra-bold :width semi-expanded))))
- ;; '(tabbar-selected-face ((t (:inherit tabbar-default-face :foreground "grey" :box (:line-width -1 :color "grey" :style released-button)))))
- ;; '(tabbar-separator ((t (:distant-foreground "red" :foreground "brown" :height 0.1 :width condensed))))
- '(tabbar-unselected ((t (:foreground "dark green" :overline "dark green" :height 1.3))))
- ;; '(tabbar-unselected-face ((t (:inherit tabbar-default-face :foreground "white" :box (:line-width -1 :color "black" :style pressed-button)))))
+ '(tabbar-selected ((t (:inherit tabbar-default :weight ultra-bold :width semi-expanded))))
+ '(tabbar-unselected ((t (:height 1.3))))
  )
 
 (dolist (face '(tabbar-selected tabbar-separator tabbar-unselected))
   (set-face-attribute face nil
-                      :background awesome-tab-background
+                      :background awesome-tab-background-color
                       ))
+
+(set-face-attribute 'tabbar-selected nil
+                    :foreground awesome-tab-active-color
+                    :overline awesome-tab-active-color
+                    )
+
+(set-face-attribute 'tabbar-unselected nil
+                    :foreground awesome-tab-inactive-color
+                    :overline awesome-tab-inactive-color
+                    )
 
 (provide 'awesome-tab)
 
