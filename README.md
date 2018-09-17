@@ -1,3 +1,5 @@
+<img src="./screenshot.png">
+
 # What is it?
 
 Tabbar.el is cool, but very ugly defaultly.
