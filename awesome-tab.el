@@ -82,6 +82,7 @@
 ;;; Require
 (require 'tabbar)
 (require 'projectile)
+(require 'helm)
 
 ;;; Code:
 
