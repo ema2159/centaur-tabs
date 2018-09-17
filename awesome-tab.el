@@ -61,10 +61,10 @@
 ;; You can use below commands for you need:
 ;;
 ;; `tabbar-switch-group'
-;; `tabbar-select-end-tab'
 ;; `tabbar-select-beg-tab'
-;; `tabbar-backward-tab-other-window'
+;; `tabbar-select-end-tab'
 ;; `tabbar-forward-tab-other-window'
+;; `tabbar-backward-tab-other-window'
 ;; `tabbar-kill-all-buffers-in-current-group'
 ;;
 ;; If you're helm fans, you need add below code in your helm config:
