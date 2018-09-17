@@ -82,7 +82,6 @@
 ;;; Require
 (require 'tabbar)
 (require 'projectile)
-(require 'helm)
 
 ;;; Code:
 
@@ -248,9 +247,11 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
        tab-buffer-list) )))
 
 (defvar helm-source-tabbar-group
-  (helm-build-sync-source "Tabbar Group"
-    :candidates #'tabbar-get-groups
-    :action '(("Switch to group" . tabbar-switch-group))))
+  (when (featurep 'helm)
+    (require 'helm)
+    (helm-build-sync-source "Tabbar Group"
+      :candidates #'tabbar-get-groups
+      :action '(("Switch to group" . tabbar-switch-group)))))
 
 (custom-set-variables
  '(tabbar-background-color "black")
