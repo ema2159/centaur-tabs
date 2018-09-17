@@ -1,4 +1,4 @@
-;;; awesome-tab.el --- Provide an out of box configuration to use tabbar in Emacs.
+;; awesome-tab.el --- Provide an out of box configuration to use tabbar in Emacs.
 
 ;; Filename: awesome-tab.el
 ;; Description: Provide an out of box configuration to use tabbar in Emacs.
@@ -39,12 +39,15 @@
 
 ;;; Commentary:
 ;;
-;; Provide an out of box configuration to use tabbar in Emacs.
+;; Tabbar.el is cool, but very ugly defaultly.
+;; Every emacser will waste too much time to customize it.
+;;
+;; So this extension provide an out of box configuration to use tabbar in Emacs.
 ;;
 
 ;;; Installation:
 ;;
-;; Put awesome-tab.el to your load-path.
+;; Put tabbar.el and awesome-tab.el to your load-path.
 ;; The load-path is usually ~/elisp/.
 ;; It's set in your ~/.emacs like this:
 ;; (add-to-list 'load-path (expand-file-name "~/elisp"))
@@ -54,13 +57,28 @@
 ;; (require 'awesome-tab)
 ;;
 ;; No need more.
+;;
+;; You can use below commands for you need:
+;;
+;; `tabbar-switch-group'
+;; `tabbar-select-end-tab'
+;; `tabbar-select-beg-tab'
+;; `tabbar-backward-tab-other-window'
+;; `tabbar-forward-tab-other-window'
+;; `tabbar-kill-all-buffers-in-current-group'
+;;
+;; If you're helm fans, you need add below code in your helm config:
+;;
+;; (tabbar-build-helm-source)
+;;
+;; Then add `helm-source-tabbar-group' in `helm-source-list'
+;;
 
 ;;; Customize:
 ;;
-;;
-;;
-;; All of the above can customize by:
-;;      M-x customize-group RET awesome-tab RET
+;; `tabbar-background-color'
+;; `tabbar-active-color'
+;; `tabbar-inactive-color'
 ;;
 
 ;;; Change log:
@@ -85,11 +103,12 @@
 
 ;;; Code:
 
-(tabbar-mode t)                         ;多标签模式
-(setq uniquify-separator "/")           ;分隔符
-(setq uniquify-buffer-name-style 'post-forward-angle-brackets) ;反方向的显示重复的Buffer名字
-(setq uniquify-after-kill-buffer-p t)   ;删除重复名字的Buffer后重命名
+;;;;;;;;;;;;;;;;;;;;;;; Options ;;;;;;;;;;;;;;;;;;;;;;;
+(defvar tabbar-background-color (face-attribute 'default :background))
+(defvar tabbar-active-color "green3")
+(defvar tabbar-inactive-color "dark green")
 
+;;;;;;;;;;;;;;;;;;;;;;; Theme ;;;;;;;;;;;;;;;;;;;;;;;
 (defcustom tabbar-hide-header-button t
   "Hide header button at left-up corner.
 Default is t."
@@ -107,64 +126,52 @@ Default is t."
               tabbar-scroll-right-button (quote (("") "")))))
   :group 'tabbar)
 
-(defun tabbar-filter (condp lst)
-  (delq nil
-        (mapcar (lambda (x) (and (funcall condp x) x)) lst)))
+(custom-set-variables
+ '(tabbar-background-color tabbar-background-color)
+ )
 
-(defun tabbar-filter-buffer-list ()
-  (tabbar-filter
-   (lambda (x)
-     (let ((name (format "%s" x)))
-       (and
-        (not (string-prefix-p "*" name))
-        (not (string-match "^magit.*:\\s-" name))
-        )))
-   (delq nil
-         (mapcar #'(lambda (b)
-                     (cond
-                      ;; Always include the current buffer.
-                      ((eq (current-buffer) b) b)
-                      ((buffer-file-name b) b)
-                      ((char-equal ?\  (aref (buffer-name b) 0)) nil)
-                      ((buffer-live-p b) b)))
-                 (buffer-list)))))
+(custom-set-faces
+ '(tabbar-default ((t (:height 1.3))))
+ '(tabbar-selected ((t (:inherit tabbar-default :weight ultra-bold :width semi-expanded))))
+ '(tabbar-unselected ((t (:height 1.3))))
+ )
 
-(setq tabbar-buffer-list-function 'tabbar-filter-buffer-list)
+(dolist (face '(tabbar-selected
+                tabbar-separator
+                tabbar-unselected))
+  (set-face-attribute face nil
+                      :background tabbar-background-color
+                      ))
 
-(defun tabbar-buffer-groups-by-mixin-rules ()
-  "Mixin multiple rules.
+(set-face-attribute 'tabbar-selected nil
+                    :foreground tabbar-active-color
+                    :overline tabbar-active-color
+                    )
 
-Group tabbar with mode if buffer is derived from `eshell-mode' `emacs-lisp-mode' `dired-mode' `org-mode' `magit-mode'.
-All buffer name start with * will group to \"Emacs\".
-Other buffer group by `projectile-project-p' with project name."
-  (list
-   (cond
-    ((derived-mode-p 'eshell-mode)
-     "EShell")
-    ((derived-mode-p 'emacs-lisp-mode)
-     "Elisp")
-    ((derived-mode-p 'dired-mode)
-     "Dired")
-    ((memq major-mode '(org-mode org-agenda-mode diary-mode))
-     "OrgMode")
-    ((memq major-mode '(magit-process-mode
-                        magit-status-mode
-                        magit-diff-mode
-                        magit-log-mode
-                        magit-file-mode
-                        magit-blob-mode
-                        magit-blame-mode
-                        ))
-     "Magit")
-    ((string-equal "*" (substring (buffer-name) 0 1))
-     "Emacs")
-    (t
-     (if (projectile-project-p)
-         (projectile-project-name)
-       "Common"))
-    )))
+(set-face-attribute 'tabbar-unselected nil
+                    :foreground tabbar-inactive-color
+                    :overline tabbar-inactive-color
+                    )
 
-(setq tabbar-buffer-groups-function 'tabbar-buffer-groups-by-mixin-rules)
+;;;;;;;;;;;;;;;;;;;;;;; Interactive functions ;;;;;;;;;;;;;;;;;;;;;;;
+(defun tabbar-switch-group (&optional groupname)
+  "Switch tab groups using ido."
+  (interactive)
+  (let* ((tab-buffer-list (mapcar
+                           #'(lambda (b)
+                               (with-current-buffer b
+                                 (list (current-buffer)
+                                       (buffer-name)
+                                       (funcall tabbar-buffer-groups-function) )))
+                           (funcall tabbar-buffer-list-function)))
+         (groups (tabbar-get-groups))
+         (group-name (or groupname (ido-completing-read "Groups: " groups))) )
+    (catch 'done
+      (mapc
+       #'(lambda (group)
+           (when (equal group-name (car (car (cdr (cdr group)))))
+             (throw 'done (switch-to-buffer (car (cdr group))))))
+       tab-buffer-list) )))
 
 (defun tabbar-select-end-tab ()
   "Select end tab of current tabset."
@@ -204,13 +211,6 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
   (interactive)
   (tabbar-backward-tab-other-window t))
 
-(defun tabbar-get-groups ()
-  ;; Refresh groups.
-  (set tabbar-tabsets-tabset (tabbar-map-tabsets 'tabbar-selected-tab))
-  (mapcar #'(lambda (group)
-              (format "%s" (cdr group)))
-          (tabbar-tabs tabbar-tabsets-tabset)))
-
 (defun tabbar-kill-all-buffers-in-current-group ()
   "Kill all buffers in current group."
   (interactive)
@@ -227,25 +227,90 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
     (tabbar-forward-group)
     ))
 
-(defun tabbar-switch-group (&optional groupname)
-  "Switch tab groups using ido."
-  (interactive)
-  (let* ((tab-buffer-list (mapcar
-                           #'(lambda (b)
-                               (with-current-buffer b
-                                 (list (current-buffer)
-                                       (buffer-name)
-                                       (funcall tabbar-buffer-groups-function) )))
-                           (funcall tabbar-buffer-list-function)))
-         (groups (tabbar-get-groups))
-         (group-name (or groupname (ido-completing-read "Groups: " groups))) )
-    (catch 'done
-      (mapc
-       #'(lambda (group)
-           (when (equal group-name (car (car (cdr (cdr group)))))
-             (throw 'done (switch-to-buffer (car (cdr group))))))
-       tab-buffer-list) )))
+;;;;;;;;;;;;;;;;;;;;;;; Utils functions ;;;;;;;;;;;;;;;;;;;;;;;
+(defun tabbar-filter (condp lst)
+  (delq nil
+        (mapcar (lambda (x) (and (funcall condp x) x)) lst)))
 
+(defun tabbar-get-groups ()
+  ;; Refresh groups.
+  (set tabbar-tabsets-tabset (tabbar-map-tabsets 'tabbar-selected-tab))
+  (mapcar #'(lambda (group)
+              (format "%s" (cdr group)))
+          (tabbar-tabs tabbar-tabsets-tabset)))
+
+;;;;;;;;;;;;;;;;;;;;;;; Default configurations ;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Loading tabbar mode.
+(tabbar-mode t)
+
+;; Uniquify tab name when open multiple buffers with same filename.
+(setq uniquify-separator "/")
+(setq uniquify-buffer-name-style 'post-forward-angle-brackets)
+(setq uniquify-after-kill-buffer-p t)
+
+;; Rules to control buffers show in tabs.
+(defun tabbar-filter-buffer-list ()
+  "`tabbar-filter-buffer-list' control buffers show in tabs.
+
+All buffer that start with * or magit-* won't display in tabbar.
+Of course, you still can switch buffer by other emacs commands."
+  (tabbar-filter
+   (lambda (x)
+     (let ((name (format "%s" x)))
+       (and
+        (not (string-prefix-p "*" name))
+        (not (string-match "^magit.*:\\s-" name))
+        )))
+   (delq nil
+         (mapcar #'(lambda (b)
+                     (cond
+                      ;; Always include the current buffer.
+                      ((eq (current-buffer) b) b)
+                      ((buffer-file-name b) b)
+                      ((char-equal ?\  (aref (buffer-name b) 0)) nil)
+                      ((buffer-live-p b) b)))
+                 (buffer-list)))))
+
+(setq tabbar-buffer-list-function 'tabbar-filter-buffer-list)
+
+;; Rules to control buffer's group rules.
+(defun tabbar-buffer-groups-by-mixin-rules ()
+  "`tabbar-buffer-groups-by-mixin-rules' control buffers' group rules.
+
+Group tabbar with mode if buffer is derived from `eshell-mode' `emacs-lisp-mode' `dired-mode' `org-mode' `magit-mode'.
+All buffer name start with * will group to \"Emacs\".
+Other buffer group by `projectile-project-p' with project name."
+  (list
+   (cond
+    ((derived-mode-p 'eshell-mode)
+     "EShell")
+    ((derived-mode-p 'emacs-lisp-mode)
+     "Elisp")
+    ((derived-mode-p 'dired-mode)
+     "Dired")
+    ((memq major-mode '(org-mode org-agenda-mode diary-mode))
+     "OrgMode")
+    ((memq major-mode '(magit-process-mode
+                        magit-status-mode
+                        magit-diff-mode
+                        magit-log-mode
+                        magit-file-mode
+                        magit-blob-mode
+                        magit-blame-mode
+                        ))
+     "Magit")
+    ((string-equal "*" (substring (buffer-name) 0 1))
+     "Emacs")
+    (t
+     (if (projectile-project-p)
+         (projectile-project-name)
+       "Common"))
+    )))
+
+(setq tabbar-buffer-groups-function 'tabbar-buffer-groups-by-mixin-rules)
+
+;; Helm source for switch group in helm.
 (defvar helm-source-tabbar-group nil)
 
 (defun tabbar-build-helm-source ()
@@ -254,38 +319,9 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
         (when (featurep 'helm)
           (require 'helm)
           (helm-build-sync-source
-           "Tabbar Group"
-           :candidates #'tabbar-get-groups
-           :action '(("Switch to group" . tabbar-switch-group))))))
-
-(defvar tabbar-background-color (face-attribute 'default :background))
-(defvar tabbar-active-color "green3")
-(defvar tabbar-inactive-color "dark green")
-
-(custom-set-variables
- '(tabbar-background-color tabbar-background-color)
- )
-
-(custom-set-faces
- '(tabbar-default ((t (:height 1.3))))
- '(tabbar-selected ((t (:inherit tabbar-default :weight ultra-bold :width semi-expanded))))
- '(tabbar-unselected ((t (:height 1.3))))
- )
-
-(dolist (face '(tabbar-selected tabbar-separator tabbar-unselected))
-  (set-face-attribute face nil
-                      :background tabbar-background-color
-                      ))
-
-(set-face-attribute 'tabbar-selected nil
-                    :foreground tabbar-active-color
-                    :overline tabbar-active-color
-                    )
-
-(set-face-attribute 'tabbar-unselected nil
-                    :foreground tabbar-inactive-color
-                    :overline tabbar-inactive-color
-                    )
+              "Tabbar Group"
+            :candidates #'tabbar-get-groups
+            :action '(("Switch to group" . tabbar-switch-group))))))
 
 (provide 'awesome-tab)
 
