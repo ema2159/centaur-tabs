@@ -246,20 +246,22 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
              (throw 'done (switch-to-buffer (car (cdr group))))))
        tab-buffer-list) )))
 
-(defvar helm-source-tabbar-group
-  (when (featurep 'helm)
-    (require 'helm)
-    (helm-build-sync-source "Tabbar Group"
-      :candidates #'tabbar-get-groups
-      :action '(("Switch to group" . tabbar-switch-group)))))
+(defvar helm-source-tabbar-group nil)
+
+(defun tabbar-build-helm-source ()
+  (interactive)
+  (setq helm-source-tabbar-group
+        (when (featurep 'helm)
+          (require 'helm)
+          (helm-build-sync-source "Tabbar Group"
+                                  :candidates #'tabbar-get-groups
+                                  :action '(("Switch to group" . tabbar-switch-group))))))
 
 (custom-set-variables
  '(tabbar-background-color "black")
  )
 
 (custom-set-faces
- '(tabbar-button ((t (:inherit tabbar-default :background "black" :foreground "red" :box (:line-width 1 :color "black" :style released-button)))))
- '(tabbar-button-highlight ((t (:inherit tabbar-default :background "black" :foreground "green" :box (:color "red")))))
  '(tabbar-default ((t (:height 1.3))))
  '(tabbar-selected ((t (:inherit tabbar-default :background "black" :foreground "green3" :overline "green3" :weight ultra-bold :width semi-expanded))))
  '(tabbar-selected-face ((t (:inherit tabbar-default-face :background "black" :foreground "grey" :box (:line-width -1 :color "grey" :style released-button)))))
