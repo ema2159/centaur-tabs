@@ -254,21 +254,28 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
         (when (featurep 'helm)
           (require 'helm)
           (helm-build-sync-source "Tabbar Group"
-                                  :candidates #'tabbar-get-groups
-                                  :action '(("Switch to group" . tabbar-switch-group))))))
+            :candidates #'tabbar-get-groups
+            :action '(("Switch to group" . tabbar-switch-group))))))
+
+(defvar awesome-tab-background (face-attribute 'default :background))
 
 (custom-set-variables
- '(tabbar-background-color "black")
+ '(tabbar-background-color awesome-tab-background)
  )
 
 (custom-set-faces
  '(tabbar-default ((t (:height 1.3))))
- '(tabbar-selected ((t (:inherit tabbar-default :background "black" :foreground "green3" :overline "green3" :weight ultra-bold :width semi-expanded))))
- '(tabbar-selected-face ((t (:inherit tabbar-default-face :background "black" :foreground "grey" :box (:line-width -1 :color "grey" :style released-button)))))
- '(tabbar-separator ((t (:background "black" :distant-foreground "red" :foreground "brown" :height 0.1 :width condensed))))
- '(tabbar-unselected ((t (:background "black" :foreground "dark green" :overline "dark green" :height 1.3))))
- '(tabbar-unselected-face ((t (:inherit tabbar-default-face :background "black" :foreground "white" :box (:line-width -1 :color "black" :style pressed-button)))))
+ '(tabbar-selected ((t (:inherit tabbar-default :foreground "green3" :overline "green3" :weight ultra-bold :width semi-expanded))))
+ ;; '(tabbar-selected-face ((t (:inherit tabbar-default-face :foreground "grey" :box (:line-width -1 :color "grey" :style released-button)))))
+ ;; '(tabbar-separator ((t (:distant-foreground "red" :foreground "brown" :height 0.1 :width condensed))))
+ '(tabbar-unselected ((t (:foreground "dark green" :overline "dark green" :height 1.3))))
+ ;; '(tabbar-unselected-face ((t (:inherit tabbar-default-face :foreground "white" :box (:line-width -1 :color "black" :style pressed-button)))))
  )
+
+(dolist (face '(tabbar-selected tabbar-separator tabbar-unselected))
+  (set-face-attribute face nil
+                      :background awesome-tab-background
+                      ))
 
 (provide 'awesome-tab)
 
