@@ -258,12 +258,12 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
            :candidates #'tabbar-get-groups
            :action '(("Switch to group" . tabbar-switch-group))))))
 
-(defvar awesome-tab-background-color (face-attribute 'default :background))
-(defvar awesome-tab-active-color "green3")
-(defvar awesome-tab-inactive-color "dark green")
+(defvar tabbar-background-color (face-attribute 'default :background))
+(defvar tabbar-active-color "green3")
+(defvar tabbar-inactive-color "dark green")
 
 (custom-set-variables
- '(tabbar-background-color awesome-tab-background-color)
+ '(tabbar-background-color tabbar-background-color)
  )
 
 (custom-set-faces
@@ -274,17 +274,17 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
 
 (dolist (face '(tabbar-selected tabbar-separator tabbar-unselected))
   (set-face-attribute face nil
-                      :background awesome-tab-background-color
+                      :background tabbar-background-color
                       ))
 
 (set-face-attribute 'tabbar-selected nil
-                    :foreground awesome-tab-active-color
-                    :overline awesome-tab-active-color
+                    :foreground tabbar-active-color
+                    :overline tabbar-active-color
                     )
 
 (set-face-attribute 'tabbar-unselected nil
-                    :foreground awesome-tab-inactive-color
-                    :overline awesome-tab-inactive-color
+                    :foreground tabbar-inactive-color
+                    :overline tabbar-inactive-color
                     )
 
 (provide 'awesome-tab)
