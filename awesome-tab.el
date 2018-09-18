@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-09-17 22:14:34
-;; Version: 0.2
-;; Last-Updated: 2018-09-18 13:37:56
+;; Version: 0.3
+;; Last-Updated: 2018-09-18 22:59:51
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/awesome-tab.el
 ;; Keywords:
@@ -88,7 +88,8 @@
 ;;
 ;; 2018/09/18
 ;;      * Fix unselect tab height and add option `tabbar-hide-tab-rules'
-;;      
+;;      * Use `tabbar-groups-hash' store every buffer's project name avoid performance issue cause by `projectile-project-name'.
+;;
 ;; 2018/09/17
 ;;      * First released.
 ;;
@@ -294,6 +295,24 @@ Of course, you still can switch buffer by other emacs commands."
 (setq tabbar-buffer-list-function 'tabbar-filter-buffer-list)
 
 ;; Rules to control buffer's group rules.
+(defvar tabbar-groups-hash (make-hash-table :test 'equal))
+
+(defun tabbar-init-groups-name ()
+  (interactive)
+  (setq tabbar-groups-hash (make-hash-table :test 'equal)))
+
+(defun tabbar-get-group-name (buf)
+  (let ((group-name (gethash buf tabbar-groups-hash)))
+    (if group-name
+        group-name
+      (tabbar-set-group-name buf))))
+
+(defun tabbar-set-group-name (buf)
+  (with-current-buffer buf
+    (let ((project-name (projectile-project-name)))
+      (puthash buf project-name tabbar-groups-hash)
+      project-name)))
+
 (defun tabbar-buffer-groups-by-mixin-rules ()
   "`tabbar-buffer-groups-by-mixin-rules' control buffers' group rules.
 
@@ -323,7 +342,7 @@ Other buffer group by `projectile-project-p' with project name."
      "Emacs")
     (t
      (if (projectile-project-p)
-         (projectile-project-name)
+         (tabbar-get-group-name (current-buffer))
        "Common"))
     )))
 
