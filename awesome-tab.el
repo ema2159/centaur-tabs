@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-09-17 22:14:34
-;; Version: 0.1
-;; Last-Updated: 2018-09-17 22:14:34
+;; Version: 0.2
+;; Last-Updated: 2018-09-18 13:37:56
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/awesome-tab.el
 ;; Keywords:
@@ -81,10 +81,14 @@
 ;; `tabbar-background-color'
 ;; `tabbar-active-color'
 ;; `tabbar-inactive-color'
+;; `tabbar-hide-tab-rules'
 ;;
 
 ;;; Change log:
 ;;
+;; 2018/09/18
+;;      * Fix unselect tab height and add option `tabbar-hide-tab-rules'
+;;      
 ;; 2018/09/17
 ;;      * First released.
 ;;
@@ -109,6 +113,10 @@
 (defvar tabbar-background-color (face-attribute 'default :background))
 (defvar tabbar-active-color "green3")
 (defvar tabbar-inactive-color "dark green")
+(defvar tabbar-hide-tab-rules
+  '(("prefix" . "*")
+    ("anyplace" . "^magit.*:\\s-")
+    ))
 
 ;;;;;;;;;;;;;;;;;;;;;;; Theme ;;;;;;;;;;;;;;;;;;;;;;;
 (defcustom tabbar-hide-header-button t
@@ -135,7 +143,7 @@ Default is t."
 (custom-set-faces
  '(tabbar-default ((t (:height 1.3))))
  '(tabbar-selected ((t (:inherit tabbar-default :weight ultra-bold :width semi-expanded))))
- '(tabbar-unselected ((t (:height 1.3))))
+ '(tabbar-unselected ((t (:inherit tabbar-default))))
  )
 
 (dolist (face '(tabbar-selected
@@ -260,9 +268,18 @@ Of course, you still can switch buffer by other emacs commands."
   (tabbar-filter
    (lambda (x)
      (let ((name (format "%s" x)))
-       (and
-        (not (string-prefix-p "*" name))
-        (not (string-match "^magit.*:\\s-" name))
+       (eval
+        `(and ,@ (mapcar #'(lambda (rule)
+                             (let ((match-position (car rule))
+                                   (match-regexp (cdr rule)))
+                               (cond ((string-equal match-position "prefix")
+                                      (not (string-prefix-p match-regexp name)))
+                                     ((string-equal match-position "anyplace")
+                                      (not (string-match match-regexp name)))
+                                     ((string-equal match-position "suffix")
+                                      (not (string-suffix-p match-regexp name)))
+                                     )))
+                         tabbar-hide-tab-rules))
         )))
    (delq nil
          (mapcar #'(lambda (b)
