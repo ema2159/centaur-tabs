@@ -24,14 +24,18 @@ It's set in your ~/.emacs like this:
 
 ### Usage.
 
-| Command                                  | Description                           |
-| :--------                                | :----                                 |
-| tabbar-switch-group                      | Switch tabbar group by ido fuzz match |
-| tabbar-select-beg-tab                    | Select first tab of current group     |
-| tabbar-select-end-tab                    | Select last tab of current group      |
-| tabbar-forward-tab-other-window          | Select next tab in other window       |
-| tabbar-backward-tab-other-window         | Select previous tab in other window   |
-| tabbar-kill-all-buffers-in-current-group | Kill all buffers of current group     |
+| Command                                  | Description                                        |
+| :--------                                | :----                                              |
+| tabbar-switch-group                      | Switch tabbar group by ido fuzz match              |
+| tabbar-select-beg-tab                    | Select first tab of current group                  |
+| tabbar-select-end-tab                    | Select last tab of current group                   |
+| tabbar-forward-tab-other-window          | Select next tab in other window                    |
+| tabbar-backward-tab-other-window         | Select previous tab in other window                |
+| tabbar-kill-all-buffers-in-current-group | Kill all buffers of current group                  |
+| tabbar-backward                          | Select the previous available tab                  |
+| tabbar-forward                           | Select the next available tab                      |
+| tabbar-backward-group                    | Go to selected tab in the previous available group |
+| tabbar-forward-group                     | Go to selected tab in the next available group     |
 
 If you're helm fans, you need add below code in your helm config:
 
