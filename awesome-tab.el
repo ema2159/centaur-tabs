@@ -70,8 +70,8 @@
 ;; `tabbar-kill-all-buffers-in-current-group'
 ;; `tabbar-kill-match-buffers-in-current-group'
 ;; `tabbar-keep-match-buffers-in-current-group'
-;; `tabbar-move-current-tab-one-place-left'
-;; `tabbar-move-current-tab-one-place-right'
+;; `tabbar-move-current-tab-to-left'
+;; `tabbar-move-current-tab-to-right'
 ;;
 ;; If you're helm fans, you need add below code in your helm config:
 ;;
@@ -232,7 +232,7 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
   (interactive)
   (tabbar-backward-tab-other-window t))
 
-(defun tabbar-move-current-tab-one-place-right ()
+(defun tabbar-move-current-tab-to-right ()
   "Move current tab one place right, unless it's already the rightmost."
   (interactive)
   (let* ((bufset (tabbar-current-tabset t))
@@ -258,7 +258,7 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
     (tabbar-set-template bufset nil)
     (tabbar-display-update)))
 
-(defun tabbar-move-current-tab-one-place-left ()
+(defun tabbar-move-current-tab-to-left ()
   "Move current tab one place left, unless it's already the leftmost."
   (interactive)
   (let* ((bufset (tabbar-current-tabset t))
@@ -386,6 +386,7 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
 (dolist (hook (list
                'magit-status-mode-hook
                'magit-popup-mode-hook
+               'reb-mode-hook
                ))
   (add-hook hook '(lambda () (setq-local header-line-format nil))))
 
@@ -485,10 +486,9 @@ Other buffer group by `projectile-project-p' with project name."
   (setq helm-source-tabbar-group
         (when (featurep 'helm)
           (require 'helm)
-          (helm-build-sync-source
-           "Tabbar Group"
-           :candidates #'tabbar-get-groups
-           :action '(("Switch to group" . tabbar-switch-group))))))
+          (helm-build-sync-source "Tabbar Group"
+            :candidates #'tabbar-get-groups
+            :action '(("Switch to group" . tabbar-switch-group))))))
 
 ;; Ivy source for switching group in ivy.
 (defvar ivy-source-tabbar-group nil)
