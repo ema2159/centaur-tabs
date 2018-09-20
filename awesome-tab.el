@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-09-17 22:14:34
-;; Version: 0.5
-;; Last-Updated: 2018-09-20 15:47:45
+;; Version: 0.6
+;; Last-Updated: 2018-09-20 18:02:42
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/awesome-tab.el
 ;; Keywords:
@@ -92,6 +92,7 @@
 ;;      * Remove empty header line from magit buffers.
 ;;      * Add new function `tabbar-kill-match-buffers-in-current-group', it's handy in mixin mode, such as web-mode.
 ;;      * Add new function `tabbar-keep-match-buffers-in-current-group', it's handy in mixin mode, such as web-mode.
+;;      * Fix error cause by `tabbar-kill-buffer-match-rule'.
 ;;
 ;; 2018/09/18
 ;;      * Fix unselect tab height and add option `tabbar-hide-tab-rules'
@@ -308,7 +309,7 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
      (mapc #'(lambda (buffer)
                (with-current-buffer buffer
                  (when (string-equal current-group-name (cdr (tabbar-selected-tab (tabbar-current-tabset t))))
-                   (when (,match-rule buffer)
+                   (when (funcall ,match-rule buffer)
                      (kill-buffer buffer))
                    )))
            (buffer-list))))
@@ -428,9 +429,9 @@ Other buffer group by `projectile-project-p' with project name."
         (when (featurep 'helm)
           (require 'helm)
           (helm-build-sync-source
-              "Tabbar Group"
-            :candidates #'tabbar-get-groups
-            :action '(("Switch to group" . tabbar-switch-group))))))
+           "Tabbar Group"
+           :candidates #'tabbar-get-groups
+           :action '(("Switch to group" . tabbar-switch-group))))))
 
 (provide 'awesome-tab)
 
