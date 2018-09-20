@@ -15,7 +15,7 @@
 ;;
 ;; Features that might be required by this library:
 ;;
-;; `tabbar' `projectile'
+;; `projectile'
 ;;
 
 ;;; This file is NOT part of GNU Emacs
@@ -49,7 +49,7 @@
 ;;
 ;; You need install projectile (https://github.com/bbatsov/projectile) first.
 ;;
-;; Then put tabbar.el and awesome-tab.el to your load-path.
+;; Then put awesome-tab.el to your load-path.
 ;; The load-path is usually ~/elisp/.
 ;; It's set in your ~/.emacs like this:
 ;; (add-to-list 'load-path (expand-file-name "~/elisp"))
@@ -82,10 +82,9 @@
 
 ;;; Customize:
 ;;
-;; `tabbar-back-color'
-;; `tabbar-active-color'
-;; `tabbar-inactive-color'
-;; `tabbar-hide-tab-rules'
+;; `tabbar-background-color'
+;; `tabbar-selected'
+;; `tabbar-unselected'
 ;;
 
 ;;; Change log:
@@ -485,53 +484,23 @@ current cached copy."
 ;;
 (defface tabbar-default
   '(
-    ;;(((class color grayscale) (background light))
-    ;; :inherit variable-pitch
-    ;; :height 0.8
-    ;; :foreground "gray50"
-    ;; :background "grey75"
-    ;; )
-    (((class color grayscale) (background dark))
-     :inherit variable-pitch
-     :height 0.8
-     :foreground "grey75"
-     :background "black"
-     )
-    (((class mono) (background light))
-     :inherit variable-pitch
-     :height 0.8
-     :foreground "white"
-     :background "black"
-     )
-    (((class mono) (background dark))
-     :inherit variable-pitch
-     :height 0.8
-     :foreground "white"
-     :background "black"
-     )
     (t
-     :inherit variable-pitch
-     :height 0.8
-     :foreground "gray50"
-     :background "black"
+     :inherit default
+     :height 1.3
      ))
   "Default face used in the tab bar."
   :group 'tabbar)
 
 (defface tabbar-unselected
   '((t
-     :inherit tabbar-default
-     :box (:line-width 1 :color "white" :style released-button)
-     ))
+     (:inherit tabbar-default
+               :foreground "dark green" :overline "dark green")))
   "Face used for unselected tabs."
   :group 'tabbar)
 
 (defface tabbar-selected
-  '((t
-     :inherit tabbar-default
-     :box (:line-width 1 :color "white" :style pressed-button)
-     :foreground "blue"
-     ))
+  '((t (:inherit tabbar-default :weight ultra-bold :width semi-expanded
+                 :foreground "green3" :overline "green3")))
   "Face used for the selected tab."
   :group 'tabbar)
 
@@ -572,8 +541,9 @@ By default, use the background color specified for the
 `tabbar-default' face (or inherited from another face), or the
 background color of the `default' face otherwise."
   :group 'tabbar
-  :type '(choice (const :tag "Default" nil)
-                 (color)))
+  :type '((t
+           :inherit default
+           )))
 
 (defsubst tabbar-background-color ()
   "Return the background color of the tab bar."
@@ -757,7 +727,7 @@ The variable `tabbar-separator-widget' gives details on this widget."
 
 ;;; Images
 ;;
-(defcustom tabbar-use-images t
+(defcustom tabbar-use-images nil
   "*Non-nil means to try to use images in tab bar.
 That is for buttons and separators."
   :group 'tabbar
@@ -1592,47 +1562,6 @@ visiting a file.  The current buffer is always included."
         (setq mode (get mode 'derived-mode-parent))))
     derived))
 
-(defun tabbar-buffer-groups ()
-  "Return the list of group names the current buffer belongs to.
-Return a list of one element based on major mode."
-  (list
-   (cond
-    ((or (get-buffer-process (current-buffer))
-         ;; Check if the major mode derives from `comint-mode' or
-         ;; `compilation-mode'.
-         (tabbar-buffer-mode-derived-p
-          major-mode '(comint-mode compilation-mode)))
-     "Process"
-     )
-    ((member (buffer-name)
-             '("*scratch*" "*Messages*"))
-     "Common"
-     )
-    ((eq major-mode 'dired-mode)
-     "Dired"
-     )
-    ((memq major-mode
-           '(help-mode apropos-mode Info-mode Man-mode))
-     "Help"
-     )
-    ((memq major-mode
-           '(rmail-mode
-             rmail-edit-mode vm-summary-mode vm-mode mail-mode
-             mh-letter-mode mh-show-mode mh-folder-mode
-             gnus-summary-mode message-mode gnus-group-mode
-             gnus-article-mode score-mode gnus-browse-killed-mode))
-     "Mail"
-     )
-    (t
-     ;; Return `mode-name' if not blank, `major-mode' otherwise.
-     (if (and (stringp mode-name)
-              ;; Take care of preserving the match-data because this
-              ;; function is called when updating the header line.
-              (save-match-data (string-match "[^ ]" mode-name)))
-         mode-name
-       (symbol-name major-mode))
-     ))))
-
 ;;; Group buffers in tab sets.
 ;;
 (defvar tabbar--buffers nil)
@@ -1855,15 +1784,6 @@ Run as `tabbar-quit-hook'."
 (add-hook 'tabbar-init-hook 'tabbar-buffer-init)
 (add-hook 'tabbar-quit-hook 'tabbar-buffer-quit)
 
-;;;;;;;;;;;;;;;;;;;;;;; Options ;;;;;;;;;;;;;;;;;;;;;;;
-(defvar tabbar-back-color (face-attribute 'default :background))
-(defvar tabbar-active-color "green3")
-(defvar tabbar-inactive-color "dark green")
-(defvar tabbar-hide-tab-rules
-  '(("prefix" . "*")
-    ("anyplace" . "^magit.*:\\s-")
-    ))
-
 ;;;;;;;;;;;;;;;;;;;;;;; Theme ;;;;;;;;;;;;;;;;;;;;;;;
 (defcustom tabbar-hide-header-button t
   "Hide header button at left-up corner.
@@ -1881,33 +1801,6 @@ Default is t."
               tabbar-scroll-left-button (quote (("") ""))
               tabbar-scroll-right-button (quote (("") "")))))
   :group 'tabbar)
-
-(custom-set-variables
- '(tabbar-background-color tabbar-back-color)
- )
-
-(custom-set-faces
- '(tabbar-default ((t (:height 1.3))))
- '(tabbar-selected ((t (:inherit tabbar-default :weight ultra-bold :width semi-expanded))))
- '(tabbar-unselected ((t (:inherit tabbar-default))))
- )
-
-(dolist (face '(tabbar-selected
-                tabbar-separator
-                tabbar-unselected))
-  (set-face-attribute face nil
-                      :background tabbar-back-color
-                      ))
-
-(set-face-attribute 'tabbar-selected nil
-                    :foreground tabbar-active-color
-                    :overline tabbar-active-color
-                    )
-
-(set-face-attribute 'tabbar-unselected nil
-                    :foreground tabbar-inactive-color
-                    :overline tabbar-inactive-color
-                    )
 
 ;;;;;;;;;;;;;;;;;;;;;;; Interactive functions ;;;;;;;;;;;;;;;;;;;;;;;
 (defun tabbar-switch-group (&optional groupname)
@@ -2107,10 +2000,6 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
 
 ;;;;;;;;;;;;;;;;;;;;;;; Default configurations ;;;;;;;;;;;;;;;;;;;;;;;
 
-;; Loading tabbar mode.
-(tabbar-mode t)
-(setq tabbar-use-images nil)            ;speed up by not using images
-
 ;; Uniquify tab name when open multiple buffers with same filename.
 (setq uniquify-separator "/")
 (setq uniquify-buffer-name-style 'post-forward-angle-brackets)
@@ -2124,40 +2013,6 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
                'reb-mode-hook
                ))
   (add-hook hook '(lambda () (setq-local header-line-format nil))))
-
-;; Rules to control buffers show in tabs.
-(defun tabbar-filter-buffer-list ()
-  "`tabbar-filter-buffer-list' control buffers show in tabs.
-
-All buffer that start with * or magit-* won't display in tabbar.
-Of course, you still can switch buffer by other emacs commands."
-  (tabbar-filter
-   (lambda (x)
-     (let ((name (format "%s" x)))
-       (eval
-        `(and ,@ (mapcar #'(lambda (rule)
-                             (let ((match-position (car rule))
-                                   (match-regexp (cdr rule)))
-                               (cond ((string-equal match-position "prefix")
-                                      (not (string-prefix-p match-regexp name)))
-                                     ((string-equal match-position "anyplace")
-                                      (not (string-match match-regexp name)))
-                                     ((string-equal match-position "suffix")
-                                      (not (string-suffix-p match-regexp name)))
-                                     )))
-                         tabbar-hide-tab-rules))
-        )))
-   (delq nil
-         (mapcar #'(lambda (b)
-                     (cond
-                      ;; Always include the current buffer.
-                      ((eq (current-buffer) b) b)
-                      ((buffer-file-name b) b)
-                      ((char-equal ?\  (aref (buffer-name b) 0)) nil)
-                      ((buffer-live-p b) b)))
-                 (buffer-list)))))
-
-(setq tabbar-buffer-list-function 'tabbar-filter-buffer-list)
 
 ;; Rules to control buffer's group rules.
 (defvar tabbar-groups-hash (make-hash-table :test 'equal))
@@ -2178,14 +2033,24 @@ Of course, you still can switch buffer by other emacs commands."
       (puthash buf project-name tabbar-groups-hash)
       project-name)))
 
-(defun tabbar-buffer-groups-by-mixin-rules ()
-  "`tabbar-buffer-groups-by-mixin-rules' control buffers' group rules.
+(defun tabbar-buffer-groups ()
+  "`tabbar-buffer-groups' control buffers' group rules.
 
 Group tabbar with mode if buffer is derived from `eshell-mode' `emacs-lisp-mode' `dired-mode' `org-mode' `magit-mode'.
 All buffer name start with * will group to \"Emacs\".
 Other buffer group by `projectile-project-p' with project name."
   (list
    (cond
+    ((or (string-equal "*" (substring (buffer-name) 0 1))
+         (memq major-mode '(magit-process-mode
+                            magit-status-mode
+                            magit-diff-mode
+                            magit-log-mode
+                            magit-file-mode
+                            magit-blob-mode
+                            magit-blame-mode
+                            )))
+     "Emacs")
     ((derived-mode-p 'eshell-mode)
      "EShell")
     ((derived-mode-p 'emacs-lisp-mode)
@@ -2194,24 +2059,11 @@ Other buffer group by `projectile-project-p' with project name."
      "Dired")
     ((memq major-mode '(org-mode org-agenda-mode diary-mode))
      "OrgMode")
-    ((memq major-mode '(magit-process-mode
-                        magit-status-mode
-                        magit-diff-mode
-                        magit-log-mode
-                        magit-file-mode
-                        magit-blob-mode
-                        magit-blame-mode
-                        ))
-     "Magit")
-    ((string-equal "*" (substring (buffer-name) 0 1))
-     "Emacs")
     (t
      (if (projectile-project-p)
          (tabbar-get-group-name (current-buffer))
        "Common"))
     )))
-
-(setq tabbar-buffer-groups-function 'tabbar-buffer-groups-by-mixin-rules)
 
 ;; Helm source for switching group in helm.
 (defvar helm-source-tabbar-group nil)
@@ -2237,6 +2089,8 @@ Other buffer group by `projectile-project-p' with project name."
            "Tabbar Groups:"
            (tabbar-get-groups)
            :action #'tabbar-switch-group))))
+
+(tabbar-mode t)
 
 (provide 'awesome-tab)
 

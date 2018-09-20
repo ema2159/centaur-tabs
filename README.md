@@ -53,18 +53,7 @@ Then add ```helm-source-tabbar-group``` in ```helm-source-list```
 
 | Option                  | Description                |
 | :--------               | :----                      |
-| tabbar-back-color | Background color of tabbar |
-| tabbar-active-color     | Active tab color           |
-| tabbar-inactive-color   | Inactive tab color         |
-| tabbar-hide-tab-rules   | The hide tab rules         |
+| tabbar-background-color | Background color of tabbar |
+| tabbar-selected     | Active tab color           |
+| tabbar-unselected   | Inactive tab color         |
 
-```tabbar-hide-tab-rules``` value is:
-```
-'(
-  ("prefix" . "*")
-  ("match" . "^magit.*:\\s-")
- )
-```
-It's easy to understand.
-1. First rule control match position of tab name, value can use "prefix", "anyplace", "suffix".
-2. Second rule is regexp to match tab name.
