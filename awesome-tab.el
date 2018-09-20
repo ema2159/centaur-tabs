@@ -69,7 +69,7 @@
 ;; `tabbar-backward-tab-other-window'
 ;; `tabbar-kill-all-buffers-in-current-group'
 ;; `tabbar-kill-match-buffers-in-current-group'
-;; `tabbar-kill-keep-buffers-in-current-group'
+;; `tabbar-keep-match-buffers-in-current-group'
 ;;
 ;; If you're helm fans, you need add below code in your helm config:
 ;;
