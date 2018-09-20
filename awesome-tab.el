@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-09-17 22:14:34
-;; Version: 0.3
-;; Last-Updated: 2018-09-18 22:59:51
+;; Version: 0.4
+;; Last-Updated: 2018-09-20 15:25:42
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/awesome-tab.el
 ;; Keywords:
@@ -68,6 +68,7 @@
 ;; `tabbar-forward-tab-other-window'
 ;; `tabbar-backward-tab-other-window'
 ;; `tabbar-kill-all-buffers-in-current-group'
+;; `tabbar-kill-match-buffers-in-current-group'
 ;;
 ;; If you're helm fans, you need add below code in your helm config:
 ;;
@@ -86,6 +87,10 @@
 
 ;;; Change log:
 ;;
+;; 2018/09/20
+;;      * Remove empty header line from magit buffers.
+;;      * Add new function `tabbar-kill-match-buffers-in-current-group', it's handy in mixin mode, such as web-mode.
+;;
 ;; 2018/09/18
 ;;      * Fix unselect tab height and add option `tabbar-hide-tab-rules'
 ;;      * Use `tabbar-groups-hash' store every buffer's project name avoid performance issue cause by `projectile-project-name'.
@@ -96,7 +101,7 @@
 
 ;;; Acknowledgements:
 ;;
-;;
+;; casouri: documentation and many useful patches.
 ;;
 
 ;;; TODO
@@ -236,6 +241,39 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
             (buffer-list)))
     ;; Switch to next group.
     (tabbar-forward-group)
+    ))
+
+(defun tabbar-kill-match-buffers-in-current-group ()
+  "Kill all buffers match extension in current group."
+  (interactive)
+  (let* ((groups (tabbar-get-groups))
+         (current-group-name (cdr (tabbar-selected-tab (tabbar-current-tabset t))))
+         (extension-names '())
+         match-extension)
+    ;; Read all extension names in current group.
+    (save-excursion
+      (mapc #'(lambda (buffer)
+                (with-current-buffer buffer
+                  (when (string-equal current-group-name (cdr (tabbar-selected-tab (tabbar-current-tabset t))))
+                    (when (buffer-file-name buffer)
+                      (add-to-list 'extension-names (file-name-extension (buffer-file-name buffer))))
+                    )))
+            (buffer-list)))
+    ;; Read extension need to kill.
+    (setq match-extension (ido-completing-read "Kill buffer suffix with: " extension-names))
+    ;; Kill all buffers match extension in current group.
+    (save-excursion
+      (mapc #'(lambda (buffer)
+                (with-current-buffer buffer
+                  (when (string-equal current-group-name (cdr (tabbar-selected-tab (tabbar-current-tabset t))))
+                    (let ((filename (buffer-file-name buffer)))
+                      (when (and filename (string-equal (file-name-extension filename) match-extension))
+                        (kill-buffer buffer)))
+                    )))
+            (buffer-list)))
+    ;; Switch to next group if last file killed.
+    (when (equal (length extension-names) 1)
+      (tabbar-forward-group))
     ))
 
 ;;;;;;;;;;;;;;;;;;;;;;; Utils functions ;;;;;;;;;;;;;;;;;;;;;;;
