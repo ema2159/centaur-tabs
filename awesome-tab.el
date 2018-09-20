@@ -420,7 +420,7 @@ Other buffer group by `projectile-project-p' with project name."
 
 (setq tabbar-buffer-groups-function 'tabbar-buffer-groups-by-mixin-rules)
 
-;; Helm source for switch group in helm.
+;; Helm source for switching group in helm.
 (defvar helm-source-tabbar-group nil)
 
 (defun tabbar-build-helm-source ()
@@ -432,6 +432,19 @@ Other buffer group by `projectile-project-p' with project name."
            "Tabbar Group"
            :candidates #'tabbar-get-groups
            :action '(("Switch to group" . tabbar-switch-group))))))
+
+;; Ivy source for switching group in ivy.
+(defvar ivy-source-tabbar-group nil)
+
+(defun tabbar-build-ivy-source ()
+  (interactive)
+  (setq ivy-source-tabbar-group
+        (when (featurep 'ivy)
+          (require 'ivy)
+          (ivy-read
+           "Tabbar Groups:"
+           (tabbar-get-groups)
+           :action #'tabbar-switch-group))))
 
 (provide 'awesome-tab)
 
