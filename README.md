@@ -37,6 +37,7 @@ It's set in your ~/.emacs like this:
 | tabbar-forward-group                       | Go to selected tab in the next available group     |
 | tabbar-kill-all-buffers-in-current-group   | Kill all buffers of current group                  |
 | tabbar-kill-match-buffers-in-current-group | Kill buffers match extension of current group      |
+| tabbar-keep-match-buffers-in-current-group | Keep buffers match extension of current group      |
 
 If you're helm fans, you need add below code in your helm config:
 

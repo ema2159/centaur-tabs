@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-09-17 22:14:34
-;; Version: 0.4
-;; Last-Updated: 2018-09-20 15:25:42
+;; Version: 0.5
+;; Last-Updated: 2018-09-20 15:47:45
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/awesome-tab.el
 ;; Keywords:
@@ -69,6 +69,7 @@
 ;; `tabbar-backward-tab-other-window'
 ;; `tabbar-kill-all-buffers-in-current-group'
 ;; `tabbar-kill-match-buffers-in-current-group'
+;; `tabbar-kill-keep-buffers-in-current-group'
 ;;
 ;; If you're helm fans, you need add below code in your helm config:
 ;;
@@ -90,6 +91,7 @@
 ;; 2018/09/20
 ;;      * Remove empty header line from magit buffers.
 ;;      * Add new function `tabbar-kill-match-buffers-in-current-group', it's handy in mixin mode, such as web-mode.
+;;      * Add new function `tabbar-keep-match-buffers-in-current-group', it's handy in mixin mode, such as web-mode.
 ;;
 ;; 2018/09/18
 ;;      * Fix unselect tab height and add option `tabbar-hide-tab-rules'
@@ -230,15 +232,10 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
 (defun tabbar-kill-all-buffers-in-current-group ()
   "Kill all buffers in current group."
   (interactive)
-  (let* ((groups (tabbar-get-groups))
-         (current-group-name (cdr (tabbar-selected-tab (tabbar-current-tabset t)))))
+  (let* ((current-group-name (cdr (tabbar-selected-tab (tabbar-current-tabset t)))))
     ;; Kill all buffers in current group.
-    (save-excursion
-      (mapc #'(lambda (buffer)
-                (with-current-buffer buffer
-                  (when (string-equal current-group-name (cdr (tabbar-selected-tab (tabbar-current-tabset t))))
-                    (kill-buffer buffer))))
-            (buffer-list)))
+    (tabbar-kill-buffer-match-rule
+     (lambda (buffer) t))
     ;; Switch to next group.
     (tabbar-forward-group)
     ))
@@ -246,31 +243,36 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
 (defun tabbar-kill-match-buffers-in-current-group ()
   "Kill all buffers match extension in current group."
   (interactive)
-  (let* ((groups (tabbar-get-groups))
-         (current-group-name (cdr (tabbar-selected-tab (tabbar-current-tabset t))))
-         (extension-names '())
+  (let* ((current-group-name (cdr (tabbar-selected-tab (tabbar-current-tabset t))))
+         (extension-names (tabbar-get-extensions))
          match-extension)
-    ;; Read all extension names in current group.
-    (save-excursion
-      (mapc #'(lambda (buffer)
-                (with-current-buffer buffer
-                  (when (string-equal current-group-name (cdr (tabbar-selected-tab (tabbar-current-tabset t))))
-                    (when (buffer-file-name buffer)
-                      (add-to-list 'extension-names (file-name-extension (buffer-file-name buffer))))
-                    )))
-            (buffer-list)))
     ;; Read extension need to kill.
-    (setq match-extension (ido-completing-read "Kill buffer suffix with: " extension-names))
+    (setq match-extension (ido-completing-read "Kill buffers suffix with: " extension-names))
     ;; Kill all buffers match extension in current group.
-    (save-excursion
-      (mapc #'(lambda (buffer)
-                (with-current-buffer buffer
-                  (when (string-equal current-group-name (cdr (tabbar-selected-tab (tabbar-current-tabset t))))
-                    (let ((filename (buffer-file-name buffer)))
-                      (when (and filename (string-equal (file-name-extension filename) match-extension))
-                        (kill-buffer buffer)))
-                    )))
-            (buffer-list)))
+    (tabbar-kill-buffer-match-rule
+     (lambda (buffer)
+       (let ((filename (buffer-file-name buffer)))
+         (and filename (string-equal (file-name-extension filename) match-extension))
+         )))
+    ;; Switch to next group if last file killed.
+    (when (equal (length extension-names) 1)
+      (tabbar-forward-group))
+    ))
+
+(defun tabbar-keep-match-buffers-in-current-group ()
+  "Keep all buffers match extension in current group."
+  (interactive)
+  (let* ((current-group-name (cdr (tabbar-selected-tab (tabbar-current-tabset t))))
+         (extension-names (tabbar-get-extensions))
+         match-extension)
+    ;; Read extension need to kill.
+    (setq match-extension (ido-completing-read "Just keep buffers suffix with: " extension-names))
+    ;; Kill all buffers match extension in current group.
+    (tabbar-kill-buffer-match-rule
+     (lambda (buffer)
+       (let ((filename (buffer-file-name buffer)))
+         (and filename (not (string-equal (file-name-extension filename) match-extension)))
+         )))
     ;; Switch to next group if last file killed.
     (when (equal (length extension-names) 1)
       (tabbar-forward-group))
@@ -287,6 +289,29 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
   (mapcar #'(lambda (group)
               (format "%s" (cdr group)))
           (tabbar-tabs tabbar-tabsets-tabset)))
+
+(defun tabbar-get-extensions ()
+  ;; Refresh groups.
+  (set tabbar-tabsets-tabset (tabbar-map-tabsets 'tabbar-selected-tab))
+  (let ((extension-names '()))
+    (mapc #'(lambda (buffer)
+              (with-current-buffer buffer
+                (when (string-equal current-group-name (cdr (tabbar-selected-tab (tabbar-current-tabset t))))
+                  (when (buffer-file-name buffer)
+                    (add-to-list 'extension-names (file-name-extension (buffer-file-name buffer))))
+                  )))
+          (buffer-list))
+    extension-names))
+
+(defmacro tabbar-kill-buffer-match-rule (match-rule)
+  `(save-excursion
+     (mapc #'(lambda (buffer)
+               (with-current-buffer buffer
+                 (when (string-equal current-group-name (cdr (tabbar-selected-tab (tabbar-current-tabset t))))
+                   (when (,match-rule buffer)
+                     (kill-buffer buffer))
+                   )))
+           (buffer-list))))
 
 ;;;;;;;;;;;;;;;;;;;;;;; Default configurations ;;;;;;;;;;;;;;;;;;;;;;;
 
