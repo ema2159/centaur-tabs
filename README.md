@@ -11,7 +11,7 @@ So this extension provide an out of box configuration to use tabbar in Emacs.
 ### Installation
 You need install [projectile](https://github.com/bbatsov/projectile) first.
 
-Then put tabbar.el and awesome-tab.el to your load-path.
+Then put awesome-tab.el to your load-path.
 
 The load-path is usually ~/elisp/.
 
