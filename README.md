@@ -51,7 +51,7 @@ Then add ```helm-source-tabbar-group``` in ```helm-source-list```
 
 | Option                  | Description                |
 | :--------               | :----                      |
-| tabbar-background-color | Background color of tabbar |
+| tabbar-back-color | Background color of tabbar |
 | tabbar-active-color     | Active tab color           |
 | tabbar-inactive-color   | Inactive tab color         |
 | tabbar-hide-tab-rules   | The hide tab rules         |

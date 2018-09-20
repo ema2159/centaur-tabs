@@ -80,7 +80,7 @@
 
 ;;; Customize:
 ;;
-;; `tabbar-background-color'
+;; `tabbar-back-color'
 ;; `tabbar-active-color'
 ;; `tabbar-inactive-color'
 ;; `tabbar-hide-tab-rules'
@@ -118,7 +118,7 @@
 ;;; Code:
 
 ;;;;;;;;;;;;;;;;;;;;;;; Options ;;;;;;;;;;;;;;;;;;;;;;;
-(defvar tabbar-background-color (face-attribute 'default :background))
+(defvar tabbar-back-color (face-attribute 'default :background))
 (defvar tabbar-active-color "green3")
 (defvar tabbar-inactive-color "dark green")
 (defvar tabbar-hide-tab-rules
@@ -145,7 +145,7 @@ Default is t."
   :group 'tabbar)
 
 (custom-set-variables
- '(tabbar-background-color tabbar-background-color)
+ '(tabbar-background-color tabbar-back-color)
  )
 
 (custom-set-faces
@@ -158,7 +158,7 @@ Default is t."
                 tabbar-separator
                 tabbar-unselected))
   (set-face-attribute face nil
-                      :background tabbar-background-color
+                      :background tabbar-back-color
                       ))
 
 (set-face-attribute 'tabbar-selected nil
