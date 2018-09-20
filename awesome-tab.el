@@ -259,9 +259,14 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
 (setq uniquify-separator "/")
 (setq uniquify-buffer-name-style 'post-forward-angle-brackets)
 (setq uniquify-after-kill-buffer-p t)
-;; Fix: empty header line in magit popup window makes its window insufficient of space
-;; to display all content
-(add-hook 'magit-popup-mode-hook (lambda () (setq-local header-line-format nil)))
+
+;; Some buffer's header line is empty that make its window insufficient of space to display all content
+;; Feel free to add hook in below list. ;)
+(dolist (hook (list
+               'magit-status-mode-hook
+               'magit-popup-mode-hook
+               ))
+  (add-hook hook '(lambda () (setq-local header-line-format nil))))
 
 ;; Rules to control buffers show in tabs.
 (defun tabbar-filter-buffer-list ()
