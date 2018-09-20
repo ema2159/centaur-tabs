@@ -188,7 +188,7 @@ The function is called with no arguments.")
 The function is passed the mouse event received when clicking on the
 scroll left button.  It should scroll the current tab set.")
 
-(defvar awesome-tab-scroll-left-help-function 'awesome-tab-scroll-left-help
+(defvar awesome-tab-scroll-left-help-function nil
   "Function to obtain a help string for the scroll left button.
 The help string is displayed when the mouse is onto the button.
 The function is called with no arguments.")
@@ -198,7 +198,7 @@ The function is called with no arguments.")
 The function is passed the mouse event received when clicking on the
 scroll right button.  It should scroll the current tab set.")
 
-(defvar awesome-tab-scroll-right-help-function 'awesome-tab-scroll-right-help
+(defvar awesome-tab-scroll-right-help-function nil
   "Function to obtain a help string for the scroll right button.
 The help string is displayed when the mouse is onto the button.
 The function is called with no arguments.")
@@ -649,8 +649,7 @@ P2 13 13 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
 A disabled button image will be automatically build from it.")
 
 (defcustom awesome-tab-scroll-left-button
-  (cons (cons " <" awesome-tab-scroll-left-button-enabled-image)
-        (cons " =" nil))
+  (quote (("") ""))
   "The scroll left button.
 The variable `awesome-tab-button-widget' gives details on this widget."
   :group 'awesome-tab
@@ -682,8 +681,7 @@ P2 13 13 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
 A disabled button image will be automatically build from it.")
 
 (defcustom awesome-tab-scroll-right-button
-  (cons (cons " >" awesome-tab-scroll-right-button-enabled-image)
-        (cons " =" nil))
+  (quote (("") ""))
   "The scroll right button.
 The variable `awesome-tab-button-widget' gives details on this widget."
   :group 'awesome-tab
@@ -851,18 +849,10 @@ Pass mouse click events on a button to `awesome-tab-click-on-button'."
   (when (eq (event-basic-type event) 'mouse-1)
     (awesome-tab-scroll (awesome-tab-current-tabset) -1)))
 
-(defun awesome-tab-scroll-left-help ()
-  "Help string shown when mouse is over the scroll left button."
-  "mouse-1: scroll tabs left.")
-
 (defun awesome-tab-scroll-right (event)
   "On mouse EVENT, scroll current tab set on right."
   (when (eq (event-basic-type event) 'mouse-1)
     (awesome-tab-scroll (awesome-tab-current-tabset) 1)))
-
-(defun awesome-tab-scroll-right-help ()
-  "Help string shown when mouse is over the scroll right button."
-  "mouse-1: scroll tabs right.")
 
 ;;; Tabs
 ;;
@@ -1511,9 +1501,7 @@ Returns non-nil if the new state is enabled.
   "Display buffers in the tab bar."
   :group 'awesome-tab)
 
-(defcustom awesome-tab-buffer-home-button
-  (cons (cons "[+]" awesome-tab-home-button-enabled-image)
-        (cons "[-]" awesome-tab-home-button-disabled-image))
+(defcustom awesome-tab-buffer-home-button (quote (("") ""))
   "The home button displayed when showing buffer tabs.
 The enabled button value is displayed when showing tabs for groups of
 buffers, and the disabled button value is displayed when showing
@@ -1780,24 +1768,6 @@ Run as `awesome-tab-quit-hook'."
 
 (add-hook 'awesome-tab-init-hook 'awesome-tab-buffer-init)
 (add-hook 'awesome-tab-quit-hook 'awesome-tab-buffer-quit)
-
-;;;;;;;;;;;;;;;;;;;;;;; Theme ;;;;;;;;;;;;;;;;;;;;;;;
-(defcustom awesome-tab-hide-header-button t
-  "Hide header button at left-up corner.
-Default is t."
-  :type 'boolean
-  :set (lambda (symbol value)
-         (set symbol value)
-         (if value
-             (setq
-              awesome-tab-scroll-left-help-function nil ;don't show help information
-              awesome-tab-scroll-right-help-function nil
-              awesome-tab-help-on-tab-function nil
-              awesome-tab-home-help-function nil
-              awesome-tab-buffer-home-button (quote (("") "")) ;don't show awesome-tab button
-              awesome-tab-scroll-left-button (quote (("") ""))
-              awesome-tab-scroll-right-button (quote (("") "")))))
-  :group 'awesome-tab)
 
 ;;;;;;;;;;;;;;;;;;;;;;; Interactive functions ;;;;;;;;;;;;;;;;;;;;;;;
 (defun awesome-tab-switch-group (&optional groupname)
@@ -2071,8 +2041,8 @@ Other buffer group by `projectile-project-p' with project name."
         (when (featurep 'helm)
           (require 'helm)
           (helm-build-sync-source "Awesome-Tab Group"
-            :candidates #'awesome-tab-get-groups
-            :action '(("Switch to group" . awesome-tab-switch-group))))))
+                                  :candidates #'awesome-tab-get-groups
+                                  :action '(("Switch to group" . awesome-tab-switch-group))))))
 
 ;; Ivy source for switching group in ivy.
 (defvar ivy-source-awesome-tab-group nil)
