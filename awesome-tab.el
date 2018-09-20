@@ -374,6 +374,7 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
 
 ;; Loading tabbar mode.
 (tabbar-mode t)
+(setq tabbar-use-images nil)            ;speed up by not using images
 
 ;; Uniquify tab name when open multiple buffers with same filename.
 (setq uniquify-separator "/")
