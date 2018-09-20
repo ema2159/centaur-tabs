@@ -38,6 +38,8 @@ It's set in your ~/.emacs like this:
 | tabbar-kill-all-buffers-in-current-group   | Kill all buffers of current group                  |
 | tabbar-kill-match-buffers-in-current-group | Kill buffers match extension of current group      |
 | tabbar-keep-match-buffers-in-current-group | Keep buffers match extension of current group      |
+| tabbar-move-current-tab-one-place-left     | Move current tab to left                           |
+| tabbar-move-current-tab-one-place-right    | Move current tab to right                          |
 
 If you're helm fans, you need add below code in your helm config:
 
