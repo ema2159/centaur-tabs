@@ -163,12 +163,6 @@ The function is passed a tab and should return a string.")
 The function is passed a mouse event and a tab, and should make it the
 selected tab.")
 
-(defvar awesome-tab-help-on-tab-function nil
-  "Function to obtain a help string for a tab.
-The help string is displayed when the mouse is onto the button.  The
-function is passed the tab and should return a help string or nil for
-none.")
-
 (defvar awesome-tab-button-label-function nil
   "Function that obtains a button label displayed on the tab bar.
 The function is passed a button name should return a propertized
@@ -178,31 +172,16 @@ string to display.")
   "Function called when clicking on the tab bar home button.
 The function is passed the mouse event received.")
 
-(defvar awesome-tab-home-help-function nil
-  "Function to obtain a help string for the tab bar home button.
-The help string is displayed when the mouse is onto the button.
-The function is called with no arguments.")
-
 (defvar awesome-tab-scroll-left-function 'awesome-tab-scroll-left
   "Function that scrolls tabs on left.
 The function is passed the mouse event received when clicking on the
 scroll left button.  It should scroll the current tab set.")
-
-(defvar awesome-tab-scroll-left-help-function nil
-  "Function to obtain a help string for the scroll left button.
-The help string is displayed when the mouse is onto the button.
-The function is called with no arguments.")
 
 (defvar awesome-tab-scroll-right-function 'awesome-tab-scroll-right
   "Function that scrolls tabs on right.
 The function is passed the mouse event received when clicking on the
 scroll right button.  It should scroll the current tab set.")
 
-(defvar awesome-tab-scroll-right-help-function nil
-  "Function to obtain a help string for the scroll right button.
-The help string is displayed when the mouse is onto the button.
-The function is called with no arguments.")
-
 ;;; Misc.
 ;;
 (eval-and-compile
@@ -258,7 +237,7 @@ room."
               w (+ w (char-width (aref str n)))))
       (concat (substring str 0 i) el (substring str n)))
      )))
-
+
 ;;; Tab and tab set
 ;;
 (defsubst awesome-tab-make-tab (object tabset)
@@ -476,7 +455,7 @@ current cached copy."
   (awesome-tab-scroll awesome-tab-tabsets-tabset 0)
   (awesome-tab-set-template awesome-tab-tabsets-tabset nil)
   awesome-tab-tabsets-tabset)
-
+
 ;;; Faces
 ;;
 (defface awesome-tab-default
@@ -552,7 +531,7 @@ background color of the `default' face otherwise."
               (setq face 'default))
           (setq color (face-background face)))
         color)))
-
+
 ;;; Buttons and separator look and feel
 ;;
 (defconst awesome-tab-button-widget
@@ -585,39 +564,8 @@ is derived from it.")
 (defvar awesome-tab-home-button-value nil
   "Value of the home button.")
 
-(defconst awesome-tab-home-button-enabled-image
-  '((:type pbm :data "\
-P2 13 13 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
-255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0
-6 0 255 255 255 255 255 255 255 255 255 255 9 130 9 255 255 255 255
-255 255 255 255 255 255 26 130 26 255 255 255 255 255 255 255 0 9 26
-41 130 41 26 9 0 255 255 255 255 5 145 140 135 130 125 120 115 5 255
-255 255 255 0 9 26 41 130 41 26 9 0 255 255 255 255 255 255 255 26 130
-26 255 255 255 255 255 255 255 255 255 255 9 130 9 255 255 255 255 255
-255 255 255 255 255 0 6 0 255 255 255 255 255 255 255 255 255 255 255
-255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
-255 255 255
-"))
-  "Default image for the enabled home button.")
-
-(defconst awesome-tab-home-button-disabled-image
-  '((:type pbm :data "\
-P2 13 13 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
-255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
-255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
-255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
-255 255 0 0 1 2 3 2 1 0 0 255 255 255 255 0 132 128 123 119 114 110
-106 0 255 255 255 255 0 0 1 2 3 2 1 0 0 255 255 255 255 255 255 255
-255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
-255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
-255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
-255 255 255 255 255 255 255 255 255
-"))
-  "Default image for the disabled home button.")
-
 (defcustom awesome-tab-home-button
-  (cons (cons "[o]" awesome-tab-home-button-enabled-image)
-        (cons "[x]" awesome-tab-home-button-disabled-image))
+  (quote (("") ""))
   "The home button.
 The variable `awesome-tab-button-widget' gives details on this widget."
   :group 'awesome-tab
@@ -631,22 +579,6 @@ The variable `awesome-tab-button-widget' gives details on this widget."
 ;;
 (defvar awesome-tab-scroll-left-button-value nil
   "Value of the scroll left button.")
-
-(defconst awesome-tab-scroll-left-button-enabled-image
-  '((:type pbm :data "\
-P2 13 13 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
-255 255 255 255 255 255 255 255 128 16 48 255 255 255 255 255 255 255
-255 144 28 86 128 0 255 255 255 255 255 255 160 44 92 159 135 113 0
-255 255 255 255 160 44 97 165 144 129 120 117 0 255 255 176 44 98 175
-174 146 127 126 127 128 0 255 255 0 160 184 156 143 136 134 135 137
-138 0 255 255 176 32 67 144 146 144 145 146 148 149 0 255 255 255 255
-160 42 75 140 154 158 159 160 0 255 255 255 255 255 255 160 40 74 154
-170 171 0 255 255 255 255 255 255 255 255 160 41 82 163 0 255 255 255
-255 255 255 255 255 255 255 160 32 48 255 255 255 255 255 255 255 255
-255 255 255 255 255 255
-"))
-  "Default image for the enabled scroll left button.
-A disabled button image will be automatically build from it.")
 
 (defcustom awesome-tab-scroll-left-button
   (quote (("") ""))
@@ -663,22 +595,6 @@ The variable `awesome-tab-button-widget' gives details on this widget."
 ;;
 (defvar awesome-tab-scroll-right-button-value nil
   "Value of the scroll right button.")
-
-(defconst awesome-tab-scroll-right-button-enabled-image
-  '((:type pbm :data "\
-P2 13 13 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
-48 32 160 255 255 255 255 255 255 255 255 255 255 44 161 71 32 160 255
-255 255 255 255 255 255 255 36 157 163 145 62 32 160 255 255 255 255
-255 255 30 128 133 137 142 124 50 32 160 255 255 255 255 29 120 121
-124 126 126 124 105 42 32 176 255 255 31 126 127 128 128 128 128 126
-124 89 32 255 255 33 134 135 136 137 137 138 119 49 32 176 255 255 34
-143 144 145 146 128 54 32 160 255 255 255 255 36 152 153 134 57 32 160
-255 255 255 255 255 255 38 141 60 32 160 255 255 255 255 255 255 255
-255 48 32 160 255 255 255 255 255 255 255 255 255 255 255 255 255 255
-255 255 255 255 255 255 255 255
-"))
-  "Default image for the enabled scroll right button.
-A disabled button image will be automatically build from it.")
 
 (defcustom awesome-tab-scroll-right-button
   (quote (("") ""))
@@ -720,25 +636,10 @@ The variable `awesome-tab-separator-widget' gives details on this widget."
           ;; Schedule refresh of separator value.
           (setq awesome-tab-separator-value nil)))
 
-;;; Images
-;;
-(defcustom awesome-tab-use-images nil
-  "*Non-nil means to try to use images in tab bar.
-That is for buttons and separators."
-  :group 'awesome-tab
-  :type 'boolean
-  :set '(lambda (variable value)
-          (custom-set-default variable value)
-          ;; Schedule refresh of all buttons and separator values.
-          (setq awesome-tab-separator-value nil
-                awesome-tab-home-button-value nil
-                awesome-tab-scroll-left-button-value nil
-                awesome-tab-scroll-right-button-value nil)))
-
 (defsubst awesome-tab-find-image (specs)
   "Find an image, choosing one of a list of image specifications.
 SPECS is a list of image specifications.  See also `find-image'."
-  (when (and awesome-tab-use-images (display-images-p))
+  (when (display-images-p)
     (condition-case nil
         (find-image specs)
       (error nil))))
@@ -763,7 +664,7 @@ an extra margin around the image."
         (plist-put plist :margin margin))
     (setcdr image plist))
   image)
-
+
 ;;; Button keymaps and callbacks
 ;;
 (defun awesome-tab-make-mouse-keymap (callback)
@@ -795,20 +696,6 @@ The default is `mouse-1'."
 (defconst awesome-tab-default-button-keymap
   (awesome-tab-make-mouse-keymap 'awesome-tab-select-button-callback)
   "Default keymap of a button.")
-
-(defun awesome-tab-help-on-button (window object position)
-  "Return a help string or nil for none, for the button under the mouse.
-WINDOW is the window in which the help was found (unused).
-OBJECT is the button label under the mouse.
-POSITION is the position in that label.
-Call `awesome-tab-NAME-help-function' where NAME is the button name
-associated to OBJECT."
-  (let* ((name (get-text-property position 'awesome-tab-button object))
-         (funvar (and name
-                      (intern-soft (format "awesome-tab-%s-help-function"
-                                           name)))))
-    (and (symbol-value funvar)
-         (funcall (symbol-value funvar)))))
 
 (defsubst awesome-tab-click-on-button (name &optional type)
   "Handle a mouse click event on button NAME.
@@ -860,16 +747,6 @@ Pass mouse click events on a button to `awesome-tab-click-on-button'."
   (awesome-tab-make-mouse-keymap 'awesome-tab-select-tab-callback)
   "Default keymap of a tab.")
 
-(defun awesome-tab-help-on-tab (window object position)
-  "Return a help string or nil for none, for the tab under the mouse.
-WINDOW is the window in which the help was found (unused).
-OBJECT is the tab label under the mouse.
-POSITION is the position in that label.
-Call `awesome-tab-help-on-tab-function' with the associated tab."
-  (when awesome-tab-help-on-tab-function
-    (let ((tab (get-text-property position 'awesome-tab-tab object)))
-      (funcall awesome-tab-help-on-tab-function tab))))
-
 (defsubst awesome-tab-click-on-tab (tab &optional type)
   "Handle a mouse click event on tab TAB.
 Call `awesome-tab-select-tab-function' with the received, or simulated
@@ -901,7 +778,7 @@ Pass mouse click events on a tab to `awesome-tab-click-on-tab'."
           (interactive "@e")
           (and (awesome-tab-click-p ,event)
                (awesome-tab-click-on-tab ',tab ,event)))))))
-
+
 ;;; Tab bar construction
 ;;
 (defun awesome-tab-button-label (name)
@@ -942,7 +819,7 @@ element."
                       'mouse-face 'awesome-tab-button-highlight
                       'pointer 'hand
                       'local-map (awesome-tab-make-button-keymap name)
-                      'help-echo 'awesome-tab-help-on-button)
+                      )
           (propertize (cdr label)
                       'face 'awesome-tab-button
                       'pointer 'arrow)))))
@@ -999,7 +876,6 @@ Call `awesome-tab-tab-label-function' to obtain a label for TAB."
              tab)
            'awesome-tab-tab tab
            'local-map (awesome-tab-make-tab-keymap tab)
-           'help-echo 'awesome-tab-help-on-tab
            'mouse-face 'awesome-tab-highlight
            'face (if (awesome-tab-selected-p tab (awesome-tab-current-tabset))
                      'awesome-tab-selected
@@ -1095,7 +971,7 @@ That is dedicated windows, and `checkdoc' status windows."
                     (if (boundp 'ispell-choices-buffer)
                         ispell-choices-buffer
                       "*Choices*")))))
-
+
 ;;; Cyclic navigation through tabs
 ;;
 (defun awesome-tab-cycle (&optional backward type)
@@ -1195,7 +1071,7 @@ Depend on the setting of the option `awesome-tab-cycle-scope'."
   (interactive)
   (let ((awesome-tab-cycle-scope 'tabs))
     (awesome-tab-cycle)))
-
+
 ;;; Button press commands
 ;;
 (defsubst awesome-tab--mouse (number)
@@ -1232,7 +1108,7 @@ A numeric prefix ARG value of 2, or 3, respectively simulates a
 mouse-2, or mouse-3 click.  The default is a mouse-1 click."
   (interactive "p")
   (awesome-tab-click-on-button 'scroll-right (awesome-tab--mouse arg)))
-
+
 ;;; Mouse-wheel support
 ;;
 (require 'mwheel)
@@ -1338,7 +1214,7 @@ Mouse-enabled equivalent of the command `awesome-tab-forward-tab'."
   (if (awesome-tab--mwheel-up-p event)
       (awesome-tab-mwheel-forward-group event)
     (awesome-tab-mwheel-backward-group event)))
-
+
 ;;; Minor modes
 ;;
 (defsubst awesome-tab-mode-on-p ()
@@ -1386,7 +1262,7 @@ hidden, it is shown again.  Signal an error if Awesome-Tab mode is off."
           (kill-local-variable 'awesome-tab--local-hlf))
       ;; The tab bar is locally hidden, show it again.
       (kill-local-variable 'header-line-format))))
-
+
 ;;; Awesome-Tab mode
 ;;
 (defvar awesome-tab-prefix-key [(control ?c)]
@@ -1494,7 +1370,7 @@ Returns non-nil if the new state is enabled.
 
 (add-hook 'awesome-tab-mode-hook      'awesome-tab-mwheel-follow)
 (add-hook 'mouse-wheel-mode-hook 'awesome-tab-mwheel-follow)
-
+
 ;;; Buffer tabs
 ;;
 (defgroup awesome-tab-buffer nil
@@ -1599,7 +1475,7 @@ Return the the first group where the current buffer is."
       (setq awesome-tab--buffers bl)))
   ;; Return the first group the current buffer belongs to.
   (car (nth 2 (assq (current-buffer) awesome-tab--buffers))))
-
+
 ;;; Tab bar callbacks
 ;;
 (defvar awesome-tab--buffer-show-groups nil)
@@ -1663,18 +1539,6 @@ That is, a string used to represent it on the tab bar."
                        (length (awesome-tab-view
                                 (awesome-tab-current-tabset)))))))))
 
-(defun awesome-tab-buffer-help-on-tab (tab)
-  "Return the help string shown when mouse is onto TAB."
-  (if awesome-tab--buffer-show-groups
-      (let* ((tabset (awesome-tab-tab-tabset tab))
-             (tab (awesome-tab-selected-tab tabset)))
-        (format "mouse-1: switch to buffer %S in group [%s]"
-                (buffer-name (awesome-tab-tab-value tab)) tabset))
-    (format "mouse-1: switch to buffer %S\n\
-mouse-2: pop to buffer, mouse-3: delete other windows"
-            (buffer-name (awesome-tab-tab-value tab)))
-    ))
-
 (defun awesome-tab-buffer-select-tab (event tab)
   "On mouse EVENT, select TAB."
   (let ((mouse-button (event-basic-type event))
@@ -1702,14 +1566,6 @@ mouse-3, close the current buffer."
       (kill-buffer nil))
      )))
 
-(defun awesome-tab-buffer-help-on-home ()
-  "Return the help string shown when mouse is onto the toggle button."
-  (concat
-   (if awesome-tab--buffer-show-groups
-       "mouse-1: show buffers in selected group"
-     "mouse-1: show groups of buffers")
-   ", mouse-3: close current buffer"))
-
 (defun awesome-tab-buffer-track-killed ()
   "Hook run just before actually killing a buffer.
 In Awesome-Tab mode, try to switch to a buffer in the current tab bar,
@@ -1733,7 +1589,7 @@ first."
            ;; Move sibling buffer in front of the buffer list.
            (save-current-buffer
              (switch-to-buffer sibling))))))
-
+
 ;;; Tab bar buffer setup
 ;;
 (defun awesome-tab-buffer-init ()
@@ -1744,10 +1600,8 @@ Run as `awesome-tab-init-hook'."
         awesome-tab-current-tabset-function 'awesome-tab-buffer-tabs
         awesome-tab-tab-label-function 'awesome-tab-buffer-tab-label
         awesome-tab-select-tab-function 'awesome-tab-buffer-select-tab
-        awesome-tab-help-on-tab-function 'awesome-tab-buffer-help-on-tab
         awesome-tab-button-label-function 'awesome-tab-buffer-button-label
         awesome-tab-home-function 'awesome-tab-buffer-click-on-home
-        awesome-tab-home-help-function 'awesome-tab-buffer-help-on-home
         )
   (add-hook 'kill-buffer-hook 'awesome-tab-buffer-track-killed))
 
@@ -1759,10 +1613,8 @@ Run as `awesome-tab-quit-hook'."
         awesome-tab-current-tabset-function nil
         awesome-tab-tab-label-function nil
         awesome-tab-select-tab-function nil
-        awesome-tab-help-on-tab-function nil
         awesome-tab-button-label-function nil
         awesome-tab-home-function nil
-        awesome-tab-home-help-function nil
         )
   (remove-hook 'kill-buffer-hook 'awesome-tab-buffer-track-killed))
 
@@ -2041,8 +1893,8 @@ Other buffer group by `projectile-project-p' with project name."
         (when (featurep 'helm)
           (require 'helm)
           (helm-build-sync-source "Awesome-Tab Group"
-                                  :candidates #'awesome-tab-get-groups
-                                  :action '(("Switch to group" . awesome-tab-switch-group))))))
+            :candidates #'awesome-tab-get-groups
+            :action '(("Switch to group" . awesome-tab-switch-group))))))
 
 ;; Ivy source for switching group in ivy.
 (defvar ivy-source-awesome-tab-group nil)
