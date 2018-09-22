@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-09-17 22:14:34
-;; Version: 0.6
-;; Last-Updated: 2018-09-20 18:02:42
+;; Version: 0.7
+;; Last-Updated: 2018-09-22 16:59:21
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/awesome-tab.el
 ;; Keywords:
@@ -85,6 +85,9 @@
 ;;
 
 ;;; Change log:
+;;
+;; 2018/09/22
+;;      * Adjust `awesome-tab-buffer-list' to hide unused buffer to user.
 ;;
 ;; 2018/09/20
 ;;      * Remove empty header line from magit buffers.
@@ -1400,19 +1403,33 @@ buffers.")
 It must return a list of group names, or nil if the buffer has no
 group.  Notice that it is better that a buffer belongs to one group.")
 
+(defun awesome-tab-filter (condp lst)
+  (delq nil
+        (mapcar (lambda (x) (and (funcall condp x) x)) lst)))
+
 (defun awesome-tab-buffer-list ()
   "Return the list of buffers to show in tabs.
 Exclude buffers whose name starts with a space, when they are not
 visiting a file.  The current buffer is always included."
-  (delq nil
-        (mapcar #'(lambda (b)
-                    (cond
-                     ;; Always include the current buffer.
-                     ((eq (current-buffer) b) b)
-                     ((buffer-file-name b) b)
-                     ((char-equal ?\  (aref (buffer-name b) 0)) nil)
-                     ((buffer-live-p b) b)))
-                (buffer-list))))
+  (awesome-tab-filter
+   (lambda (x)
+     (let ((name (format "%s" x)))
+       (and
+        (not (string-prefix-p "*epc" name))
+        (not (string-prefix-p "*helm" name))
+        (not (string-prefix-p "*Compile-Log*" name))
+        (not (string-prefix-p "*lsp" name))
+        (not (string-prefix-p "magit" name))
+        )))
+   (delq nil
+         (mapcar #'(lambda (b)
+                     (cond
+                      ;; Always include the current buffer.
+                      ((eq (current-buffer) b) b)
+                      ((buffer-file-name b) b)
+                      ((char-equal ?\  (aref (buffer-name b) 0)) nil)
+                      ((buffer-live-p b) b)))
+                 (buffer-list)))))
 
 (defun awesome-tab-buffer-mode-derived-p (mode parents)
   "Return non-nil if MODE derives from a mode in PARENTS."
@@ -1783,10 +1800,6 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
     ))
 
 ;;;;;;;;;;;;;;;;;;;;;;; Utils functions ;;;;;;;;;;;;;;;;;;;;;;;
-(defun awesome-tab-filter (condp lst)
-  (delq nil
-        (mapcar (lambda (x) (and (funcall condp x) x)) lst)))
-
 (defun awesome-tab-get-groups ()
   ;; Refresh groups.
   (set awesome-tab-tabsets-tabset (awesome-tab-map-tabsets 'awesome-tab-selected-tab))
