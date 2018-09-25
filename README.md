@@ -16,6 +16,7 @@ It's set in your ~/.emacs like this:
 ```Elisp
 (add-to-list 'load-path (expand-file-name "~/elisp"))
 (require 'awesome-tab)
+(awesome-tab-mode t)
 ```
 
 ### Usage.

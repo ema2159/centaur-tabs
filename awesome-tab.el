@@ -1940,8 +1940,6 @@ Other buffer group by `projectile-project-p' with project name."
            (awesome-tab-get-groups)
            :action #'awesome-tab-switch-group))))
 
-(awesome-tab-mode t)
-
 (provide 'awesome-tab)
 
 ;;; awesome-tab.el ends here
