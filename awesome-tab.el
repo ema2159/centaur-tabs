@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-09-17 22:14:34
-;; Version: 0.9
-;; Last-Updated: 2018-09-25 11:37:07
+;; Version: 1.0
+;; Last-Updated: 2018-09-25 19:33:44
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/awesome-tab.el
 ;; Keywords:
@@ -54,6 +54,7 @@
 ;; And the following to your ~/.emacs startup file.
 ;;
 ;; (require 'awesome-tab)
+;; (awesome-tab-mode t)
 ;;
 ;; No need more.
 ;;
@@ -89,6 +90,7 @@
 ;;
 ;; 2018/09/29
 ;;      * Add new command `awesome-tab-kill-other-buffers-in-current-group'
+;;      * Not enable mode default.
 ;;
 ;; 2018/09/25
 ;;      * Adjust magit regexp to only match magit buffer, not file that named with magit.
