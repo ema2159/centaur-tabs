@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-09-17 22:14:34
-;; Version: 0.7
-;; Last-Updated: 2018-09-22 16:59:21
+;; Version: 0.8
+;; Last-Updated: 2018-09-25 10:34:20
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/awesome-tab.el
 ;; Keywords:
@@ -85,6 +85,9 @@
 ;;
 
 ;;; Change log:
+;;
+;; 2018/09/25
+;;      * Adjust magit regexp to only match magit buffer, not file that named with magit. 
 ;;
 ;; 2018/09/22
 ;;      * Adjust `awesome-tab-buffer-list' to hide unused buffer to user.
@@ -1419,7 +1422,8 @@ visiting a file.  The current buffer is always included."
         (not (string-prefix-p "*helm" name))
         (not (string-prefix-p "*Compile-Log*" name))
         (not (string-prefix-p "*lsp" name))
-        (not (string-prefix-p "magit" name))
+        (not (and (string-prefix-p "magit" name)
+                  (not (file-name-extension name))))
         )))
    (delq nil
          (mapcar #'(lambda (b)
