@@ -20,9 +20,9 @@ It's set in your ~/.emacs like this:
 
 ### Usage.
 
-| Command                                    | Description                                        |
-| :--------                                  | :----                                              |
-| awesome-tab-switch-group                        | Switch awesome-tab group by ido fuzz match              |
+| Command                                         | Description                                        |
+| :--------                                       | :----                                              |
+| awesome-tab-switch-group                        | Switch awesome-tab group by ido fuzz match         |
 | awesome-tab-select-beg-tab                      | Select first tab of current group                  |
 | awesome-tab-select-end-tab                      | Select last tab of current group                   |
 | awesome-tab-forward-tab-other-window            | Select next tab in other window                    |
@@ -31,11 +31,12 @@ It's set in your ~/.emacs like this:
 | awesome-tab-forward                             | Select the next available tab                      |
 | awesome-tab-backward-group                      | Go to selected tab in the previous available group |
 | awesome-tab-forward-group                       | Go to selected tab in the next available group     |
+| awesome-tab-kill-other-buffers-in-current-group | Kill other buffers of current group                |
 | awesome-tab-kill-all-buffers-in-current-group   | Kill all buffers of current group                  |
 | awesome-tab-kill-match-buffers-in-current-group | Kill buffers match extension of current group      |
 | awesome-tab-keep-match-buffers-in-current-group | Keep buffers match extension of current group      |
-| awesome-tab-move-current-tab-to-left     | Move current tab to left                           |
-| awesome-tab-move-current-tab-to-right    | Move current tab to right                          |
+| awesome-tab-move-current-tab-to-left            | Move current tab to left                           |
+| awesome-tab-move-current-tab-to-right           | Move current tab to right                          |
 
 If you're helm fans, you need add below code in your helm config:
 
