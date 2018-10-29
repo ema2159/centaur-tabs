@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-09-17 22:14:34
-;; Version: 1.0
-;; Last-Updated: 2018-09-25 19:33:44
+;; Version: 1.1
+;; Last-Updated: 2018-10-29 21:13:55
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/awesome-tab.el
 ;; Keywords:
@@ -15,7 +15,7 @@
 ;;
 ;; Features that might be required by this library:
 ;;
-;; `projectile'
+;; `projectile' `mwheel'
 ;;
 
 ;;; This file is NOT part of GNU Emacs
@@ -88,6 +88,9 @@
 
 ;;; Change log:
 ;;
+;; 2018/10/29
+;;	* Add `mwheel' depend.
+;; 
 ;; 2018/09/29
 ;;      * Add new command `awesome-tab-kill-other-buffers-in-current-group'
 ;;      * Not enable mode default.
@@ -124,6 +127,7 @@
 
 ;;; Require
 (require 'projectile)
+(require 'mwheel)
 
 ;;; Code:
 ;;;;;;;;;;;;;;;;;;;;;;; Awesome-Tab source code ;;;;;;;;;;;;;;;;;;;;;;;
