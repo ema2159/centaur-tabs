@@ -5,9 +5,7 @@
 Provide an out of box configuration to use tab in Emacs.
 
 ### Installation
-You need install [projectile](https://github.com/bbatsov/projectile) first.
-
-Then put awesome-tab.el to your load-path.
+Put awesome-tab.el to your load-path.
 
 The load-path is usually ~/elisp/.
 

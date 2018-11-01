@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-09-17 22:14:34
-;; Version: 1.1
-;; Last-Updated: 2018-10-29 21:13:55
+;; Version: 1.2
+;; Last-Updated: 2018-11-01 21:56:46
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/awesome-tab.el
 ;; Keywords:
@@ -15,7 +15,7 @@
 ;;
 ;; Features that might be required by this library:
 ;;
-;; `projectile' `mwheel'
+;; `mwheel'
 ;;
 
 ;;; This file is NOT part of GNU Emacs
@@ -44,9 +44,7 @@
 
 ;;; Installation:
 ;;
-;; You need install projectile (https://github.com/bbatsov/projectile) first.
-;;
-;; Then put awesome-tab.el to your load-path.
+;; Put awesome-tab.el to your load-path.
 ;; The load-path is usually ~/elisp/.
 ;; It's set in your ~/.emacs like this:
 ;; (add-to-list 'load-path (expand-file-name "~/elisp"))
@@ -88,9 +86,12 @@
 
 ;;; Change log:
 ;;
+;; 2018/11/01
+;;	* Remove `projectile' depend.
+;;
 ;; 2018/10/29
-;;	* Add `mwheel' depend.
-;; 
+;;      * Add `mwheel' depend.
+;;
 ;; 2018/09/29
 ;;      * Add new command `awesome-tab-kill-other-buffers-in-current-group'
 ;;      * Not enable mode default.
@@ -126,7 +127,6 @@
 ;;
 
 ;;; Require
-(require 'projectile)
 (require 'mwheel)
 
 ;;; Code:
@@ -1883,9 +1883,15 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
         group-name
       (awesome-tab-set-group-name buf))))
 
+(defun awesome-tab-in-project-p ()
+  (cdr (project-current)))
+
+(defun awesome-tab-project-name ()
+  (format "Project: %s" (expand-file-name (cdr (project-current)))))
+
 (defun awesome-tab-set-group-name (buf)
   (with-current-buffer buf
-    (let ((project-name (projectile-project-name)))
+    (let ((project-name (awesome-tab-project-name)))
       (puthash buf project-name awesome-tab-groups-hash)
       project-name)))
 
@@ -1894,7 +1900,7 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
 
 Group awesome-tab with mode if buffer is derived from `eshell-mode' `emacs-lisp-mode' `dired-mode' `org-mode' `magit-mode'.
 All buffer name start with * will group to \"Emacs\".
-Other buffer group by `projectile-project-p' with project name."
+Other buffer group by `awesome-tab-in-project-p' with project name."
   (list
    (cond
     ((or (string-equal "*" (substring (buffer-name) 0 1))
@@ -1916,7 +1922,7 @@ Other buffer group by `projectile-project-p' with project name."
     ((memq major-mode '(org-mode org-agenda-mode diary-mode))
      "OrgMode")
     (t
-     (if (projectile-project-p)
+     (if (awesome-tab-in-project-p)
          (awesome-tab-get-group-name (current-buffer))
        "Common"))
     )))
