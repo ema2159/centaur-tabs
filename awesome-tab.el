@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-09-17 22:14:34
-;; Version: 1.2
-;; Last-Updated: 2018-11-01 21:56:46
+;; Version: 1.3
+;; Last-Updated: 2018-11-14 08:55:39
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/awesome-tab.el
 ;; Keywords:
@@ -15,7 +15,7 @@
 ;;
 ;; Features that might be required by this library:
 ;;
-;; `mwheel'
+;;
 ;;
 
 ;;; This file is NOT part of GNU Emacs
@@ -86,8 +86,11 @@
 
 ;;; Change log:
 ;;
+;; 2018/11/14
+;;	* Remove wheel features, emacser should only use the keyboard to operate Emacs.
+;;
 ;; 2018/11/01
-;;	* Remove `projectile' depend.
+;;      * Remove `projectile' depend.
 ;;
 ;; 2018/10/29
 ;;      * Add `mwheel' depend.
@@ -127,7 +130,6 @@
 ;;
 
 ;;; Require
-(require 'mwheel)
 
 ;;; Code:
 ;;;;;;;;;;;;;;;;;;;;;;; Awesome-Tab source code ;;;;;;;;;;;;;;;;;;;;;;;
@@ -1125,112 +1127,6 @@ mouse-2, or mouse-3 click.  The default is a mouse-1 click."
   (interactive "p")
   (awesome-tab-click-on-button 'scroll-right (awesome-tab--mouse arg)))
 
-;;; Mouse-wheel support
-;;
-(require 'mwheel)
-
-;;; Compatibility
-;;
-(defconst awesome-tab--mwheel-up-event
-  (symbol-value (if (boundp 'mouse-wheel-up-event)
-                    'mouse-wheel-up-event
-                  'mouse-wheel-up-button)))
-
-(defconst awesome-tab--mwheel-down-event
-  (symbol-value (if (boundp 'mouse-wheel-down-event)
-                    'mouse-wheel-down-event
-                  'mouse-wheel-down-button)))
-
-(defsubst awesome-tab--mwheel-key (event-type)
-  "Return a mouse wheel key symbol from EVENT-TYPE.
-When EVENT-TYPE is a symbol return it.
-When it is a button number, return symbol `mouse-<EVENT-TYPE>'."
-  (if (symbolp event-type)
-      event-type
-    (intern (format "mouse-%s" event-type))))
-
-(defsubst awesome-tab--mwheel-up-p (event)
-  "Return non-nil if EVENT is a mouse-wheel up event."
-  (let ((x (event-basic-type event)))
-    (if (eq 'mouse-wheel x)
-        (< (car (cdr (cdr event))) 0) ;; Emacs 21.3
-      ;; Emacs > 21.3
-      (eq x awesome-tab--mwheel-up-event))))
-
-;;; Basic commands
-;;
-;;;###autoload
-(defun awesome-tab-mwheel-backward (event)
-  "Select the previous available tab.
-EVENT is the mouse event that triggered this command.
-Mouse-enabled equivalent of the command `awesome-tab-backward'."
-  (interactive "@e")
-  (awesome-tab-cycle t event))
-
-;;;###autoload
-(defun awesome-tab-mwheel-forward (event)
-  "Select the next available tab.
-EVENT is the mouse event that triggered this command.
-Mouse-enabled equivalent of the command `awesome-tab-forward'."
-  (interactive "@e")
-  (awesome-tab-cycle nil event))
-
-;;;###autoload
-(defun awesome-tab-mwheel-backward-group (event)
-  "Go to selected tab in the previous available group.
-If there is only one group, select the previous visible tab.
-EVENT is the mouse event that triggered this command.
-Mouse-enabled equivalent of the command `awesome-tab-backward-group'."
-  (interactive "@e")
-  (let ((awesome-tab-cycle-scope 'groups))
-    (awesome-tab-cycle t event)))
-
-;;;###autoload
-(defun awesome-tab-mwheel-forward-group (event)
-  "Go to selected tab in the next available group.
-If there is only one group, select the next visible tab.
-EVENT is the mouse event that triggered this command.
-Mouse-enabled equivalent of the command `awesome-tab-forward-group'."
-  (interactive "@e")
-  (let ((awesome-tab-cycle-scope 'groups))
-    (awesome-tab-cycle nil event)))
-
-;;;###autoload
-(defun awesome-tab-mwheel-backward-tab (event)
-  "Select the previous visible tab.
-EVENT is the mouse event that triggered this command.
-Mouse-enabled equivalent of the command `awesome-tab-backward-tab'."
-  (interactive "@e")
-  (let ((awesome-tab-cycle-scope 'tabs))
-    (awesome-tab-cycle t event)))
-
-;;;###autoload
-(defun awesome-tab-mwheel-forward-tab (event)
-  "Select the next visible tab.
-EVENT is the mouse event that triggered this command.
-Mouse-enabled equivalent of the command `awesome-tab-forward-tab'."
-  (interactive "@e")
-  (let ((awesome-tab-cycle-scope 'tabs))
-    (awesome-tab-cycle nil event)))
-
-;;; Wrappers when there is only one generic mouse-wheel event
-;;
-;;;###autoload
-(defun awesome-tab-mwheel-switch-tab (event)
-  "Select the next or previous tab according to EVENT."
-  (interactive "@e")
-  (if (awesome-tab--mwheel-up-p event)
-      (awesome-tab-mwheel-forward-tab event)
-    (awesome-tab-mwheel-backward-tab event)))
-
-;;;###autoload
-(defun awesome-tab-mwheel-switch-group (event)
-  "Select the next or previous group of tabs according to EVENT."
-  (interactive "@e")
-  (if (awesome-tab--mwheel-up-p event)
-      (awesome-tab-mwheel-forward-group event)
-    (awesome-tab-mwheel-backward-group event)))
-
 ;;; Minor modes
 ;;
 (defsubst awesome-tab-mode-on-p ()
@@ -1337,55 +1233,6 @@ Returns non-nil if the new state is enabled.
       (setq-default header-line-format awesome-tab--global-hlf)
       (awesome-tab-free-tabsets-store))
     ))
-
-;;; Awesome-Tab-Mwheel mode
-;;
-(defvar awesome-tab-mwheel-mode-map
-  (let ((km (make-sparse-keymap)))
-    (if (get 'mouse-wheel 'event-symbol-elements)
-        ;; Use one generic mouse wheel event
-        (define-key km [A-mouse-wheel]
-          'awesome-tab-mwheel-switch-group)
-      ;; Use separate up/down mouse wheel events
-      (let ((up   (awesome-tab--mwheel-key awesome-tab--mwheel-up-event))
-            (down (awesome-tab--mwheel-key awesome-tab--mwheel-down-event)))
-        (define-key km `[header-line ,down]
-          'awesome-tab-mwheel-backward-group)
-        (define-key km `[header-line ,up]
-          'awesome-tab-mwheel-forward-group)
-        (define-key km `[header-line (control ,down)]
-          'awesome-tab-mwheel-backward-tab)
-        (define-key km `[header-line (control ,up)]
-          'awesome-tab-mwheel-forward-tab)
-        (define-key km `[header-line (shift ,down)]
-          'awesome-tab-mwheel-backward)
-        (define-key km `[header-line (shift ,up)]
-          'awesome-tab-mwheel-forward)
-        ))
-    km)
-  "Keymap to use in Awesome-Tab-Mwheel mode.")
-
-;;;###autoload
-(define-minor-mode awesome-tab-mwheel-mode
-  "Toggle use of the mouse wheel to navigate through tabs or groups.
-With prefix argument ARG, turn on if positive, otherwise off.
-Returns non-nil if the new state is enabled.
-
-\\{awesome-tab-mwheel-mode-map}"
-  :group 'awesome-tab
-  :require 'awesome-tab
-  :global t
-  :keymap awesome-tab-mwheel-mode-map
-  (when awesome-tab-mwheel-mode
-    (unless (and mouse-wheel-mode awesome-tab-mode)
-      (awesome-tab-mwheel-mode -1))))
-
-(defun awesome-tab-mwheel-follow ()
-  "Toggle Awesome-Tab-Mwheel following Awesome-Tab and Mouse-Wheel modes."
-  (awesome-tab-mwheel-mode (if (and mouse-wheel-mode awesome-tab-mode) 1 -1)))
-
-(add-hook 'awesome-tab-mode-hook      'awesome-tab-mwheel-follow)
-(add-hook 'mouse-wheel-mode-hook 'awesome-tab-mwheel-follow)
 
 ;;; Buffer tabs
 ;;
