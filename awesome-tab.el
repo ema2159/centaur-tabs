@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-09-17 22:14:34
-;; Version: 1.3
-;; Last-Updated: 2018-11-14 08:55:39
+;; Version: 1.4
+;; Last-Updated: 2018-11-16 02:18:30
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/awesome-tab.el
 ;; Keywords:
@@ -86,8 +86,11 @@
 
 ;;; Change log:
 ;;
+;; 2018/11/16
+;;	* Open new tab on right of current one.
+;;
 ;; 2018/11/14
-;;	* Remove wheel features, emacser should only use the keyboard to operate Emacs.
+;;      * Remove wheel features, emacser should only use the keyboard to operate Emacs.
 ;;
 ;; 2018/11/01
 ;;      * Remove `projectile' depend.
@@ -410,19 +413,28 @@ Return the tab selected, or nil if nothing was selected."
 That is, the sub-list of tabs starting at the first visible one."
   (nthcdr (awesome-tab-start tabset) (awesome-tab-tabs tabset)))
 
-(defun awesome-tab-add-tab (tabset object &optional append)
-  "Add to TABSET a tab with value OBJECT if there isn't one there yet.
-If the tab is added, it is added at the beginning of the tab list,
-unless the optional argument APPEND is non-nil, in which case it is
-added at the end."
+(defun awesome-tab-add-tab (tabset object)
+  "Return tab if it has opend.
+Otherwise insert new tab on right of current tab."
   (let ((tabs (awesome-tab-tabs tabset)))
     (if (awesome-tab-get-tab object tabset)
         tabs
-      (let ((tab (awesome-tab-make-tab object tabset)))
+      (let* ((tab (awesome-tab-make-tab object tabset))
+             (selected (awesome-tab-selected-tab tabset))
+             (selected-index (cl-position (car selected) (mapcar 'car tabs))))
         (awesome-tab-set-template tabset nil)
-        (set tabset (if append
-                        (append tabs (list tab))
-                      (cons tab tabs)))))))
+        (set tabset (awesome-tab-insert-at tabs selected-index tab))
+        ))))
+
+(defun awesome-tab-insert-at (list index insert-element)
+  (let ((counter 0)
+        (result '()))
+    (dolist (element list)
+      (if (equal counter index)
+          (setq result (append result (list element insert-element)))
+        (setq result (append result (list element))))
+      (setq counter (+ 1 counter)))
+    result))
 
 (defun awesome-tab-delete-tab (tab)
   "Remove TAB from its tab set."
@@ -1332,7 +1344,7 @@ Return the the first group where the current buffer is."
                   ;; This is a new buffer, or a previously existing
                   ;; buffer that has been renamed, or moved to another
                   ;; group.  Update the tab set, and the display.
-                  (awesome-tab-add-tab tabset (car e) t)
+                  (awesome-tab-add-tab tabset (car e))
                   (awesome-tab-set-template tabset nil))
               (awesome-tab-make-tabset g (car e))))))
       ;; Remove tabs for buffers not found in cache or moved to other
