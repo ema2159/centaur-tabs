@@ -1,21 +1,54 @@
-<img src="./screenshot.png">
+
+
+<img src="./Awesometab-Screenshot-Desktop.png">
+<img src="./Awetab-Screenshot-Termux.png">
+
+
+Table of Contents
+=================
+
+* [What is it?](#what-is-it)
+     * [Installation](#installation)
+     * [Usage.](#usage)
+     * [Customize](#customize)
+
 
 # What is it?
 
-Provide an out of box configuration to use tab in Emacs.
+Emacs package to provide out-of-the-box configuration to use tabs.
 
 ### Installation
-Put awesome-tab.el to your load-path.
 
-The load-path is usually ~/elisp/.
+1. Clone this repository
 
-It's set in your ~/.emacs like this:
+```
+git clone --depth=1 https://github.com/manateelazycat/awesome-tab.git
+```
+
+2. Move awesome-tab.el to your load-path.
+
+The load-path is usually `~/elisp/`.
+
+It's set in your `~/.emacs` or `~/.emacs.d/init.el` like this:
 
 ```Elisp
 (add-to-list 'load-path (expand-file-name "~/elisp"))
 (require 'awesome-tab)
 (awesome-tab-mode t)
 ```
+
+If you are using [Use-packge](https://github.com/jwiegley/use-package), the configuration will look like this
+
+```ELisp
+(use-package awesome-tab
+  :load-path "path/to/your/awesome-tab.el"
+  :config 
+  (awesome-tab-mode t)
+)
+```
+
+3. Reload your emacs configuration using `M-x eval-buffer` or restarting emacs
+
 
 ### Usage.
 
