@@ -1,7 +1,6 @@
 
 
 <img src="./Awesometab-Screenshot-Desktop.png">
-<img src="./Awetab-Screenshot-Termux.png">
 
 
 Table of Contents
