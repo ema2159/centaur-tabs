@@ -1,6 +1,4 @@
-
-
-<img src="./Awesometab-Screenshot-Desktop.png">
+<img src="./screenshot.png">
 
 
 Table of Contents
@@ -41,7 +39,7 @@ If you are using [Use-packge](https://github.com/jwiegley/use-package), the conf
 ```ELisp
 (use-package awesome-tab
   :load-path "path/to/your/awesome-tab.el"
-  :config 
+  :config
   (awesome-tab-mode t)
 )
 ```
