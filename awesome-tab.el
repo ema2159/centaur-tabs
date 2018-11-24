@@ -1,4 +1,4 @@
-;; awesome-tab.el --- Provide an out of box configuration to use tab in Emacs.
+;;; awesome-tab.el --- Provide an out of box configuration to use tab in Emacs.
 
 ;; Filename: awesome-tab.el
 ;; Description: Provide an out of box configuration to use awesome-tab in Emacs.
