@@ -84,3 +84,20 @@ Then add ```helm-source-awesome-tab-group``` in ```helm-source-list```
 | awesome-tab-background-color | Background color of awesome-tab |
 | awesome-tab-selected     | Active tab color           |
 | awesome-tab-unselected   | Inactive tab color         |
+
+Awesome tab hide some tabs with regular expression that controller by function ```awesome-tab-hide-tab-function```
+
+```
+(defun awesome-tab-hide-tab-function (x)
+  (let ((name (format "%s" x)))
+    (and
+     (not (string-prefix-p "*epc" name))
+     (not (string-prefix-p "*helm" name))
+     (not (string-prefix-p "*Compile-Log*" name))
+     (not (string-prefix-p "*lsp" name))
+     (not (and (string-prefix-p "magit" name)
+               (not (file-name-extension name))))
+     )))
+```
+
+Tab will hide if ```awesome-tab-hide-tab-function``` return t, you can write your own code to customize hide rules.

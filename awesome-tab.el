@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-09-17 22:14:34
-;; Version: 1.4
-;; Last-Updated: 2018-11-16 02:18:30
+;; Version: 1.5
+;; Last-Updated: 2018-12-27 22:25:21
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/awesome-tab.el
 ;; Keywords:
@@ -86,8 +86,11 @@
 
 ;;; Change log:
 ;;
+;; 2018/12/27
+;;      * Tab will hide if ```awesome-tab-hide-tab-function``` return t, you can write your own code to customize hide rules.
+;;
 ;; 2018/11/16
-;;	* Open new tab on right of current one.
+;;  * Open new tab on right of current one.
 ;;
 ;; 2018/11/14
 ;;      * Remove wheel features, emacser should only use the keyboard to operate Emacs.
@@ -1284,16 +1287,7 @@ group.  Notice that it is better that a buffer belongs to one group.")
 Exclude buffers whose name starts with a space, when they are not
 visiting a file.  The current buffer is always included."
   (awesome-tab-filter
-   (lambda (x)
-     (let ((name (format "%s" x)))
-       (and
-        (not (string-prefix-p "*epc" name))
-        (not (string-prefix-p "*helm" name))
-        (not (string-prefix-p "*Compile-Log*" name))
-        (not (string-prefix-p "*lsp" name))
-        (not (and (string-prefix-p "magit" name)
-                  (not (file-name-extension name))))
-        )))
+   'awesome-tab-hide-tab-function
    (delq nil
          (mapcar #'(lambda (b)
                      (cond
@@ -1795,8 +1789,8 @@ Other buffer group by `awesome-tab-in-project-p' with project name."
         (when (featurep 'helm)
           (require 'helm)
           (helm-build-sync-source "Awesome-Tab Group"
-            :candidates #'awesome-tab-get-groups
-            :action '(("Switch to group" . awesome-tab-switch-group))))))
+                                  :candidates #'awesome-tab-get-groups
+                                  :action '(("Switch to group" . awesome-tab-switch-group))))))
 
 ;; Ivy source for switching group in ivy.
 (defvar ivy-source-awesome-tab-group nil)
@@ -1810,6 +1804,17 @@ Other buffer group by `awesome-tab-in-project-p' with project name."
            "Awesome-Tab Groups:"
            (awesome-tab-get-groups)
            :action #'awesome-tab-switch-group))))
+
+(defun awesome-tab-hide-tab-function (x)
+  (let ((name (format "%s" x)))
+    (and
+     (not (string-prefix-p "*epc" name))
+     (not (string-prefix-p "*helm" name))
+     (not (string-prefix-p "*Compile-Log*" name))
+     (not (string-prefix-p "*lsp" name))
+     (not (and (string-prefix-p "magit" name)
+               (not (file-name-extension name))))
+     )))
 
 (provide 'awesome-tab)
 
