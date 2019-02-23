@@ -15,7 +15,7 @@
 ;;
 ;; Features that might be required by this library:
 ;;
-;;
+;; `powerline'
 ;;
 
 ;;; This file is NOT part of GNU Emacs
@@ -140,6 +140,7 @@
 ;;
 
 ;;; Require
+(require 'powerline)
 
 ;;; Code:
 ;;;;;;;;;;;;;;;;;;;;;;; Awesome-Tab source code ;;;;;;;;;;;;;;;;;;;;;;;

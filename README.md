@@ -30,7 +30,9 @@ It's set in your `~/.emacs` or `~/.emacs.d/init.el` like this:
 
 ```Elisp
 (add-to-list 'load-path (expand-file-name "~/elisp"))
+
 (require 'awesome-tab)
+
 (awesome-tab-mode t)
 ```
 
