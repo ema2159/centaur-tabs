@@ -203,10 +203,6 @@ selected tab.")
 The function is passed a button name should return a propertized
 string to display.")
 
-(defvar awesome-tab-home-function nil
-  "Function called when clicking on the tab bar home button.
-The function is passed the mouse event received.")
-
 (defvar awesome-tab-scroll-left-function 'awesome-tab-scroll-left
   "Function that scrolls tabs on left.
 The function is passed the mouse event received when clicking on the
@@ -898,9 +894,7 @@ element."
   "Return a list of propertized strings for tab bar buttons.
 TABSET is the tab set used to choose the appropriate buttons."
   (list
-   (if awesome-tab-home-function
-       (car awesome-tab-home-button-value)
-     (cdr awesome-tab-home-button-value))
+   (cdr awesome-tab-home-button-value)
    (if (> (awesome-tab-start tabset) 0)
        (car awesome-tab-scroll-left-button-value)
      (cdr awesome-tab-scroll-left-button-value))
@@ -1441,18 +1435,6 @@ That is, a string used to represent it on the tab bar."
     (awesome-tab-buffer-show-groups nil)
     ))
 
-(defun awesome-tab-buffer-click-on-home (event)
-  "Handle a mouse click EVENT on the tab bar home button.
-mouse-1, toggle the display of tabs for groups of buffers.
-mouse-3, close the current buffer."
-  (let ((mouse-button (event-basic-type event)))
-    (cond
-     ((eq mouse-button 'mouse-1)
-      (awesome-tab-buffer-show-groups (not awesome-tab--buffer-show-groups)))
-     ((eq mouse-button 'mouse-3)
-      (kill-buffer nil))
-     )))
-
 (defun awesome-tab-buffer-track-killed ()
   "Hook run just before actually killing a buffer.
 In Awesome-Tab mode, try to switch to a buffer in the current tab bar,
@@ -1488,7 +1470,6 @@ Run as `awesome-tab-init-hook'."
         awesome-tab-tab-label-function 'awesome-tab-buffer-tab-label
         awesome-tab-select-tab-function 'awesome-tab-buffer-select-tab
         awesome-tab-button-label-function 'awesome-tab-buffer-button-label
-        awesome-tab-home-function 'awesome-tab-buffer-click-on-home
         )
   (add-hook 'kill-buffer-hook 'awesome-tab-buffer-track-killed))
 
@@ -1501,7 +1482,6 @@ Run as `awesome-tab-quit-hook'."
         awesome-tab-tab-label-function nil
         awesome-tab-select-tab-function nil
         awesome-tab-button-label-function nil
-        awesome-tab-home-function nil
         )
   (remove-hook 'kill-buffer-hook 'awesome-tab-buffer-track-killed))
 
