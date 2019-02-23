@@ -532,6 +532,7 @@ current cached copy."
 
 (defface awesome-tab-separator
   '((t
+     :background "black" :foreground "black"
      :height 0.1
      ))
   "Face used for separators between tabs."
