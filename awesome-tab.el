@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-09-17 22:14:34
-;; Version: 1.5
-;; Last-Updated: 2018-12-27 22:25:21
+;; Version: 1.6
+;; Last-Updated: 2019-02-23 14:21:32
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/awesome-tab.el
 ;; Keywords:
@@ -85,6 +85,9 @@
 ;;
 
 ;;; Change log:
+;;
+;; 2019/02/23
+;;      * Significantly optimize the performance of switching tab by avoiding excessive calls `project-current'.
 ;;
 ;; 2018/12/27
 ;;      * Tab will hide if ```awesome-tab-hide-tab-function``` return t, you can write your own code to customize hide rules.
@@ -167,6 +170,12 @@ the tab bar is scrolled horizontally so the selected tab becomes
 visible."
   :group 'awesome-tab
   :type 'boolean)
+
+(defcustom awesome-tab-common-group-name "Common"
+  "If the current buffer does not belong to any project,
+the group name uses the name of this variable."
+  :group 'awesome-tab
+  :type 'string)
 
 (defvar awesome-tab-inhibit-functions '(awesome-tab-default-inhibit-function)
   "List of functions to be called before displaying the tab bar.
@@ -1726,34 +1735,30 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
 ;; Rules to control buffer's group rules.
 (defvar awesome-tab-groups-hash (make-hash-table :test 'equal))
 
-(defun awesome-tab-init-groups-name ()
-  (interactive)
-  (setq awesome-tab-groups-hash (make-hash-table :test 'equal)))
+(defun awesome-tab-project-name ()
+  (let ((project-name (cdr (project-current))))
+    (if project-name
+        (format "Project: %s" (expand-file-name project-name))
+      awesome-tab-common-group-name)))
 
 (defun awesome-tab-get-group-name (buf)
   (let ((group-name (gethash buf awesome-tab-groups-hash)))
+    ;; Return group name cache if it exists for improve performance.
     (if group-name
         group-name
-      (awesome-tab-set-group-name buf))))
-
-(defun awesome-tab-in-project-p ()
-  (cdr (project-current)))
-
-(defun awesome-tab-project-name ()
-  (format "Project: %s" (expand-file-name (cdr (project-current)))))
-
-(defun awesome-tab-set-group-name (buf)
-  (with-current-buffer buf
-    (let ((project-name (awesome-tab-project-name)))
-      (puthash buf project-name awesome-tab-groups-hash)
-      project-name)))
+      ;; Otherwise try get group name with `project-current'.
+      ;; `project-current' is very slow, it will slow down Emacs if you call it when switch buffer.
+      (with-current-buffer buf
+        (let ((project-name (awesome-tab-project-name)))
+          (puthash buf project-name awesome-tab-groups-hash)
+          project-name)))))
 
 (defun awesome-tab-buffer-groups ()
   "`awesome-tab-buffer-groups' control buffers' group rules.
 
 Group awesome-tab with mode if buffer is derived from `eshell-mode' `emacs-lisp-mode' `dired-mode' `org-mode' `magit-mode'.
 All buffer name start with * will group to \"Emacs\".
-Other buffer group by `awesome-tab-in-project-p' with project name."
+Other buffer group by `awesome-tab-get-group-name' with project name."
   (list
    (cond
     ((or (string-equal "*" (substring (buffer-name) 0 1))
@@ -1775,10 +1780,7 @@ Other buffer group by `awesome-tab-in-project-p' with project name."
     ((memq major-mode '(org-mode org-agenda-mode diary-mode))
      "OrgMode")
     (t
-     (if (awesome-tab-in-project-p)
-         (awesome-tab-get-group-name (current-buffer))
-       "Common"))
-    )))
+     (awesome-tab-get-group-name (current-buffer))))))
 
 ;; Helm source for switching group in helm.
 (defvar helm-source-awesome-tab-group nil)
@@ -1789,8 +1791,8 @@ Other buffer group by `awesome-tab-in-project-p' with project name."
         (when (featurep 'helm)
           (require 'helm)
           (helm-build-sync-source "Awesome-Tab Group"
-                                  :candidates #'awesome-tab-get-groups
-                                  :action '(("Switch to group" . awesome-tab-switch-group))))))
+            :candidates #'awesome-tab-get-groups
+            :action '(("Switch to group" . awesome-tab-switch-group))))))
 
 ;; Ivy source for switching group in ivy.
 (defvar ivy-source-awesome-tab-group nil)
