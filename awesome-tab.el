@@ -1333,7 +1333,7 @@ Return the the first group where the current buffer is."
                           (buffer-name)
                           (if awesome-tab-buffer-groups-function
                               (funcall awesome-tab-buffer-groups-function)
-                            '("Common")))))
+                            '(awesome-tab-common-group-name)))))
               (and awesome-tab-buffer-list-function
                    (funcall awesome-tab-buffer-list-function)))
              #'(lambda (e1 e2)
