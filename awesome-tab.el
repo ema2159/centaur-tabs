@@ -499,27 +499,19 @@ current cached copy."
 ;;; Faces
 ;;
 (defface awesome-tab-default
-  '(
-    (t
-     :background "black" :foreground "black"
-     :overline nil :box nil
-     :height 1.1
-     ))
+  '((t
+     (:background "black" :foreground "black")))
   "Default face used in the tab bar."
   :group 'awesome-tab)
 
 (defface awesome-tab-unselected
   '((t
-     (:background "#3D3C3D" :foreground "grey50"
-                  :overline nil :box nil
-                  :height 1.1)))
+     (:background "#3D3C3D" :foreground "grey50")))
   "Face used for unselected tabs."
   :group 'awesome-tab)
 
 (defface awesome-tab-selected
-  '((t (:background "#31343E" :foreground "white"
-                    :overline nil :box nil
-                    :height 1.1)))
+  '((t (:background "#31343E" :foreground "white")))
   "Face used for the selected tab."
   :group 'awesome-tab)
 
@@ -1643,8 +1635,8 @@ Other buffer group by `awesome-tab-get-group-name' with project name."
         (when (featurep 'helm)
           (require 'helm)
           (helm-build-sync-source "Awesome-Tab Group"
-                                  :candidates #'awesome-tab-get-groups
-                                  :action '(("Switch to group" . awesome-tab-switch-group))))))
+            :candidates #'awesome-tab-get-groups
+            :action '(("Switch to group" . awesome-tab-switch-group))))))
 
 ;; Ivy source for switching group in ivy.
 (defvar ivy-source-awesome-tab-group nil)
