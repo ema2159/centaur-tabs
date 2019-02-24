@@ -589,22 +589,6 @@ If IMAGE is non-nil, try to use that image, else use STRING.
 If only the ENABLED-BUTTON image is provided, a DISABLED-BUTTON image
 is derived from it.")
 
-;;; Home button
-;;
-(defvar awesome-tab-home-button-value nil
-  "Value of the home button.")
-
-(defcustom awesome-tab-home-button
-  (quote (("") ""))
-  "The home button.
-The variable `awesome-tab-button-widget' gives details on this widget."
-  :group 'awesome-tab
-  :type awesome-tab-button-widget
-  :set '(lambda (variable value)
-          (custom-set-default variable value)
-          ;; Schedule refresh of button value.
-          (setq awesome-tab-home-button-value nil)))
-
 ;;; Scroll left button
 ;;
 (defvar awesome-tab-scroll-left-button-value nil
@@ -836,7 +820,6 @@ element."
   "Return a list of propertized strings for tab bar buttons.
 TABSET is the tab set used to choose the appropriate buttons."
   (list
-   (cdr awesome-tab-home-button-value)
    (if (> (awesome-tab-start tabset) 0)
        (car awesome-tab-scroll-left-button-value)
      (cdr awesome-tab-scroll-left-button-value))
@@ -871,8 +854,6 @@ Call `awesome-tab-tab-label-function' to obtain a label for TAB."
          (padcolor (awesome-tab-background-color))
          atsel elts)
     ;; Initialize buttons and separator values.
-    (or awesome-tab-home-button-value
-        (awesome-tab-line-button 'home))
     (or awesome-tab-scroll-left-button-value
         (awesome-tab-line-button 'scroll-left))
     (or awesome-tab-scroll-right-button-value
@@ -1201,19 +1182,6 @@ Returns non-nil if the new state is enabled.
   "Display buffers in the tab bar."
   :group 'awesome-tab)
 
-(defcustom awesome-tab-buffer-home-button (quote (("") ""))
-  "The home button displayed when showing buffer tabs.
-The enabled button value is displayed when showing tabs for groups of
-buffers, and the disabled button value is displayed when showing
-buffer tabs.
-The variable `awesome-tab-button-widget' gives details on this widget."
-  :group 'awesome-tab-buffer
-  :type awesome-tab-button-widget
-  :set '(lambda (variable value)
-          (custom-set-default variable value)
-          ;; Schedule refresh of button value.
-          (setq awesome-tab-home-button-value nil)))
-
 (defvar awesome-tab-buffer-list-function 'awesome-tab-buffer-list
   "Function that returns the list of buffers to show in tabs.
 That function is called with no arguments and must return a list of
@@ -1312,9 +1280,7 @@ Return the the first group where the current buffer is."
 
 (defsubst awesome-tab-buffer-show-groups (flag)
   "Set display of tabs for groups of buffers to FLAG."
-  (setq awesome-tab--buffer-show-groups flag
-        ;; Redisplay the home button.
-        awesome-tab-home-button-value nil))
+  (setq awesome-tab--buffer-show-groups flag))
 
 (defun awesome-tab-buffer-tabs ()
   "Return the buffers to display on the tab bar, in a tab set."
@@ -1334,23 +1300,6 @@ by the variable `awesome-tab-button-label'.
 When NAME is 'home, return a different ENABLED button if showing tabs
 or groups.  Call the function `awesome-tab-button-label' otherwise."
   (let ((lab (awesome-tab-button-label name)))
-    (when (eq name 'home)
-      (let* ((btn awesome-tab-buffer-home-button)
-             (on  (awesome-tab-find-image (cdar btn)))
-             (off (awesome-tab-find-image (cddr btn))))
-        ;; When `awesome-tab-buffer-home-button' does not provide a value,
-        ;; default to the enabled value of `awesome-tab-home-button'.
-        (if on
-            (awesome-tab-normalize-image on 1)
-          (setq on (get-text-property 0 'display (car lab))))
-        (if off
-            (awesome-tab-normalize-image off 1)
-          (setq off (get-text-property 0 'display (car lab))))
-        (setcar lab
-                (if awesome-tab--buffer-show-groups
-                    (propertize (or (caar btn) (car lab)) 'display on)
-                  (propertize (or (cadr btn) (car lab)) 'display off)))
-        ))
     lab))
 
 (defun awesome-tab-buffer-tab-label (tab)
