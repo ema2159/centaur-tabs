@@ -530,14 +530,6 @@ current cached copy."
   "Face used to highlight a tab during mouse-overs."
   :group 'awesome-tab)
 
-(defface awesome-tab-separator
-  '((t
-     :background "black" :foreground "black"
-     :height 0.1
-     ))
-  "Face used for separators between tabs."
-  :group 'awesome-tab)
-
 (defface awesome-tab-button
   '((t
      :box nil
@@ -647,32 +639,6 @@ The variable `awesome-tab-button-widget' gives details on this widget."
 
 ;;; Separator
 ;;
-(defconst awesome-tab-separator-widget
-  '(cons (choice (string)
-                 (number :tag "Space width" 0.2))
-         (repeat :tag "Image"
-                 :extra-offset 2
-                 (restricted-sexp :tag "Spec"
-                                  :match-alternatives (listp))))
-  "Widget for editing a tab bar separator.
-A separator is specified as a pair (STRING-OR-WIDTH . IMAGE) where
-STRING-OR-WIDTH is a string value or a space width, and IMAGE a list
-of image specifications.
-If IMAGE is non-nil, try to use that image, else use STRING-OR-WIDTH.
-The value (\"\"), or (0) hide separators.")
-
-(defvar awesome-tab-separator-value nil
-  "Value of the separator used between tabs.")
-
-(defcustom awesome-tab-separator (list 0.2)
-  "Separator used between tabs.
-The variable `awesome-tab-separator-widget' gives details on this widget."
-  :group 'awesome-tab
-  :type awesome-tab-separator-widget
-  :set '(lambda (variable value)
-          (custom-set-default variable value)
-          ;; Schedule refresh of separator value.
-          (setq awesome-tab-separator-value nil)))
 
 (defvar awesome-tab-height 22)
 (defvar awesome-tab-style-left (powerline-wave-right 'awesome-tab-default nil awesome-tab-height))
@@ -866,31 +832,6 @@ element."
                       'face 'awesome-tab-button
                       'pointer 'arrow)))))
 
-(defun awesome-tab-line-separator ()
-  "Return the display representation of a tab bar separator.
-That is, a propertized string used as an `header-line-format' template
-element."
-  (let ((image (awesome-tab-find-image (cdr awesome-tab-separator))))
-    ;; Cache the separator display value in variable
-    ;; `awesome-tab-separator-value'.
-    (setq awesome-tab-separator-value
-          (cond
-           (image
-            (propertize " "
-                        'face 'awesome-tab-separator
-                        'pointer 'arrow
-                        'display (awesome-tab-normalize-image image)))
-           ((numberp (car awesome-tab-separator))
-            (propertize " "
-                        'face 'awesome-tab-separator
-                        'pointer 'arrow
-                        'display (list 'space
-                                       :width (car awesome-tab-separator))))
-           ((propertize (or (car awesome-tab-separator) " ")
-                        'face 'awesome-tab-separator
-                        'pointer 'arrow))))
-    ))
-
 (defsubst awesome-tab-line-buttons (tabset)
   "Return a list of propertized strings for tab bar buttons.
 TABSET is the tab set used to choose the appropriate buttons."
@@ -903,7 +844,7 @@ TABSET is the tab set used to choose the appropriate buttons."
           (1- (length (awesome-tab-tabs tabset))))
        (car awesome-tab-scroll-right-button-value)
      (cdr awesome-tab-scroll-right-button-value))
-   awesome-tab-separator-value))
+   ))
 
 (defsubst awesome-tab-line-tab (tab)
   "Return the display representation of tab TAB.
@@ -921,7 +862,7 @@ Call `awesome-tab-tab-label-function' to obtain a label for TAB."
                      'awesome-tab-selected
                    'awesome-tab-unselected)
            'pointer 'hand)
-          awesome-tab-separator-value))
+          ))
 
 (defun awesome-tab-line-format (tabset)
   "Return the `header-line-format' value to display TABSET."
@@ -930,8 +871,6 @@ Call `awesome-tab-tab-label-function' to obtain a label for TAB."
          (padcolor (awesome-tab-background-color))
          atsel elts)
     ;; Initialize buttons and separator values.
-    (or awesome-tab-separator-value
-        (awesome-tab-line-separator))
     (or awesome-tab-home-button-value
         (awesome-tab-line-button 'home))
     (or awesome-tab-scroll-left-button-value
