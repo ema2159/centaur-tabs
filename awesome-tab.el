@@ -551,17 +551,6 @@ background color of the `default' face otherwise."
   :group 'awesome-tab
   :type 'face)
 
-(defsubst awesome-tab-background-color ()
-  "Return the background color of the tab bar."
-  (or awesome-tab-background-color
-      (let* ((face 'awesome-tab-default)
-             (color (face-background face)))
-        (while (null color)
-          (or (facep (setq face (face-attribute face :inherit)))
-              (setq face 'default))
-          (setq color (face-background face)))
-        color)))
-
 ;;; Buttons and separator look and feel
 ;;
 (defconst awesome-tab-button-widget
@@ -851,7 +840,7 @@ Call `awesome-tab-tab-label-function' to obtain a label for TAB."
   "Return the `header-line-format' value to display TABSET."
   (let* ((sel (awesome-tab-selected-tab tabset))
          (tabs (awesome-tab-view tabset))
-         (padcolor (awesome-tab-background-color))
+         (padcolor awesome-tab-background-color)
          atsel elts)
     ;; Initialize buttons and separator values.
     (or awesome-tab-scroll-left-button-value
