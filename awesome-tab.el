@@ -1629,8 +1629,8 @@ Other buffer group by `awesome-tab-get-group-name' with project name."
         (when (featurep 'helm)
           (require 'helm)
           (helm-build-sync-source "Awesome-Tab Group"
-            :candidates #'awesome-tab-get-groups
-            :action '(("Switch to group" . awesome-tab-switch-group))))))
+                                  :candidates #'awesome-tab-get-groups
+                                  :action '(("Switch to group" . awesome-tab-switch-group))))))
 
 ;; Ivy source for switching group in ivy.
 (defvar ivy-source-awesome-tab-group nil)
@@ -1698,7 +1698,9 @@ Other buffer group by `awesome-tab-get-group-name' with project name."
                (previous-buffer-index (cl-position previous current-group-buffers)))
 
           ;; If the two tabs are not adjacent, swap the positions of the two tabs.
-          (when (> (abs (- current-buffer-index previous-buffer-index)) 1)
+          (when (and current-buffer-index
+                     previous-buffer-index
+                     (> (abs (- current-buffer-index previous-buffer-index)) 1))
             (let* ((copy-group-tabs (copy-list current-group-tabs))
                    (previous-tab (nth previous-buffer-index copy-group-tabs))
                    (current-tab (nth current-buffer-index copy-group-tabs))
