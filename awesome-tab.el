@@ -1170,7 +1170,7 @@ group.  Notice that it is better that a buffer belongs to one group.")
 Exclude buffers whose name starts with a space, when they are not
 visiting a file.  The current buffer is always included."
   (awesome-tab-filter
-   'awesome-tab-hide-tab-function
+   awesome-tab-hide-tab-function
    (delq nil
          (mapcar #'(lambda (b)
                      (cond
