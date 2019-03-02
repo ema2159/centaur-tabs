@@ -1680,6 +1680,11 @@ Other buffer group by `awesome-tab-get-group-name' with project name."
 
 (defun awesome-tab-adjust-buffer-order ()
   "Put the two buffers switched to the adjacent position after current buffer changed."
+  ;; Init last buffer and group with current one if `awesome-tab-last-focus-buffer' is nil.
+  (unless awesome-tab-last-focus-buffer
+    (setq awesome-tab-last-focus-buffer (current-buffer))
+    (setq awesome-tab-last-focus-buffer-group (first (funcall awesome-tab-buffer-groups-function))))
+
   ;; Just continue when buffer changed.
   (when (and (not (eq (current-buffer) awesome-tab-last-focus-buffer))
              (not (minibufferp)))
