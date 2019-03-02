@@ -1700,11 +1700,14 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
 
 ;; Some buffer's header line is empty that make its window insufficient of space to display all content
 ;; Feel free to add hook in below list. ;)
-(dolist (hook (list
-               'magit-status-mode-hook
-               'magit-popup-mode-hook
-               'reb-mode-hook
-               ))
+
+(defcustom awesometab-hide-tabs-hooks
+  '(magit-status-mode-hook magit-popup-mode-hook reb-mode-hook)
+  "hide tab bar for these hooks."
+  :type '(repeat symbol)
+  :group 'awesome-tab)
+
+(dolist (hook awesometab-hide-tabs-hooks)
   (add-hook hook '(lambda () (setq-local header-line-format nil))))
 
 ;; Rules to control buffer's group rules.
