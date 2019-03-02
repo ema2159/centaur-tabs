@@ -8,6 +8,9 @@ Table of Contents
      * [Installation](#installation)
      * [Usage.](#usage)
      * [Customize](#customize)
+        * [Theme](#theme)
+        * [HideRules](#hiderules)
+        * [GroupRules](#grouprules)
 
 
 # What is it?
@@ -24,9 +27,9 @@ git clone --depth=1 https://github.com/manateelazycat/awesome-tab.git
 
 2. Move powerline-separators.el, powerline-themes.el, powerline.el, awesome-tab.el to your load-path.
 
-The load-path is usually `~/elisp/`.
+    The load-path is usually `~/elisp/`.
 
-It's set in your `~/.emacs` or `~/.emacs.d/init.el` like this:
+    It's set in your `~/.emacs` or `~/.emacs.d/init.el` like this:
 
 ```Elisp
 (add-to-list 'load-path (expand-file-name "~/elisp"))
@@ -36,7 +39,7 @@ It's set in your `~/.emacs` or `~/.emacs.d/init.el` like this:
 (awesome-tab-mode t)
 ```
 
-If you are using [Use-packge](https://github.com/jwiegley/use-package), the configuration will look like this
+    If you are using [Use-packge](https://github.com/jwiegley/use-package), the configuration will look like this
 
 ```ELisp
 (use-package awesome-tab
@@ -71,17 +74,17 @@ If you are using [Use-packge](https://github.com/jwiegley/use-package), the conf
 | awesome-tab-move-current-tab-to-left            | Move current tab to left                                                              |
 | awesome-tab-move-current-tab-to-right           | Move current tab to right                                                             |
 
-If you're helm fans, you need add below code in your helm config:
+    If you're helm fans, you need add below code in your helm config:
 
 ```Elisp
 (awesome-tab-build-helm-source)
 ```
 
-Then add ```helm-source-awesome-tab-group``` in ```helm-source-list```
+    Then add ```helm-source-awesome-tab-group``` in ```helm-source-list```
 
 ### Customize
 
-##### Theme
+#### Theme
 
 | Option                  | Description                |
 | :--------               | :----                      |
@@ -89,7 +92,7 @@ Then add ```helm-source-awesome-tab-group``` in ```helm-source-list```
 | awesome-tab-selected     | Active tab color           |
 | awesome-tab-unselected   | Inactive tab color         |
 
-###### Hide rules.
+##### HideRules
 Awesome tab hide some tabs with regular expression that controller by function ```awesome-tab-hide-tab-function```
 
 Default hide function is ```awesome-hide-tab```
@@ -109,7 +112,7 @@ Default hide function is ```awesome-hide-tab```
 
 Tab will hide if ```awesome-tab-hide-tab-function``` return nil, you can write your own code to customize hide rules.
 
-###### Group rules.
+##### GroupRules
 Awesome tab use ```awesome-tab-buffer-groups-function``` to control tab group.
 Default group function is ```awesome-tab-buffer-groups```
 
