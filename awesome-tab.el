@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-09-17 22:14:34
-;; Version: 1.7
-;; Last-Updated: 2019-02-23 21:14:53
+;; Version: 2.0
+;; Last-Updated: 2019-03-03 00:44:05
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/awesome-tab.el
 ;; Keywords:
@@ -85,6 +85,9 @@
 ;;
 
 ;;; Change log:
+;;
+;; 2019/03/03
+;;      * Automatically adsorb tabs after switching tabs, making switch tabs quickly.
 ;;
 ;; 2019/02/23
 ;;      * Significantly optimize the performance of switching tab by avoiding excessive calls `project-current'.
@@ -1623,8 +1626,8 @@ Other buffer group by `awesome-tab-get-group-name' with project name."
         (when (featurep 'helm)
           (require 'helm)
           (helm-build-sync-source "Awesome-Tab Group"
-                                  :candidates #'awesome-tab-get-groups
-                                  :action '(("Switch to group" . awesome-tab-switch-group))))))
+            :candidates #'awesome-tab-get-groups
+            :action '(("Switch to group" . awesome-tab-switch-group))))))
 
 ;; Ivy source for switching group in ivy.
 (defvar ivy-source-awesome-tab-group nil)
@@ -1649,6 +1652,68 @@ Other buffer group by `awesome-tab-get-group-name' with project name."
      (not (and (string-prefix-p "magit" name)
                (not (file-name-extension name))))
      )))
+
+
+(defvar awesome-tab-last-focus-buffer nil
+  "The last focus buffer.")
+
+(defvar awesome-tab-last-focus-buffer-group nil
+  "The group name of last focus buffer.")
+
+(defun awesome-tab-remove-nth-element (nth list)
+  (if (zerop nth) (cdr list)
+    (let ((last (nthcdr (1- nth) list)))
+      (setcdr last (cddr last))
+      list)))
+
+(defun awesome-tab-insert-after (list aft-el el)
+  "Insert EL after AFT-EL in LIST."
+  (push el (cdr (member aft-el list)))
+  list)
+
+(defun awesome-tab-insert-before (list bef-el el)
+  "Insert EL before BEF-EL in LIST."
+  (nreverse (insert-after (nreverse list) bef-el el)))
+
+(defun awesome-tab-adjust-buffer-order ()
+  "Put the two buffers switched to the adjacent position after current buffer changed."
+  ;; Just continue when buffer changed.
+  (when (and (not (eq (current-buffer) awesome-tab-last-focus-buffer))
+             (not (minibufferp)))
+    (let* ((current (current-buffer))
+           (previous awesome-tab-last-focus-buffer)
+           (current-group (first (funcall awesome-tab-buffer-groups-function))))
+      ;; Record last focus buffer.
+      (setq awesome-tab-last-focus-buffer current)
+
+      ;; Just continue if two buffers are in same group.
+      (when (eq current-group awesome-tab-last-focus-buffer-group)
+        (let* ((bufset (awesome-tab-get-tabset current-group))
+               (current-group-tabs (awesome-tab-tabs bufset))
+               (current-group-buffers (mapcar 'car current-group-tabs))
+               (current-buffer-index (cl-position current current-group-buffers))
+               (previous-buffer-index (cl-position previous current-group-buffers)))
+
+          ;; If the two tabs are not adjacent, swap the positions of the two tabs.
+          (when (> (abs (- current-buffer-index previous-buffer-index)) 1)
+            (let* ((copy-group-tabs (copy-list current-group-tabs))
+                   (previous-tab (nth previous-buffer-index copy-group-tabs))
+                   (current-tab (nth current-buffer-index copy-group-tabs))
+                   (base-group-tabs (awesome-tab-remove-nth-element previous-buffer-index copy-group-tabs))
+                   (new-group-tabs
+                    (if (> current-buffer-index previous-buffer-index)
+                        (awesome-tab-insert-before base-group-tabs current-tab previous-tab)
+                      (awesome-tab-insert-after base-group-tabs current-tab previous-tab))))
+              (set bufset new-group-tabs)
+              (awesome-tab-set-template bufset nil)
+              (awesome-tab-display-update)
+              ))))
+
+      ;; Update the group name of the last access tab.
+      (setq awesome-tab-last-focus-buffer-group current-group)
+      )))
+
+(add-hook 'post-command-hook 'awesome-tab-adjust-buffer-order)
 
 (provide 'awesome-tab)
 
