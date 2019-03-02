@@ -1678,13 +1678,14 @@ Other buffer group by `awesome-tab-get-group-name' with project name."
   "Insert EL before BEF-EL in LIST."
   (nreverse (insert-after (nreverse list) bef-el el)))
 
-(defun awesome-tab-adjust-buffer-order ()
-  "Put the two buffers switched to the adjacent position after current buffer changed."
+(defun awesome-tab-adjust-buffer-order-init ()
   ;; Init last buffer and group with current one if `awesome-tab-last-focus-buffer' is nil.
   (unless awesome-tab-last-focus-buffer
     (setq awesome-tab-last-focus-buffer (current-buffer))
-    (setq awesome-tab-last-focus-buffer-group (first (funcall awesome-tab-buffer-groups-function))))
+    (setq awesome-tab-last-focus-buffer-group (first (funcall awesome-tab-buffer-groups-function)))))
 
+(defun awesome-tab-adjust-buffer-order ()
+  "Put the two buffers switched to the adjacent position after current buffer changed."
   ;; Just continue when buffer changed.
   (when (and (not (eq (current-buffer) awesome-tab-last-focus-buffer))
              (not (minibufferp)))
@@ -1723,6 +1724,7 @@ Other buffer group by `awesome-tab-get-group-name' with project name."
       (setq awesome-tab-last-focus-buffer-group current-group)
       )))
 
+(add-hook 'pre-command-hook 'awesome-tab-adjust-buffer-order-init)
 (add-hook 'post-command-hook 'awesome-tab-adjust-buffer-order)
 
 (provide 'awesome-tab)
