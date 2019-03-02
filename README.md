@@ -6,7 +6,8 @@ Table of Contents
 
 * [What is it?](#what-is-it)
      * [Installation](#installation)
-     * [Usage.](#usage)
+     * [Usage](#usage)
+     * [Plugins](#plugins)
      * [Customize](#customize)
         * [Theme](#theme)
         * [HideRules](#hiderules)
@@ -52,7 +53,7 @@ git clone --depth=1 https://github.com/manateelazycat/awesome-tab.git
 3. Reload your emacs configuration using `M-x eval-buffer` or restarting emacs
 
 
-### Usage.
+### Usage
 
 | Command                                         | Description                                                                           |
 | :--------                                       | :----                                                                                 |
@@ -75,6 +76,7 @@ git clone --depth=1 https://github.com/manateelazycat/awesome-tab.git
 | awesome-tab-move-current-tab-to-right           | Move current tab to right                                                             |
 
    
+### Plugins
 If you're helm fans, you need add below code in your helm config,
 
 Then add ```helm-source-awesome-tab-group``` in ```helm-source-list```
@@ -82,6 +84,8 @@ Then add ```helm-source-awesome-tab-group``` in ```helm-source-list```
 ```Elisp
 (awesome-tab-build-helm-source)
 ```
+
+Ivy fans can use ```awesome-tab-build-ivy-source```
 
 ### Customize
 
