@@ -39,7 +39,7 @@ git clone --depth=1 https://github.com/manateelazycat/awesome-tab.git
 (awesome-tab-mode t)
 ```
 
-    If you are using [Use-packge](https://github.com/jwiegley/use-package), the configuration will look like this
+2. If you are using [Use-packge](https://github.com/jwiegley/use-package), the configuration will look like this
 
 ```ELisp
 (use-package awesome-tab
@@ -74,13 +74,14 @@ git clone --depth=1 https://github.com/manateelazycat/awesome-tab.git
 | awesome-tab-move-current-tab-to-left            | Move current tab to left                                                              |
 | awesome-tab-move-current-tab-to-right           | Move current tab to right                                                             |
 
-    If you're helm fans, you need add below code in your helm config:
+   
+If you're helm fans, you need add below code in your helm config,
+
+Then add ```helm-source-awesome-tab-group``` in ```helm-source-list```
 
 ```Elisp
 (awesome-tab-build-helm-source)
 ```
-
-    Then add ```helm-source-awesome-tab-group``` in ```helm-source-list```
 
 ### Customize
 
