@@ -179,12 +179,6 @@ the group name uses the name of this variable."
   :group 'awesome-tab
   :type 'string)
 
-(defvar awesome-tab-inhibit-functions '(awesome-tab-default-inhibit-function)
-  "List of functions to be called before displaying the tab bar.
-Those functions are called one by one, with no arguments, until one of
-them returns a non-nil value, and thus, prevents to display the tab
-bar.")
-
 (defvar awesome-tab-current-tabset-function nil
   "Function called with no argument to obtain the current tab set.
 This is the tab set displayed on the tab bar.")
@@ -902,16 +896,6 @@ Inhibit display of the tab bar in current window if any of the
 
 (defconst awesome-tab-header-line-format '(:eval (awesome-tab-line))
   "The tab bar header line format.")
-
-(defun awesome-tab-default-inhibit-function ()
-  "Inhibit display of the tab bar in specified windows.
-That is dedicated windows, and `checkdoc' status windows."
-  (or (window-dedicated-p (selected-window))
-      (member (buffer-name)
-              (list " *Checkdoc Status*"
-                    (if (boundp 'ispell-choices-buffer)
-                        ispell-choices-buffer
-                      "*Choices*")))))
 
 ;;; Cyclic navigation through tabs
 ;;
