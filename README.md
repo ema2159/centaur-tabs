@@ -89,8 +89,10 @@ Then add ```helm-source-awesome-tab-group``` in ```helm-source-list```
 
 Awesome tab hide some tabs with regular expression that controller by function ```awesome-tab-hide-tab-function```
 
+Default hide functions is ```awesome-hide-tab```
+
 ```
-(defun awesome-tab-hide-tab-function (x)
+(defun awesome-tab-hide-tab (x)
   (let ((name (format "%s" x)))
     (and
      (not (string-prefix-p "*epc" name))
@@ -102,4 +104,4 @@ Awesome tab hide some tabs with regular expression that controller by function `
      )))
 ```
 
-Tab will hide if ```awesome-tab-hide-tab-function``` return t, you can write your own code to customize hide rules.
+Tab will hide if ```awesome-tab-hide-tab-function``` return nil, you can write your own code to customize hide rules.

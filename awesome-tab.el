@@ -179,6 +179,10 @@ the group name uses the name of this variable."
   :group 'awesome-tab
   :type 'string)
 
+(defvar awesome-tab-hide-tab-function 'awesome-tab-hide-tab
+  "Function to hide tab.
+This fucntion accepet tab name, tab will hide if this function return ni.")
+
 (defvar awesome-tab-current-tabset-function nil
   "Function called with no argument to obtain the current tab set.
 This is the tab set displayed on the tab bar.")
@@ -1619,8 +1623,8 @@ Other buffer group by `awesome-tab-get-group-name' with project name."
         (when (featurep 'helm)
           (require 'helm)
           (helm-build-sync-source "Awesome-Tab Group"
-            :candidates #'awesome-tab-get-groups
-            :action '(("Switch to group" . awesome-tab-switch-group))))))
+                                  :candidates #'awesome-tab-get-groups
+                                  :action '(("Switch to group" . awesome-tab-switch-group))))))
 
 ;; Ivy source for switching group in ivy.
 (defvar ivy-source-awesome-tab-group nil)
@@ -1635,7 +1639,7 @@ Other buffer group by `awesome-tab-get-group-name' with project name."
            (awesome-tab-get-groups)
            :action #'awesome-tab-switch-group))))
 
-(defun awesome-tab-hide-tab-function (x)
+(defun awesome-tab-hide-tab (x)
   (let ((name (format "%s" x)))
     (and
      (not (string-prefix-p "*epc" name))
