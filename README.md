@@ -81,15 +81,18 @@ Then add ```helm-source-awesome-tab-group``` in ```helm-source-list```
 
 ### Customize
 
+##### Theme
+
 | Option                  | Description                |
 | :--------               | :----                      |
 | awesome-tab-background-color | Background color of awesome-tab |
 | awesome-tab-selected     | Active tab color           |
 | awesome-tab-unselected   | Inactive tab color         |
 
+###### Hide rules.
 Awesome tab hide some tabs with regular expression that controller by function ```awesome-tab-hide-tab-function```
 
-Default hide functions is ```awesome-hide-tab```
+Default hide function is ```awesome-hide-tab```
 
 ```
 (defun awesome-tab-hide-tab (x)
@@ -105,3 +108,40 @@ Default hide functions is ```awesome-hide-tab```
 ```
 
 Tab will hide if ```awesome-tab-hide-tab-function``` return nil, you can write your own code to customize hide rules.
+
+###### Group rules.
+Awesome tab use ```awesome-tab-buffer-groups-function``` to control tab group.
+Default group function is ```awesome-tab-buffer-groups```
+
+```
+(defun awesome-tab-buffer-groups ()
+  "`awesome-tab-buffer-groups' control buffers' group rules.
+
+Group awesome-tab with mode if buffer is derived from `eshell-mode' `emacs-lisp-mode' `dired-mode' `org-mode' `magit-mode'.
+All buffer name start with * will group to \"Emacs\".
+Other buffer group by `awesome-tab-get-group-name' with project name."
+  (list
+   (cond
+    ((or (string-equal "*" (substring (buffer-name) 0 1))
+         (memq major-mode '(magit-process-mode
+                            magit-status-mode
+                            magit-diff-mode
+                            magit-log-mode
+                            magit-file-mode
+                            magit-blob-mode
+                            magit-blame-mode
+                            )))
+     "Emacs")
+    ((derived-mode-p 'eshell-mode)
+     "EShell")
+    ((derived-mode-p 'emacs-lisp-mode)
+     "Elisp")
+    ((derived-mode-p 'dired-mode)
+     "Dired")
+    ((memq major-mode '(org-mode org-agenda-mode diary-mode))
+     "OrgMode")
+    (t
+     (awesome-tab-get-group-name (current-buffer))))))
+```
+
+This function is very simple switch logic, you can write your own code to group tabs.
