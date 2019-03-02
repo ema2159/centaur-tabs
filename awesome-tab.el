@@ -895,7 +895,7 @@ Call `awesome-tab-tab-label-function' to obtain a label for TAB."
   "Return the header line templates that represent the tab bar.
 Inhibit display of the tab bar in current window `awesome-tab-hide-tab-function' return nil."
   (cond
-   ((not (funcall awesome-tab-hide-tab-function (current-buffer)))
+   ((funcall awesome-tab-hide-tab-function (current-buffer))
     ;; Don't show the tab bar.
     (setq header-line-format nil))
    ((awesome-tab-current-tabset t)
@@ -1170,11 +1170,15 @@ group.  Notice that it is better that a buffer belongs to one group.")
   (delq nil
         (mapcar (lambda (x) (and (funcall condp x) x)) lst)))
 
+(defun awesome-tab-filter-out (condp lst)
+  (delq nil
+        (mapcar (lambda (x) (if (funcall condp x) nil x)) lst)))
+
 (defun awesome-tab-buffer-list ()
   "Return the list of buffers to show in tabs.
 Exclude buffers whose name starts with a space, when they are not
 visiting a file.  The current buffer is always included."
-  (awesome-tab-filter
+  (awesome-tab-filter-out
    awesome-tab-hide-tab-function
    (delq nil
          (mapcar #'(lambda (b)
@@ -1649,19 +1653,19 @@ Other buffer group by `awesome-tab-get-group-name' with project name."
 
 (defun awesome-tab-hide-tab (x)
   (let ((name (format "%s" x)))
-    (and
+    (or
      ;; Current window is not dedicated window.
-     (not (window-dedicated-p (selected-window)))
+     (window-dedicated-p (selected-window))
 
      ;; Buffer name not match below blacklist.
-     (not (string-prefix-p "*epc" name))
-     (not (string-prefix-p "*helm" name))
-     (not (string-prefix-p "*Compile-Log*" name))
-     (not (string-prefix-p "*lsp" name))
+     (string-prefix-p "*epc" name)
+     (string-prefix-p "*helm" name)
+     (string-prefix-p "*Compile-Log*" name)
+     (string-prefix-p "*lsp" name)
 
      ;; Is not magit buffer.
-     (not (and (string-prefix-p "magit" name)
-               (not (file-name-extension name))))
+     (and (string-prefix-p "magit" name)
+          (not (file-name-extension name)))
      )))
 
 (defvar awesome-tab-last-focus-buffer nil
