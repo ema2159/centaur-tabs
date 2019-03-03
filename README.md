@@ -102,7 +102,7 @@ Awesome tab hide some tabs with regular expression that controller by function `
 
 Default hide function is ```awesome-hide-tab```
 
-```
+```Elisp
 (defun awesome-tab-hide-tab (x)
   (let ((name (format "%s" x)))
     (and
@@ -121,7 +121,7 @@ Tab will hide if ```awesome-tab-hide-tab-function``` return nil, you can write y
 Awesome tab use ```awesome-tab-buffer-groups-function``` to control tab group.
 Default group function is ```awesome-tab-buffer-groups```
 
-```
+```Elisp
 (defun awesome-tab-buffer-groups ()
   "`awesome-tab-buffer-groups' control buffers' group rules.
 
@@ -160,7 +160,7 @@ AwesomeTab will aggregate the two tabs by ```awesome-tab-adjust-buffer-order-fun
 
 Default functions is ```awesome-tab-adjust-buffer-order``` , you can write your own rule.
 
-```
+```Elisp
 (defun awesome-tab-adjust-buffer-order ()
   "Put the two buffers switched to the adjacent position after current buffer changed."
   ;; Just continue when buffer changed.
