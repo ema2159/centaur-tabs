@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-09-17 22:14:34
-;; Version: 2.0
-;; Last-Updated: 2019-03-03 00:44:05
+;; Version: 2.1
+;; Last-Updated: 2019-03-03 13:21:27
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/awesome-tab.el
 ;; Keywords:
@@ -88,6 +88,7 @@
 ;;
 ;; 2019/03/03
 ;;      * Automatically adsorb tabs after switching tabs, making switch tabs quickly.
+;;      * Fix many typo errors.
 ;;
 ;; 2019/02/23
 ;;      * Significantly optimize the performance of switching tab by avoiding excessive calls `project-current'.
@@ -890,10 +891,9 @@ Call `awesome-tab-tab-label-function' to obtain a label for TAB."
 
 (defun awesome-tab-line ()
   "Return the header line templates that represent the tab bar.
-Inhibit display of the tab bar in current window if any of the
-`awesome-tab-inhibit-functions' return non-nil."
+Inhibit display of the tab bar in current window `awesome-tab-hide-tab-function' return nil."
   (cond
-   ((run-hook-with-args-until-success 'awesome-tab-inhibit-functions)
+   ((not (funcall awesome-tab-hide-tab-function (current-buffer)))
     ;; Don't show the tab bar.
     (setq header-line-format nil))
    ((awesome-tab-current-tabset t)
@@ -1648,14 +1648,19 @@ Other buffer group by `awesome-tab-get-group-name' with project name."
 (defun awesome-tab-hide-tab (x)
   (let ((name (format "%s" x)))
     (and
+     ;; Current window is not dedicated window.
+     (not (window-dedicated-p (selected-window)))
+
+     ;; Buffer name not match below blacklist.
      (not (string-prefix-p "*epc" name))
      (not (string-prefix-p "*helm" name))
      (not (string-prefix-p "*Compile-Log*" name))
      (not (string-prefix-p "*lsp" name))
+
+     ;; Is not magit buffer.
      (not (and (string-prefix-p "magit" name)
                (not (file-name-extension name))))
      )))
-
 
 (defvar awesome-tab-last-focus-buffer nil
   "The last focus buffer.")
@@ -1676,7 +1681,7 @@ Other buffer group by `awesome-tab-get-group-name' with project name."
 
 (defun awesome-tab-insert-before (list bef-el el)
   "Insert EL before BEF-EL in LIST."
-  (nreverse (insert-after (nreverse list) bef-el el)))
+  (nreverse (awesome-tab-insert-after (nreverse list) bef-el el)))
 
 (defun awesome-tab-adjust-buffer-order ()
   "Put the two buffers switched to the adjacent position after current buffer changed."
