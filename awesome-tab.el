@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-09-17 22:14:34
-;; Version: 2.1
-;; Last-Updated: 2019-03-03 13:21:27
+;; Version: 2.2
+;; Last-Updated: 2019-03-03 15:10:36
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/awesome-tab.el
 ;; Keywords:
@@ -89,6 +89,7 @@
 ;; 2019/03/03
 ;;      * Automatically adsorb tabs after switching tabs, making switch tabs quickly.
 ;;      * Fix many typo errors.
+;;      * Add `awesome-tab-adjust-buffer-order-function'.
 ;;
 ;; 2019/02/23
 ;;      * Significantly optimize the performance of switching tab by avoiding excessive calls `project-current'.
@@ -1683,6 +1684,10 @@ Other buffer group by `awesome-tab-get-group-name' with project name."
   "Insert EL before BEF-EL in LIST."
   (nreverse (awesome-tab-insert-after (nreverse list) bef-el el)))
 
+(defvar awesome-tab-adjust-buffer-order-function 'awesome-tab-adjust-buffer-order
+  "Function to adjust buffer order after switch tab.
+Default is `awesome-tab-adjust-buffer-order', you can write your own rule.")
+
 (defun awesome-tab-adjust-buffer-order ()
   "Put the two buffers switched to the adjacent position after current buffer changed."
   ;; Just continue when buffer changed.
@@ -1723,7 +1728,7 @@ Other buffer group by `awesome-tab-get-group-name' with project name."
       (setq awesome-tab-last-focus-buffer-group current-group)
       )))
 
-(add-hook 'post-command-hook 'awesome-tab-adjust-buffer-order)
+(add-hook 'post-command-hook awesome-tab-adjust-buffer-order-function)
 
 (provide 'awesome-tab)
 
