@@ -82,6 +82,7 @@
 ;; `awesome-tab-background-color'
 ;; `awesome-tab-selected'
 ;; `awesome-tab-unselected'
+;; `awesome-tab-label-fixed-length'
 ;;
 
 ;;; Change log:
@@ -185,6 +186,11 @@ the group name uses the name of this variable."
   :group 'awesome-tab
   :type 'string)
 
+(defcustom awesome-tab-label-fixed-length 0
+  "Fixed length of label. Set to 0 if dynamic."
+  :group 'awesome-tab
+  :type 'int)
+
 (defvar awesome-tab-hide-tab-function 'awesome-tab-hide-tab
   "Function to hide tab.
 This fucntion accepet tab name, tab will hide if this function return ni.")
@@ -272,6 +278,21 @@ room."
               w (+ w (char-width (aref str n)))))
       (concat (substring str 0 i) el (substring str n)))
      )))
+
+;; Copied from s.el
+(defun awesome-tab-truncate-string (len s &optional ellipsis)
+  "If S is longer than LEN, cut it down and add ELLIPSIS to the end.
+
+The resulting string, including ellipsis, will be LEN characters
+long.
+
+When not specified, ELLIPSIS defaults to ‘...’."
+  (declare (pure t) (side-effect-free t))
+  (unless ellipsis
+    (setq ellipsis "..."))
+  (if (> (length s) len)
+      (format "%s%s" (substring s 0 (- len (length ellipsis))) ellipsis)
+    (concat s (make-string (- len (length s)) ? ))))
 
 ;;; Tab and tab set
 ;;
@@ -1280,7 +1301,11 @@ or groups.  Call the function `awesome-tab-button-label' otherwise."
   "Return a label for TAB.
 That is, a string used to represent it on the tab bar."
   (powerline-render (list awesome-tab-style-left
-                          (format " %s  " (car tab))
+                          (format " %s "
+                                  (let ((bufname (buffer-name (car tab))))
+                                    (if (> awesome-tab-label-fixed-length 0)
+                                        (awesome-tab-truncate-string  awesome-tab-label-fixed-length bufname)
+                                      bufname)))
                           awesome-tab-style-right)))
 
 (defun awesome-tab-buffer-select-tab (event tab)

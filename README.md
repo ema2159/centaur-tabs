@@ -201,3 +201,11 @@ Default functions is ```awesome-tab-adjust-buffer-order``` , you can write your 
       (setq awesome-tab-last-focus-buffer-group current-group)
       )))
 ```      
+
+##### Advanced
+
+If you'd like all the tab labels using the same length, such as 14, use:
+
+```Elisp
+(setq awesome-tab-label-fixed-length 14)
+```
