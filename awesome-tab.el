@@ -15,7 +15,7 @@
 ;;
 ;; Features that might be required by this library:
 ;;
-;; `powerline'
+;; `powerline' `cl'
 ;;
 
 ;;; This file is NOT part of GNU Emacs
@@ -87,6 +87,9 @@
 
 ;;; Change log:
 ;;
+;; 2019/03/07
+;;      * Add `cl' dependence.
+;;
 ;; 2019/03/03
 ;;      * Automatically adsorb tabs after switching tabs, making switch tabs quickly.
 ;;      * Fix many typo errors.
@@ -147,6 +150,7 @@
 ;;
 
 ;;; Require
+(require 'cl)
 (require 'powerline)
 
 ;;; Code:
