@@ -105,17 +105,17 @@ Default hide function is ```awesome-hide-tab```
 ```Elisp
 (defun awesome-tab-hide-tab (x)
   (let ((name (format "%s" x)))
-    (and
-     (not (string-prefix-p "*epc" name))
-     (not (string-prefix-p "*helm" name))
-     (not (string-prefix-p "*Compile-Log*" name))
-     (not (string-prefix-p "*lsp" name))
-     (not (and (string-prefix-p "magit" name)
-               (not (file-name-extension name))))
+    (or
+     (string-prefix-p "*epc" name)
+     (string-prefix-p "*helm" name)
+     (string-prefix-p "*Compile-Log*" name)
+     (string-prefix-p "*lsp" name)
+     (and (string-prefix-p "magit" name)
+               (not (file-name-extension name)))
      )))
 ```
 
-Tab will hide if ```awesome-tab-hide-tab-function``` return nil, you can write your own code to customize hide rules.
+Tab will hide if ```awesome-tab-hide-tab-function``` return t, you can write your own code to customize hide rules.
 
 ##### GroupRules
 Awesome tab use ```awesome-tab-buffer-groups-function``` to control tab group.
