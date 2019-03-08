@@ -212,11 +212,6 @@ The function is passed a tab and should return a string.")
 The function is passed a mouse event and a tab, and should make it the
 selected tab.")
 
-(defvar awesome-tab-button-label-function nil
-  "Function that obtains a button label displayed on the tab bar.
-The function is passed a button name should return a propertized
-string to display.")
-
 ;;; Misc.
 ;;
 (eval-and-compile
@@ -673,9 +668,7 @@ by the variable `awesome-tab-NAME-button'."
   "Return the display representation of button NAME.
 That is, a propertized string used as an `header-line-format' template
 element."
-  (let ((label (if awesome-tab-button-label-function
-                   (funcall awesome-tab-button-label-function name)
-                 (cons name name))))
+  (let ((label (cons name name)))
     ;; Cache the display value of the enabled/disabled buttons in
     ;; variables `awesome-tab-NAME-button-value'.
     (set (intern (format "awesome-tab-%s-button-value"  name))
@@ -1116,17 +1109,6 @@ Return the the first group where the current buffer is."
       (awesome-tab-select-tab-value (current-buffer) tabset))
     tabset))
 
-(defun awesome-tab-buffer-button-label (name)
-  "Return a label for button NAME.
-That is a pair (ENABLED . DISABLED), where ENABLED and DISABLED are
-respectively the appearance of the button when enabled and disabled.
-They are propertized strings which could display images, as specified
-by the variable `awesome-tab-button-label'.
-When NAME is 'home, return a different ENABLED button if showing tabs
-or groups.  Call the function `awesome-tab-button-label' otherwise."
-  (let ((lab (awesome-tab-button-label name)))
-    lab))
-
 (defun awesome-tab-buffer-tab-label (tab)
   "Return a label for TAB.
 That is, a string used to represent it on the tab bar."
@@ -1187,7 +1169,6 @@ Run as `awesome-tab-init-hook'."
         awesome-tab-current-tabset-function 'awesome-tab-buffer-tabs
         awesome-tab-tab-label-function 'awesome-tab-buffer-tab-label
         awesome-tab-select-tab-function 'awesome-tab-buffer-select-tab
-        awesome-tab-button-label-function 'awesome-tab-buffer-button-label
         )
   (add-hook 'kill-buffer-hook 'awesome-tab-buffer-track-killed))
 
@@ -1199,7 +1180,6 @@ Run as `awesome-tab-quit-hook'."
         awesome-tab-current-tabset-function nil
         awesome-tab-tab-label-function nil
         awesome-tab-select-tab-function nil
-        awesome-tab-button-label-function nil
         )
   (remove-hook 'kill-buffer-hook 'awesome-tab-buffer-track-killed))
 
