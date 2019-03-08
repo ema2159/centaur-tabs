@@ -209,7 +209,7 @@ The function is passed a tab and should return a string.")
 
 (defvar awesome-tab-select-tab-function nil
   "Function that select a tab.
-The function is passed a mouse event and a tab, and should make it the
+The function is passed a tab, and should make it the
 selected tab.")
 
 ;;; Misc.
@@ -219,10 +219,6 @@ selected tab.")
     (if (fboundp 'force-window-update)
         #'(lambda () (force-window-update (selected-window)))
       'force-mode-line-update)))
-
-(defsubst awesome-tab-click-p (event)
-  "Return non-nil if EVENT is a mouse click event."
-  (memq 'click (event-modifiers event)))
 
 (defun awesome-tab-shorten (str width)
   "Return a shortened string from STR that fits in the given display WIDTH.
@@ -529,24 +525,11 @@ current cached copy."
   "Face used for the selected tab."
   :group 'awesome-tab)
 
-(defface awesome-tab-highlight
-  '((t
-     :underline t
-     ))
-  "Face used to highlight a tab during mouse-overs."
-  :group 'awesome-tab)
-
 (defface awesome-tab-button
   '((t
      :box nil
      ))
   "Face used for tab bar buttons."
-  :group 'awesome-tab)
-
-(defface awesome-tab-button-highlight
-  '((t
-     ))
-  "Face used to highlight a button during mouse-overs."
   :group 'awesome-tab)
 
 (defcustom awesome-tab-background-color "black"
@@ -592,61 +575,8 @@ an extra margin around the image."
     (setcdr image plist))
   image)
 
-;;; Button keymaps and callbacks
-;;
-(defsubst awesome-tab-make-mouse-event (&optional type)
-  "Return a mouse click event.
-Optional argument TYPE is a mouse-click event or one of the
-symbols `mouse-1', `mouse-2' or `mouse-3'.
-The default is `mouse-1'."
-  (if (awesome-tab-click-p type)
-      type
-    (list (or (memq type '(mouse-2 mouse-3)) 'mouse-1)
-          (or (event-start nil) ;; Emacs 21.4
-              (list (selected-window) (point) '(0 . 0) 0)))))
-
 ;;; Tabs
 ;;
-(defsubst awesome-tab-click-on-tab (tab &optional type)
-  "Handle a mouse click event on tab TAB.
-Call `awesome-tab-select-tab-function' with the received, or simulated
-mouse click event, and TAB.
-Optional argument TYPE is a mouse click event type (see the function
-`awesome-tab-make-mouse-event' for details)."
-  (when awesome-tab-select-tab-function
-    (funcall awesome-tab-select-tab-function
-             (awesome-tab-make-mouse-event type) tab)
-    (awesome-tab-display-update)))
-
-(defun awesome-tab-select-tab-callback (event)
-  "Handle a mouse EVENT on a tab.
-Pass mouse click events on a tab to `awesome-tab-click-on-tab'."
-  (interactive "@e")
-  (when (awesome-tab-click-p event)
-    (let ((target (posn-string (event-start event))))
-      (awesome-tab-click-on-tab
-       (get-text-property (cdr target) 'awesome-tab-tab (car target))
-       event))))
-
-(defun awesome-tab-line-button (name)
-  "Return the display representation of button NAME.
-That is, a propertized string used as an `header-line-format' template
-element."
-  (let ((label (cons name name)))
-    ;; Cache the display value of the enabled/disabled buttons in
-    ;; variables `awesome-tab-NAME-button-value'.
-    (set (intern (format "awesome-tab-%s-button-value"  name))
-         (cons
-          (propertize (car label)
-                      'awesome-tab-button name
-                      'face 'awesome-tab-button
-                      'mouse-face 'awesome-tab-button-highlight
-                      'pointer 'hand
-                      )
-          (propertize (cdr label)
-                      'face 'awesome-tab-button
-                      'pointer 'arrow)))))
-
 (defsubst awesome-tab-line-buttons (tabset)
   "Return a list of propertized strings for tab bar buttons.
 TABSET is the tab set used to choose the appropriate buttons."
@@ -664,7 +594,6 @@ Call `awesome-tab-tab-label-function' to obtain a label for TAB."
                (funcall awesome-tab-tab-label-function tab)
              tab)
            'awesome-tab-tab tab
-           'mouse-face 'awesome-tab-highlight
            'face (if (awesome-tab-selected-p tab (awesome-tab-current-tabset))
                      'awesome-tab-selected
                    'awesome-tab-unselected)
@@ -747,9 +676,7 @@ Inhibit display of the tab bar in current window `awesome-tab-hide-tab-function'
 The scope of the cyclic navigation through tabs is specified by the
 option `awesome-tab-cycle-scope'.
 If optional argument BACKWARD is non-nil, cycle to the previous tab
-instead.
-Optional argument TYPE is a mouse event type (see the function
-`awesome-tab-make-mouse-event' for details)."
+instead."
   (let* ((tabset (awesome-tab-current-tabset t))
          (ttabset (awesome-tab-get-tabsets-tabset))
          ;; If navigation through groups is requested, and there is
@@ -796,7 +723,7 @@ Optional argument TYPE is a mouse event type (see the function
           (setq tabset (awesome-tab-tabs (awesome-tab-tab-tabset tab))
                 tab (car (if backward (last tabset) tabset))))
         ))
-      (awesome-tab-click-on-tab tab type))))
+      (awesome-tab-buffer-select-tab tab))))
 
 ;;;###autoload
 (defun awesome-tab-backward ()
@@ -1074,12 +1001,12 @@ That is, a string used to represent it on the tab bar."
                                       bufname)))
                           awesome-tab-style-right)))
 
-(defun awesome-tab-buffer-select-tab (event tab)
-  "On mouse EVENT, select TAB."
+(defun awesome-tab-buffer-select-tab (tab)
+  "Select tab."
   (let ((buffer (awesome-tab-tab-value tab)))
     (switch-to-buffer buffer)
-    ;; Don't show groups.
     (awesome-tab-buffer-show-groups nil)
+    (awesome-tab-display-update)
     ))
 
 (defun awesome-tab-buffer-track-killed ()
@@ -1174,7 +1101,7 @@ TYPE is default option."
       (setq selected (awesome-tab-selected-tab tabset))
       (setq tabset (awesome-tab-tabs tabset)
             tab (car (if backward (last tabset) tabset)))
-      (awesome-tab-click-on-tab tab type))))
+      (awesome-tab-buffer-select-tab tab))))
 
 (defun awesome-tab-backward-tab-other-window (&optional reversed)
   "Move to left tab in other window.
@@ -1411,8 +1338,8 @@ Other buffer group by `awesome-tab-get-group-name' with project name."
         (when (featurep 'helm)
           (require 'helm)
           (helm-build-sync-source "Awesome-Tab Group"
-            :candidates #'awesome-tab-get-groups
-            :action '(("Switch to group" . awesome-tab-switch-group))))))
+                                  :candidates #'awesome-tab-get-groups
+                                  :action '(("Switch to group" . awesome-tab-switch-group))))))
 
 ;; Ivy source for switching group in ivy.
 (defvar ivy-source-awesome-tab-group nil)
