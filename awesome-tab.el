@@ -594,19 +594,6 @@ an extra margin around the image."
 
 ;;; Button keymaps and callbacks
 ;;
-(defun awesome-tab-make-mouse-keymap (callback)
-  "Return a keymap that call CALLBACK on mouse events.
-CALLBACK is passed the received mouse event."
-  (let ((keymap (make-sparse-keymap)))
-    ;; Pass mouse-1, mouse-2 and mouse-3 events to CALLBACK.
-    (define-key keymap [header-line down-mouse-1] 'ignore)
-    (define-key keymap [header-line mouse-1] callback)
-    (define-key keymap [header-line down-mouse-2] 'ignore)
-    (define-key keymap [header-line mouse-2] callback)
-    (define-key keymap [header-line down-mouse-3] 'ignore)
-    (define-key keymap [header-line mouse-3] callback)
-    keymap))
-
 (defsubst awesome-tab-make-mouse-event (&optional type)
   "Return a mouse click event.
 Optional argument TYPE is a mouse-click event or one of the
@@ -640,29 +627,6 @@ Pass mouse click events on a tab to `awesome-tab-click-on-tab'."
       (awesome-tab-click-on-tab
        (get-text-property (cdr target) 'awesome-tab-tab (car target))
        event))))
-
-;;; Tab bar construction
-;;
-(defun awesome-tab-button-label (name)
-  "Return a label for button NAME.
-That is a pair (ENABLED . DISABLED), where ENABLED and DISABLED are
-respectively the appearance of the button when enabled and disabled.
-They are propertized strings which could display images, as specified
-by the variable `awesome-tab-NAME-button'."
-  (let* ((btn (symbol-value
-               (intern-soft (format "awesome-tab-%s-button" name))))
-         (on  (awesome-tab-find-image (cdar btn)))
-         (off (and on (awesome-tab-find-image (cddr btn)))))
-    (when on
-      (awesome-tab-normalize-image on 1)
-      (if off
-          (awesome-tab-normalize-image off 1)
-        ;; If there is no disabled button image, derive one from the
-        ;; button enabled image.
-        (setq off (awesome-tab-disable-image on))))
-    (cons
-     (propertize (or (caar btn) " ") 'display on)
-     (propertize (or (cadr btn) " ") 'display off))))
 
 (defun awesome-tab-line-button (name)
   "Return the display representation of button NAME.
@@ -875,16 +839,6 @@ Depend on the setting of the option `awesome-tab-cycle-scope'."
   (interactive)
   (let ((awesome-tab-cycle-scope 'tabs))
     (awesome-tab-cycle)))
-
-;;; Button press commands
-;;
-(defsubst awesome-tab--mouse (number)
-  "Return a mouse button symbol from NUMBER.
-That is mouse-2, or mouse-3 when NUMBER is respectively 2, or 3.
-Return mouse-1 otherwise."
-  (cond ((eq number 2) 'mouse-2)
-        ((eq number 3) 'mouse-3)
-        ('mouse-1)))
 
 ;;; Minor modes
 ;;
@@ -1122,15 +1076,8 @@ That is, a string used to represent it on the tab bar."
 
 (defun awesome-tab-buffer-select-tab (event tab)
   "On mouse EVENT, select TAB."
-  (let ((mouse-button (event-basic-type event))
-        (buffer (awesome-tab-tab-value tab)))
-    (cond
-     ((eq mouse-button 'mouse-2)
-      (pop-to-buffer buffer t))
-     ((eq mouse-button 'mouse-3)
-      (delete-other-windows))
-     (t
-      (switch-to-buffer buffer)))
+  (let ((buffer (awesome-tab-tab-value tab)))
+    (switch-to-buffer buffer)
     ;; Don't show groups.
     (awesome-tab-buffer-show-groups nil)
     ))
