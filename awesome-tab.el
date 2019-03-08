@@ -195,6 +195,21 @@ the group name uses the name of this variable."
   :group 'awesome-tab
   :type 'int)
 
+(defcustom awesometab-hide-tabs-hooks
+  '(magit-status-mode-hook magit-popup-mode-hook reb-mode-hook)
+  "Some buffer's header line is empty that make its window insufficient of space to display all content.
+Feel free to add hook in this option. ;)"
+  :type '(repeat symbol)
+  :group 'awesome-tab)
+
+(defcustom awesome-tab-background-color "black"
+  "*Background color of the tab bar.
+By default, use the background color specified for the
+`awesome-tab-default' face (or inherited from another face), or the
+background color of the `default' face otherwise."
+  :group 'awesome-tab
+  :type 'face)
+
 (defvar awesome-tab-hide-tab-function 'awesome-tab-hide-tab
   "Function to hide tab.
 This fucntion accepet tab name, tab will hide if this function return ni.")
@@ -211,6 +226,20 @@ The function is passed a tab and should return a string.")
   "Function that select a tab.
 The function is passed a tab, and should make it the
 selected tab.")
+
+(defvar awesome-tab-buffer-list-function 'awesome-tab-buffer-list
+  "Function that returns the list of buffers to show in tabs.
+That function is called with no arguments and must return a list of
+buffers.")
+
+(defvar awesome-tab-buffer-groups-function 'awesome-tab-buffer-groups
+  "Function that gives the group names the current buffer belongs to.
+It must return a list of group names, or nil if the buffer has no
+group.  Notice that it is better that a buffer belongs to one group.")
+
+(defvar awesome-tab-adjust-buffer-order-function 'awesome-tab-adjust-buffer-order
+  "Function to adjust buffer order after switch tab.
+Default is `awesome-tab-adjust-buffer-order', you can write your own rule.")
 
 ;;; Misc.
 ;;
@@ -531,14 +560,6 @@ current cached copy."
      ))
   "Face used for tab bar buttons."
   :group 'awesome-tab)
-
-(defcustom awesome-tab-background-color "black"
-  "*Background color of the tab bar.
-By default, use the background color specified for the
-`awesome-tab-default' face (or inherited from another face), or the
-background color of the `default' face otherwise."
-  :group 'awesome-tab
-  :type 'face)
 
 ;;; Separator
 
@@ -876,16 +897,6 @@ Returns non-nil if the new state is enabled.
 (defgroup awesome-tab-buffer nil
   "Display buffers in the tab bar."
   :group 'awesome-tab)
-
-(defvar awesome-tab-buffer-list-function 'awesome-tab-buffer-list
-  "Function that returns the list of buffers to show in tabs.
-That function is called with no arguments and must return a list of
-buffers.")
-
-(defvar awesome-tab-buffer-groups-function 'awesome-tab-buffer-groups
-  "Function that gives the group names the current buffer belongs to.
-It must return a list of group names, or nil if the buffer has no
-group.  Notice that it is better that a buffer belongs to one group.")
 
 (defun awesome-tab-filter (condp lst)
   (delq nil
@@ -1269,13 +1280,6 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
 (setq uniquify-buffer-name-style 'post-forward-angle-brackets)
 (setq uniquify-after-kill-buffer-p t)
 
-(defcustom awesometab-hide-tabs-hooks
-  '(magit-status-mode-hook magit-popup-mode-hook reb-mode-hook)
-  "Some buffer's header line is empty that make its window insufficient of space to display all content.
-Feel free to add hook in this option. ;)"
-  :type '(repeat symbol)
-  :group 'awesome-tab)
-
 (dolist (hook awesometab-hide-tabs-hooks)
   (add-hook hook '(lambda () (setq-local header-line-format nil))))
 
@@ -1391,10 +1395,6 @@ Other buffer group by `awesome-tab-get-group-name' with project name."
 (defun awesome-tab-insert-before (list bef-el el)
   "Insert EL before BEF-EL in LIST."
   (nreverse (awesome-tab-insert-after (nreverse list) bef-el el)))
-
-(defvar awesome-tab-adjust-buffer-order-function 'awesome-tab-adjust-buffer-order
-  "Function to adjust buffer order after switch tab.
-Default is `awesome-tab-adjust-buffer-order', you can write your own rule.")
 
 (defun awesome-tab-adjust-buffer-order ()
   "Put the two buffers switched to the adjacent position after current buffer changed."
