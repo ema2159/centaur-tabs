@@ -1593,12 +1593,10 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
 (setq uniquify-buffer-name-style 'post-forward-angle-brackets)
 (setq uniquify-after-kill-buffer-p t)
 
-;; Some buffer's header line is empty that make its window insufficient of space to display all content
-;; Feel free to add hook in below list. ;)
-
 (defcustom awesometab-hide-tabs-hooks
   '(magit-status-mode-hook magit-popup-mode-hook reb-mode-hook)
-  "hide tab bar for these hooks."
+  "Some buffer's header line is empty that make its window insufficient of space to display all content.
+Feel free to add hook in this option. ;)"
   :type '(repeat symbol)
   :group 'awesome-tab)
 
@@ -1664,8 +1662,8 @@ Other buffer group by `awesome-tab-get-group-name' with project name."
         (when (featurep 'helm)
           (require 'helm)
           (helm-build-sync-source "Awesome-Tab Group"
-                                  :candidates #'awesome-tab-get-groups
-                                  :action '(("Switch to group" . awesome-tab-switch-group))))))
+            :candidates #'awesome-tab-get-groups
+            :action '(("Switch to group" . awesome-tab-switch-group))))))
 
 ;; Ivy source for switching group in ivy.
 (defvar ivy-source-awesome-tab-group nil)
