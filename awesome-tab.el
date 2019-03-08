@@ -693,44 +693,6 @@ The default is `mouse-1'."
           (or (event-start nil) ;; Emacs 21.4
               (list (selected-window) (point) '(0 . 0) 0)))))
 
-;;; Buttons
-;;
-(defconst awesome-tab-default-button-keymap
-  (awesome-tab-make-mouse-keymap 'awesome-tab-select-button-callback)
-  "Default keymap of a button.")
-
-(defsubst awesome-tab-click-on-button (name &optional type)
-  "Handle a mouse click event on button NAME.
-Call `awesome-tab-select-NAME-function' with the received, or simulated
-mouse click event.
-Optional argument TYPE is a mouse click event type (see the function
-`awesome-tab-make-mouse-event' for details)."
-  (let ((funvar (intern-soft (format "awesome-tab-%s-function" name))))
-    (when (symbol-value funvar)
-      (funcall (symbol-value funvar) (awesome-tab-make-mouse-event type))
-      (awesome-tab-display-update))))
-
-(defun awesome-tab-select-button-callback (event)
-  "Handle a mouse EVENT on a button.
-Pass mouse click events on a button to `awesome-tab-click-on-button'."
-  (interactive "@e")
-  (when (awesome-tab-click-p event)
-    (let ((target (posn-string (event-start event))))
-      (awesome-tab-click-on-button
-       (get-text-property (cdr target) 'awesome-tab-button (car target))
-       event))))
-
-(defun awesome-tab-make-button-keymap (name)
-  "Return a keymap to handle mouse click events on button NAME."
-  (if (fboundp 'posn-string)
-      awesome-tab-default-button-keymap
-    (let ((event (make-symbol "event")))
-      (awesome-tab-make-mouse-keymap
-       `(lambda (,event)
-          (interactive "@e")
-          (and (awesome-tab-click-p ,event)
-               (awesome-tab-click-on-button ',name ,event)))))))
-
 ;;; Button callbacks
 ;;
 (defun awesome-tab-scroll-left (event)
@@ -820,7 +782,6 @@ element."
                       'face 'awesome-tab-button
                       'mouse-face 'awesome-tab-button-highlight
                       'pointer 'hand
-                      'local-map (awesome-tab-make-button-keymap name)
                       )
           (propertize (cdr label)
                       'face 'awesome-tab-button
@@ -1041,33 +1002,6 @@ Return mouse-1 otherwise."
         ((eq number 3) 'mouse-3)
         ('mouse-1)))
 
-;;;###autoload
-(defun awesome-tab-press-home (&optional arg)
-  "Press the tab bar home button.
-That is, simulate a mouse click on that button.
-A numeric prefix ARG value of 2, or 3, respectively simulates a
-mouse-2, or mouse-3 click.  The default is a mouse-1 click."
-  (interactive "p")
-  (awesome-tab-click-on-button 'home (awesome-tab--mouse arg)))
-
-;;;###autoload
-(defun awesome-tab-press-scroll-left (&optional arg)
-  "Press the tab bar scroll-left button.
-That is, simulate a mouse click on that button.
-A numeric prefix ARG value of 2, or 3, respectively simulates a
-mouse-2, or mouse-3 click.  The default is a mouse-1 click."
-  (interactive "p")
-  (awesome-tab-click-on-button 'scroll-left (awesome-tab--mouse arg)))
-
-;;;###autoload
-(defun awesome-tab-press-scroll-right (&optional arg)
-  "Press the tab bar scroll-right button.
-That is, simulate a mouse click on that button.
-A numeric prefix ARG value of 2, or 3, respectively simulates a
-mouse-2, or mouse-3 click.  The default is a mouse-1 click."
-  (interactive "p")
-  (awesome-tab-click-on-button 'scroll-right (awesome-tab--mouse arg)))
-
 ;;; Minor modes
 ;;
 (defsubst awesome-tab-mode-on-p ()
@@ -1123,13 +1057,10 @@ hidden, it is shown again.  Signal an error if Awesome-Tab mode is off."
 
 (defvar awesome-tab-prefix-map
   (let ((km (make-sparse-keymap)))
-    (define-key km [(control home)]  'awesome-tab-press-home)
     (define-key km [(control left)]  'awesome-tab-backward)
     (define-key km [(control right)] 'awesome-tab-forward)
     (define-key km [(control up)]    'awesome-tab-backward-group)
     (define-key km [(control down)]  'awesome-tab-forward-group)
-    (define-key km [(control prior)] 'awesome-tab-press-scroll-left)
-    (define-key km [(control next)]  'awesome-tab-press-scroll-right)
     (define-key km [(control f10)]   'awesome-tab-local-mode)
     km)
   "The key bindings provided in Awesome-Tab mode.")
