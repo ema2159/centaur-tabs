@@ -217,16 +217,6 @@ selected tab.")
 The function is passed a button name should return a propertized
 string to display.")
 
-(defvar awesome-tab-scroll-left-function 'awesome-tab-scroll-left
-  "Function that scrolls tabs on left.
-The function is passed the mouse event received when clicking on the
-scroll left button.  It should scroll the current tab set.")
-
-(defvar awesome-tab-scroll-right-function 'awesome-tab-scroll-right
-  "Function that scrolls tabs on right.
-The function is passed the mouse event received when clicking on the
-scroll right button.  It should scroll the current tab set.")
-
 ;;; Misc.
 ;;
 (eval-and-compile
@@ -572,67 +562,7 @@ background color of the `default' face otherwise."
   :group 'awesome-tab
   :type 'face)
 
-;;; Buttons and separator look and feel
-;;
-(defconst awesome-tab-button-widget
-  '(cons
-    (cons :tag "Enabled"
-          (string)
-          (repeat :tag "Image"
-                  :extra-offset 2
-                  (restricted-sexp :tag "Spec"
-                                   :match-alternatives (listp))))
-    (cons :tag "Disabled"
-          (string)
-          (repeat :tag "Image"
-                  :extra-offset 2
-                  (restricted-sexp :tag "Spec"
-                                   :match-alternatives (listp))))
-    )
-  "Widget for editing a tab bar button.
-A button is specified as a pair (ENABLED-BUTTON . DISABLED-BUTTON),
-where ENABLED-BUTTON and DISABLED-BUTTON specify the value used when
-the button is respectively enabled and disabled.  Each button value is
-a pair (STRING . IMAGE) where STRING is a string value, and IMAGE a
-list of image specifications.
-If IMAGE is non-nil, try to use that image, else use STRING.
-If only the ENABLED-BUTTON image is provided, a DISABLED-BUTTON image
-is derived from it.")
-
-;;; Scroll left button
-;;
-(defvar awesome-tab-scroll-left-button-value nil
-  "Value of the scroll left button.")
-
-(defcustom awesome-tab-scroll-left-button
-  (quote (("") ""))
-  "The scroll left button.
-The variable `awesome-tab-button-widget' gives details on this widget."
-  :group 'awesome-tab
-  :type awesome-tab-button-widget
-  :set '(lambda (variable value)
-          (custom-set-default variable value)
-          ;; Schedule refresh of button value.
-          (setq awesome-tab-scroll-left-button-value nil)))
-
-;;; Scroll right button
-;;
-(defvar awesome-tab-scroll-right-button-value nil
-  "Value of the scroll right button.")
-
-(defcustom awesome-tab-scroll-right-button
-  (quote (("") ""))
-  "The scroll right button.
-The variable `awesome-tab-button-widget' gives details on this widget."
-  :group 'awesome-tab
-  :type awesome-tab-button-widget
-  :set '(lambda (variable value)
-          (custom-set-default variable value)
-          ;; Schedule refresh of button value.
-          (setq awesome-tab-scroll-right-button-value nil)))
-
 ;;; Separator
-;;
 
 (defvar awesome-tab-height 22)
 (defvar awesome-tab-style-left (powerline-wave-right 'awesome-tab-default nil awesome-tab-height))
@@ -693,24 +623,8 @@ The default is `mouse-1'."
           (or (event-start nil) ;; Emacs 21.4
               (list (selected-window) (point) '(0 . 0) 0)))))
 
-;;; Button callbacks
-;;
-(defun awesome-tab-scroll-left (event)
-  "On mouse EVENT, scroll current tab set on left."
-  (when (eq (event-basic-type event) 'mouse-1)
-    (awesome-tab-scroll (awesome-tab-current-tabset) -1)))
-
-(defun awesome-tab-scroll-right (event)
-  "On mouse EVENT, scroll current tab set on right."
-  (when (eq (event-basic-type event) 'mouse-1)
-    (awesome-tab-scroll (awesome-tab-current-tabset) 1)))
-
 ;;; Tabs
 ;;
-(defconst awesome-tab-default-tab-keymap
-  (awesome-tab-make-mouse-keymap 'awesome-tab-select-tab-callback)
-  "Default keymap of a tab.")
-
 (defsubst awesome-tab-click-on-tab (tab &optional type)
   "Handle a mouse click event on tab TAB.
 Call `awesome-tab-select-tab-function' with the received, or simulated
@@ -731,17 +645,6 @@ Pass mouse click events on a tab to `awesome-tab-click-on-tab'."
       (awesome-tab-click-on-tab
        (get-text-property (cdr target) 'awesome-tab-tab (car target))
        event))))
-
-(defun awesome-tab-make-tab-keymap (tab)
-  "Return a keymap to handle mouse click events on TAB."
-  (if (fboundp 'posn-string)
-      awesome-tab-default-tab-keymap
-    (let ((event (make-symbol "event")))
-      (awesome-tab-make-mouse-keymap
-       `(lambda (,event)
-          (interactive "@e")
-          (and (awesome-tab-click-p ,event)
-               (awesome-tab-click-on-tab ',tab ,event)))))))
 
 ;;; Tab bar construction
 ;;
@@ -791,13 +694,7 @@ element."
   "Return a list of propertized strings for tab bar buttons.
 TABSET is the tab set used to choose the appropriate buttons."
   (list
-   (if (> (awesome-tab-start tabset) 0)
-       (car awesome-tab-scroll-left-button-value)
-     (cdr awesome-tab-scroll-left-button-value))
-   (if (< (awesome-tab-start tabset)
-          (1- (length (awesome-tab-tabs tabset))))
-       (car awesome-tab-scroll-right-button-value)
-     (cdr awesome-tab-scroll-right-button-value))
+   (1- (length (awesome-tab-tabs tabset)))
    ))
 
 (defsubst awesome-tab-line-tab (tab)
@@ -810,7 +707,6 @@ Call `awesome-tab-tab-label-function' to obtain a label for TAB."
                (funcall awesome-tab-tab-label-function tab)
              tab)
            'awesome-tab-tab tab
-           'local-map (awesome-tab-make-tab-keymap tab)
            'mouse-face 'awesome-tab-highlight
            'face (if (awesome-tab-selected-p tab (awesome-tab-current-tabset))
                      'awesome-tab-selected
@@ -824,11 +720,6 @@ Call `awesome-tab-tab-label-function' to obtain a label for TAB."
          (tabs (awesome-tab-view tabset))
          (padcolor awesome-tab-background-color)
          atsel elts)
-    ;; Initialize buttons and separator values.
-    (or awesome-tab-scroll-left-button-value
-        (awesome-tab-line-button 'scroll-left))
-    (or awesome-tab-scroll-right-button-value
-        (awesome-tab-line-button 'scroll-right))
     ;; Track the selected tab to ensure it is always visible.
     (when awesome-tab--track-selected
       (while (not (memq sel tabs))
