@@ -26,7 +26,7 @@ Emacs package to provide out-of-the-box configuration to use tabs.
 git clone --depth=1 https://github.com/manateelazycat/awesome-tab.git
 ```
 
-2. Move powerline-separators.el, powerline-themes.el, powerline.el, awesome-tab.el to your load-path.
+2. Move awesome-tab.el to your load-path.
 
     The load-path is usually `~/elisp/`.
 
@@ -200,7 +200,7 @@ Default functions is ```awesome-tab-adjust-buffer-order``` , you can write your 
       ;; Update the group name of the last access tab.
       (setq awesome-tab-last-focus-buffer-group current-group)
       )))
-```      
+```
 
 ##### Advanced
 

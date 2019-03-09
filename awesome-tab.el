@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-09-17 22:14:34
-;; Version: 2.3
-;; Last-Updated: 2019-03-03 21:01:30
+;; Version: 2.4
+;; Last-Updated: 2019-03-09 11:15:37
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/awesome-tab.el
 ;; Keywords:
@@ -15,7 +15,7 @@
 ;;
 ;; Features that might be required by this library:
 ;;
-;; `powerline' `cl'
+;; `cl' `cl-lib' `color'
 ;;
 
 ;;; This file is NOT part of GNU Emacs
@@ -44,7 +44,7 @@
 
 ;;; Installation:
 ;;
-;; Put powerline-separators.el, powerline-themes.el, powerline.el, awesome-tab.el to your load-path.
+;; Put awesome-tab.el to your load-path.
 ;; The load-path is usually ~/elisp/.
 ;; It's set in your ~/.emacs like this:
 ;; (add-to-list 'load-path (expand-file-name "~/elisp"))
@@ -86,6 +86,9 @@
 ;;
 
 ;;; Change log:
+;;
+;; 2019/03/09
+;;      * Absorb powerline code, keep single file.
 ;;
 ;; 2019/03/07
 ;;      * Add `cl' dependence.
@@ -151,7 +154,8 @@
 
 ;;; Require
 (require 'cl)
-(require 'powerline)
+(require 'cl-lib)
+(require 'color)
 
 ;;; Code:
 ;;;;;;;;;;;;;;;;;;;;;;; Awesome-Tab source code ;;;;;;;;;;;;;;;;;;;;;;;
@@ -966,6 +970,644 @@ Return the the first group where the current buffer is."
       (awesome-tab-select-tab-value (current-buffer) tabset))
     tabset))
 
+;;; Separator
+;;
+(defvar awesome-tab-image-apple-rgb
+  (and (eq (window-system) 'ns)
+       ns-use-srgb-colorspace
+       (< 11
+          (string-to-number
+           (and (string-match "darwin\\([0-9]+\\)" system-configuration)
+                (match-string-no-properties 1 system-configuration)))))
+  "Boolean variable to determine whether to use Apple RGB colorspace to render images.
+
+t on macOS 10.7+ and `ns-use-srgb-colorspace' is t, nil otherwise.
+
+This variable is automatically set, there's no need to modify it.")
+
+(defun awesome-tab-separator-interpolate (color1 color2)
+  "Interpolate between COLOR1 and COLOR2.
+
+COLOR1 and COLOR2 must be supplied as hex strings with a leading #."
+  (let* ((c1 (color-name-to-rgb color1))
+         (c2 (color-name-to-rgb color2))
+         (red (/ (+ (nth 0 c1) (nth 0 c2)) 2))
+         (green (/ (+ (nth 1 c1) (nth 1 c2)) 2))
+         (blue (/ (+ (nth 2 c1) (nth 2 c2)) 2)))
+    (color-rgb-to-hex red green blue)))
+
+(defun awesome-tab-separator-color-xyz-to-apple-rgb (X Y Z)
+  "Convert CIE X Y Z colors to Apple RGB color space."
+  (let ((r (+ (* 3.2404542 X) (* -1.5371385 Y) (* -0.4985314 Z)))
+        (g (+ (* -0.9692660 X) (* 1.8760108 Y) (* 0.0415560 Z)))
+        (b (+ (* 0.0556434 X) (* -0.2040259 Y) (* 1.0572252 Z))))
+    (list (expt r (/ 1.8)) (expt g (/ 1.8)) (expt b (/ 1.8)))))
+
+(defun awesome-tab-separator-color-srgb-to-apple-rgb (red green blue)
+  "Convert RED GREEN BLUE colors from sRGB color space to Apple RGB.
+RED, GREEN and BLUE should be between 0.0 and 1.0, inclusive."
+  (apply 'awesome-tab-separator-color-xyz-to-apple-rgb (color-srgb-to-xyz red green blue)))
+
+(defun awesome-tab-separator-hex-color (color)
+  "Get the hexadecimal value of COLOR."
+  (when color
+    (let ((srgb-color (color-name-to-rgb color)))
+      (if awesome-tab-image-apple-rgb
+          (apply 'color-rgb-to-hex (apply 'awesome-tab-separator-color-srgb-to-apple-rgb srgb-color))
+        (apply 'color-rgb-to-hex srgb-color)))))
+
+(defun awesome-tab-separator-pattern (lst)
+  "Turn LST into an infinite pattern."
+  (when lst
+    (let ((pattern (cl-copy-list lst)))
+      (setcdr (last pattern) pattern))))
+
+(defun awesome-tab-separator-pattern-to-string (pattern)
+  "Convert a PATTERN into a string that can be used in an XPM."
+  (concat "\"" (mapconcat 'number-to-string pattern "") "\","))
+
+(defun awesome-tab-separator-reverse-pattern (pattern)
+  "Reverse each line in PATTERN."
+  (mapcar 'reverse pattern))
+
+(defun awesome-tab-separator-row-pattern (fill total &optional fade)
+  "Make a list that has FILL 0s out of TOTAL 1s with FADE 2s to the right of the fill."
+  (unless fade
+    (setq fade 0))
+  (let ((fill (min fill total))
+        (fade (min fade (max (- total fill) 0))))
+    (append (make-list fill 0)
+            (make-list fade 2)
+            (make-list (- total fill fade) 1))))
+
+(defun awesome-tab-separator-pattern-bindings-body (patterns height-exp pattern-height-sym
+                                                             second-pattern-height-sym)
+  "Create let-var bindings and a function body from PATTERNS.
+The `car' and `cdr' parts of the result can be passed to the
+function `awesome-tab-separator-wrap-defun' as its `let-vars' and `body' arguments,
+respectively.  HEIGHT-EXP is an expression calculating the image
+height and it should contain a free variable `height'.
+PATTERN-HEIGHT-SYM and SECOND-PATTERN-HEIGHT-SYM are symbols used
+for let-var binding variables."
+  (let* ((pattern (awesome-tab-separator-pattern (mapcar 'awesome-tab-separator-pattern-to-string (car patterns))))
+         (header (mapcar 'awesome-tab-separator-pattern-to-string (nth 1 patterns)))
+         (footer (mapcar 'awesome-tab-separator-pattern-to-string (nth 2 patterns)))
+         (second-pattern (awesome-tab-separator-pattern (mapcar 'awesome-tab-separator-pattern-to-string (nth 3 patterns))))
+         (center (mapcar 'awesome-tab-separator-pattern-to-string (nth 4 patterns)))
+         (reserve (+ (length header) (length footer) (length center))))
+    (when pattern
+      (cons `((,pattern-height-sym (max (- ,height-exp ,reserve) 0))
+              (,second-pattern-height-sym (/ ,pattern-height-sym 2))
+              (,pattern-height-sym ,(if second-pattern `(ceiling ,pattern-height-sym 2) `,pattern-height-sym)))
+            (list (when header `(mapconcat 'identity ',header ""))
+                  `(mapconcat 'identity
+                              (cl-subseq ',pattern 0 ,pattern-height-sym) "")
+                  (when center `(mapconcat 'identity ',center ""))
+                  (when second-pattern
+                    `(mapconcat 'identity
+                                (cl-subseq ',second-pattern
+                                           0 ,second-pattern-height-sym) ""))
+                  (when footer `(mapconcat 'identity ',footer "")))))))
+
+(defun awesome-tab-separator-pattern-defun (name dir width &rest patterns)
+  "Create a powerline function of NAME in DIR with WIDTH for PATTERNS.
+
+PATTERNS is of the form (PATTERN HEADER FOOTER SECOND-PATTERN CENTER
+PATTERN-2X HEADER-2X FOOTER-2X SECOND-PATTERN-2X CENTER-2X).
+PATTERN is required, all other components are optional.
+The first 5 components are for the standard resolution image.
+The remaining ones are for the high resolution image where both
+width and height are doubled.  If PATTERN-2X is nil or not given,
+then the remaining components are ignored and the standard
+resolution image with magnification and interpolation will be
+used in high resolution environments
+
+All generated functions generate the form:
+HEADER
+PATTERN ...
+CENTER
+SECOND-PATTERN ...
+FOOTER
+
+PATTERN and SECOND-PATTERN repeat infinitely to fill the space needed to generate a full height XPM.
+
+PATTERN, HEADER, FOOTER, SECOND-PATTERN, CENTER are of the form ((COLOR ...) (COLOR ...) ...).
+
+COLOR can be one of 0, 1, or 2, where 0 is the source color, 1 is the
+destination color, and 2 is the interpolated color between 0 and 1."
+  (when (eq dir 'right)
+    (setq patterns (mapcar 'awesome-tab-separator-reverse-pattern patterns)))
+  (let ((bindings-body (awesome-tab-separator-pattern-bindings-body patterns
+                                                                    'height
+                                                                    'pattern-height
+                                                                    'second-pattern-height))
+        (bindings-body-2x (awesome-tab-separator-pattern-bindings-body (nthcdr 5 patterns)
+                                                                       '(* height 2)
+                                                                       'pattern-height-2x
+                                                                       'second-pattern-height-2x)))
+    (awesome-tab-separator-wrap-defun name dir width
+                                      (append (car bindings-body) (car bindings-body-2x))
+                                      (cdr bindings-body) (cdr bindings-body-2x))))
+
+(defun awesome-tab-separator-background-color (face)
+  (face-attribute face
+                  (if (face-attribute face :inverse-video nil 'default)
+                      :foreground
+                    :background)
+                  nil
+                  'default))
+
+(defun awesome-tab-separator-wrap-defun (name dir width let-vars body &optional body-2x)
+  "Generate a powerline function of NAME in DIR with WIDTH using LET-VARS and BODY."
+  (let* ((src-face (if (eq dir 'left) 'face1 'face2))
+         (dst-face (if (eq dir 'left) 'face2 'face1)))
+    `(defun ,(intern (format "powerline-%s-%s" name (symbol-name dir)))
+         (face1 face2 &optional height)
+       (when window-system
+         (unless height (setq height (awesome-tab-separator-separator-height)))
+         (let* ,(append `((color1 (when ,src-face
+                                    (awesome-tab-separator-hex-color (awesome-tab-separator-background-color ,src-face))))
+                          (color2 (when ,dst-face
+                                    (awesome-tab-separator-hex-color (awesome-tab-separator-background-color ,dst-face))))
+                          (colori (when (and color1 color2) (awesome-tab-separator-interpolate color1 color2)))
+                          (color1 (or color1 "None"))
+                          (color2 (or color2 "None"))
+                          (colori (or colori "None")))
+                        let-vars)
+           (apply 'create-image
+                  ,(append `(concat (format "/* XPM */ static char * %s_%s[] = { \"%s %s 3 1\", \"0 c %s\", \"1 c %s\", \"2 c %s\","
+                                            ,(replace-regexp-in-string "-" "_" name)
+                                            (symbol-name ',dir)
+                                            ,width
+                                            height
+                                            color1
+                                            color2
+                                            colori))
+                           body
+                           '("};"))
+                  'xpm t
+                  :ascent 'center
+                  :face (when (and face1 face2)
+                          ,dst-face)
+                  ,(and body-2x
+                        `(and (featurep 'mac)
+                              (list :data-2x
+                                    ,(append `(concat (format "/* XPM */ static char * %s_%s_2x[] = { \"%s %s 3 1\", \"0 c %s\", \"1 c %s\", \"2 c %s\","
+                                                              ,(replace-regexp-in-string "-" "_" name)
+                                                              (symbol-name ',dir)
+                                                              (* ,width 2)
+                                                              (* height 2)
+                                                              color1
+                                                              color2
+                                                              colori))
+                                             body-2x
+                                             '("};")))))))))))
+
+(defmacro awesome-tab-separator-alternate (dir)
+  "Generate an alternating pattern XPM function for DIR."
+  (awesome-tab-separator-pattern-defun "alternate" dir 4
+                                       '((2 2 1 1)
+                                         (0 0 2 2))
+                                       nil nil nil nil
+                                       ;; 2x
+                                       '((2 2 2 2 1 1 1 1)
+                                         (2 2 2 2 1 1 1 1)
+                                         (0 0 0 0 2 2 2 2)
+                                         (0 0 0 0 2 2 2 2))))
+
+(defmacro awesome-tab-separator-arrow (dir)
+  "Generate an arrow XPM function for DIR."
+  (let ((row-modifier (if (eq dir 'left) 'identity 'reverse)))
+    (awesome-tab-separator-wrap-defun "arrow" dir 'middle-width
+                                      '((width (1- (/ height 2)))
+                                        (middle-width (1- (ceiling height 2))))
+                                      `((cl-loop for i from 0 to width
+                                                 concat (awesome-tab-separator-pattern-to-string (,row-modifier (awesome-tab-separator-row-pattern i middle-width))))
+                                        (when (cl-oddp height)
+                                          (awesome-tab-separator-pattern-to-string (make-list middle-width 0)))
+                                        (cl-loop for i from width downto 0
+                                                 concat (awesome-tab-separator-pattern-to-string (,row-modifier (awesome-tab-separator-row-pattern i middle-width)))))
+                                      `((when (cl-evenp height)
+                                          (awesome-tab-separator-pattern-to-string (make-list (* middle-width 2) 1)))
+                                        (cl-loop for i from 0 to (* middle-width 2)
+                                                 concat (awesome-tab-separator-pattern-to-string (,row-modifier (awesome-tab-separator-row-pattern i (* middle-width 2)))))
+                                        (cl-loop for i from (* middle-width 2) downto 0
+                                                 concat (awesome-tab-separator-pattern-to-string (,row-modifier (awesome-tab-separator-row-pattern i (* middle-width 2)))))
+                                        (when (cl-evenp height)
+                                          (awesome-tab-separator-pattern-to-string (make-list (* middle-width 2) 1)))))))
+
+(defmacro awesome-tab-separator-arrow-fade (dir)
+  "Generate an arrow-fade XPM function for DIR."
+  (let* ((row-modifier (if (eq dir 'left) 'identity 'reverse)))
+    (awesome-tab-separator-wrap-defun "arrow-fade" dir 'middle-width
+                                      '((width (1- (/ height 2)))
+                                        (middle-width (1+ (ceiling height 2))))
+                                      `((cl-loop for i from 0 to width
+                                                 concat (awesome-tab-separator-pattern-to-string (,row-modifier (awesome-tab-separator-row-pattern i middle-width 2))))
+                                        (when (cl-oddp height)
+                                          (awesome-tab-separator-pattern-to-string (,row-modifier (awesome-tab-separator-row-pattern (1+ width) middle-width 2))))
+                                        (cl-loop for i from width downto 0
+                                                 concat (awesome-tab-separator-pattern-to-string (,row-modifier (awesome-tab-separator-row-pattern i middle-width 2)))))
+                                      `((when (cl-evenp height)
+                                          (awesome-tab-separator-pattern-to-string (,row-modifier (awesome-tab-separator-row-pattern 0 (* middle-width 2) (* 2 2)))))
+                                        (cl-loop for i from 0 to (* (- middle-width 2) 2)
+                                                 concat (awesome-tab-separator-pattern-to-string (,row-modifier (awesome-tab-separator-row-pattern i (* middle-width 2) (* 2 2)))))
+                                        (cl-loop for i from (* (- middle-width 2) 2) downto 0
+                                                 concat (awesome-tab-separator-pattern-to-string (,row-modifier (awesome-tab-separator-row-pattern i (* middle-width 2) (* 2 2)))))
+                                        (when (cl-evenp height)
+                                          (awesome-tab-separator-pattern-to-string (,row-modifier (awesome-tab-separator-row-pattern 0 (* middle-width 2) (* 2 2)))))))))
+
+(defmacro awesome-tab-separator-bar (dir)
+  "Generate a bar XPM function for DIR."
+  (awesome-tab-separator-pattern-defun "bar" dir 2
+                                       '((2 2))))
+
+(defmacro awesome-tab-separator-box (dir)
+  "Generate a box XPM function for DIR."
+  (awesome-tab-separator-pattern-defun "box" dir 2
+                                       '((0 0)
+                                         (0 0)
+                                         (1 1)
+                                         (1 1))
+                                       nil nil nil nil
+                                       ;; 2x
+                                       '((0 0 0 0)
+                                         (0 0 0 0)
+                                         (0 0 0 0)
+                                         (0 0 0 0)
+                                         (1 1 1 1)
+                                         (1 1 1 1)
+                                         (1 1 1 1)
+                                         (1 1 1 1))))
+
+(defmacro awesome-tab-separator-brace (dir)
+  "Generate a brace XPM function for DIR."
+  (awesome-tab-separator-pattern-defun "brace" dir 4
+                                       '((0 1 1 1))
+                                       '((1 1 1 1)
+                                         (2 1 1 1))
+                                       '((2 1 1 1)
+                                         (1 1 1 1))
+                                       '((0 1 1 1))
+                                       '((0 2 1 1)
+                                         (0 2 1 1)
+                                         (0 0 2 1)
+                                         (0 0 0 0)
+                                         (0 0 2 1)
+                                         (0 2 1 1)
+                                         (0 2 1 1))
+                                       ;; 2x
+                                       '((0 0 1 1 1 1 1 1))
+                                       '((1 1 1 1 1 1 1 1)
+                                         (1 1 1 1 1 1 1 1)
+                                         (2 1 1 1 1 1 1 1)
+                                         (0 2 1 1 1 1 1 1))
+                                       '((0 2 1 1 1 1 1 1)
+                                         (2 1 1 1 1 1 1 1)
+                                         (1 1 1 1 1 1 1 1)
+                                         (1 1 1 1 1 1 1 1))
+                                       '((0 0 1 1 1 1 1 1))
+                                       '((0 0 2 1 1 1 1 1)
+                                         (0 0 0 1 1 1 1 1)
+                                         (0 0 0 2 1 1 1 1)
+                                         (0 0 0 0 1 1 1 1)
+                                         (0 0 0 0 2 1 1 1)
+                                         (0 0 0 0 0 2 1 1)
+                                         (0 0 0 0 0 0 0 2)
+                                         (0 0 0 0 0 0 0 2)
+                                         (0 0 0 0 0 2 1 1)
+                                         (0 0 0 0 2 1 1 1)
+                                         (0 0 0 0 1 1 1 1)
+                                         (0 0 0 2 1 1 1 1)
+                                         (0 0 0 1 1 1 1 1)
+                                         (0 0 2 1 1 1 1 1))))
+
+(defmacro awesome-tab-separator-butt (dir)
+  "Generate a butt XPM function for DIR."
+  (awesome-tab-separator-pattern-defun "butt" dir 3
+                                       '((0 0 0))
+                                       '((1 1 1)
+                                         (0 1 1)
+                                         (0 0 1))
+                                       '((0 0 1)
+                                         (0 1 1)
+                                         (1 1 1))
+                                       nil nil
+                                       ;; 2x
+                                       '((0 0 0 0 0 0))
+                                       '((1 1 1 1 1 1)
+                                         (0 1 1 1 1 1)
+                                         (0 0 1 1 1 1)
+                                         (0 0 0 1 1 1)
+                                         (0 0 0 0 1 1)
+                                         (0 0 0 0 0 1))
+                                       '((0 0 0 0 0 1)
+                                         (0 0 0 0 1 1)
+                                         (0 0 0 1 1 1)
+                                         (0 0 1 1 1 1)
+                                         (0 1 1 1 1 1)
+                                         (1 1 1 1 1 1))))
+
+(defmacro awesome-tab-separator-chamfer (dir)
+  "Generate a chamfer XPM function for DIR."
+  (awesome-tab-separator-pattern-defun "chamfer" dir 3
+                                       '((0 0 0))
+                                       '((1 1 1)
+                                         (0 1 1)
+                                         (0 0 1))
+                                       nil nil nil
+                                       ;; 2x
+                                       '((0 0 0 0 0 0))
+                                       '((1 1 1 1 1 1)
+                                         (0 1 1 1 1 1)
+                                         (0 0 1 1 1 1)
+                                         (0 0 0 1 1 1)
+                                         (0 0 0 0 1 1)
+                                         (0 0 0 0 0 1))))
+
+(defmacro awesome-tab-separator-contour (dir)
+  "Generate a contour XPM function for DIR."
+  (awesome-tab-separator-pattern-defun "contour" dir 10
+                                       '((0 0 0 0 0 1 1 1 1 1))
+                                       '((1 1 1 1 1 1 1 1 1 1)
+                                         (0 2 1 1 1 1 1 1 1 1)
+                                         (0 0 2 1 1 1 1 1 1 1)
+                                         (0 0 0 2 1 1 1 1 1 1)
+                                         (0 0 0 0 1 1 1 1 1 1)
+                                         (0 0 0 0 2 1 1 1 1 1))
+                                       '((0 0 0 0 0 2 1 1 1 1)
+                                         (0 0 0 0 0 0 1 1 1 1)
+                                         (0 0 0 0 0 0 2 1 1 1)
+                                         (0 0 0 0 0 0 0 2 1 1)
+                                         (0 0 0 0 0 0 0 0 0 0))
+                                       nil nil
+                                       ;; 2x
+                                       '((0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1))
+                                       '((1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1)
+                                         (1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1)
+                                         (0 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1)
+                                         (0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1)
+                                         (0 0 0 0 2 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1)
+                                         (0 0 0 0 0 2 1 1 1 1 1 1 1 1 1 1 1 1 1 1)
+                                         (0 0 0 0 0 0 2 1 1 1 1 1 1 1 1 1 1 1 1 1)
+                                         (0 0 0 0 0 0 0 2 1 1 1 1 1 1 1 1 1 1 1 1)
+                                         (0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1)
+                                         (0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1)
+                                         (0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1)
+                                         (0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1))
+                                       '((0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1)
+                                         (0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1)
+                                         (0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1)
+                                         (0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1)
+                                         (0 0 0 0 0 0 0 0 0 0 0 0 2 1 1 1 1 1 1 1)
+                                         (0 0 0 0 0 0 0 0 0 0 0 0 0 2 1 1 1 1 1 1)
+                                         (0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1)
+                                         (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1)
+                                         (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+                                         (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0))))
+
+(defmacro awesome-tab-separator-curve (dir)
+  "Generate a curve XPM function for DIR."
+  (awesome-tab-separator-pattern-defun "curve" dir 4
+                                       '((0 0 0 0))
+                                       '((1 1 1 1)
+                                         (2 1 1 1)
+                                         (0 0 1 1)
+                                         (0 0 2 1)
+                                         (0 0 0 1)
+                                         (0 0 0 2))
+                                       '((0 0 0 2)
+                                         (0 0 0 1)
+                                         (0 0 2 1)
+                                         (0 0 1 1)
+                                         (2 1 1 1)
+                                         (1 1 1 1))
+                                       nil nil
+                                       ;; 2x
+                                       '((0 0 0 0 0 0 0 0))
+                                       '((1 1 1 1 1 1 1 1)
+                                         (1 1 1 1 1 1 1 1)
+                                         (1 1 1 1 1 1 1 1)
+                                         (0 0 1 1 1 1 1 1)
+                                         (0 0 0 2 1 1 1 1)
+                                         (0 0 0 0 2 1 1 1)
+                                         (0 0 0 0 0 2 1 1)
+                                         (0 0 0 0 0 0 1 1)
+                                         (0 0 0 0 0 0 1 1)
+                                         (0 0 0 0 0 0 0 1)
+                                         (0 0 0 0 0 0 0 1)
+                                         (0 0 0 0 0 0 0 1))
+                                       '((0 0 0 0 0 0 0 1)
+                                         (0 0 0 0 0 0 0 1)
+                                         (0 0 0 0 0 0 0 1)
+                                         (0 0 0 0 0 0 1 1)
+                                         (0 0 0 0 0 0 1 1)
+                                         (0 0 0 0 0 2 1 1)
+                                         (0 0 0 0 2 1 1 1)
+                                         (0 0 0 2 1 1 1 1)
+                                         (0 0 1 1 1 1 1 1)
+                                         (1 1 1 1 1 1 1 1)
+                                         (1 1 1 1 1 1 1 1)
+                                         (1 1 1 1 1 1 1 1))))
+
+(defmacro awesome-tab-separator-rounded (dir)
+  "Generate a rounded XPM function for DIR."
+  (awesome-tab-separator-pattern-defun "rounded" dir 6
+                                       '((0 0 0 0 0 0))
+                                       '((2 1 1 1 1 1)
+                                         (0 0 2 1 1 1)
+                                         (0 0 0 0 1 1)
+                                         (0 0 0 0 2 1)
+                                         (0 0 0 0 0 1)
+                                         (0 0 0 0 0 2))
+                                       nil nil nil
+                                       ;; 2x
+                                       '((0 0 0 0 0 0 0 0 0 0 0 0))
+                                       '((1 1 1 1 1 1 1 1 1 1 1 1)
+                                         (0 0 2 1 1 1 1 1 1 1 1 1)
+                                         (0 0 0 0 1 1 1 1 1 1 1 1)
+                                         (0 0 0 0 0 0 1 1 1 1 1 1)
+                                         (0 0 0 0 0 0 0 2 1 1 1 1)
+                                         (0 0 0 0 0 0 0 0 1 1 1 1)
+                                         (0 0 0 0 0 0 0 0 0 1 1 1)
+                                         (0 0 0 0 0 0 0 0 0 0 1 1)
+                                         (0 0 0 0 0 0 0 0 0 0 1 1)
+                                         (0 0 0 0 0 0 0 0 0 0 2 1)
+                                         (0 0 0 0 0 0 0 0 0 0 0 1)
+                                         (0 0 0 0 0 0 0 0 0 0 0 1))))
+
+(defmacro awesome-tab-separator-roundstub (dir)
+  "Generate a roundstub XPM function for DIR."
+  (awesome-tab-separator-pattern-defun "roundstub" dir 3
+                                       '((0 0 0))
+                                       '((1 1 1)
+                                         (0 0 1)
+                                         (0 0 2))
+                                       '((0 0 2)
+                                         (0 0 1)
+                                         (1 1 1))
+                                       nil nil
+                                       ;; 2x
+                                       '((0 0 0 0 0 0))
+                                       '((1 1 1 1 1 1)
+                                         (2 1 1 1 1 1)
+                                         (0 0 0 2 1 1)
+                                         (0 0 0 0 1 1)
+                                         (0 0 0 0 0 1)
+                                         (0 0 0 0 0 1))
+                                       '((0 0 0 0 0 1)
+                                         (0 0 0 0 0 1)
+                                         (0 0 0 0 1 1)
+                                         (0 0 0 2 1 1)
+                                         (2 1 1 1 1 1)
+                                         (1 1 1 1 1 1))))
+
+(defmacro awesome-tab-separator-slant (dir)
+  "Generate a slant XPM function for DIR."
+  (let* ((row-modifier (if (eq dir 'left) 'identity 'reverse)))
+    (awesome-tab-separator-wrap-defun "slant" dir 'width
+                                      '((width (1- (ceiling height 2))))
+                                      `((cl-loop for i from 0 to (1- height)
+                                                 concat (awesome-tab-separator-pattern-to-string (,row-modifier (awesome-tab-separator-row-pattern (/ i 2) width)))))
+                                      `((cl-loop for i from 0 to (1- (* height 2))
+                                                 concat (awesome-tab-separator-pattern-to-string (,row-modifier (awesome-tab-separator-row-pattern (/ i 2) (* width 2)))))))))
+
+(defmacro awesome-tab-separator-wave (dir)
+  "Generate a wave XPM function for DIR."
+  (awesome-tab-separator-pattern-defun "wave" dir 11
+                                       '((0 0 0 0 0 0 1 1 1 1 1))
+                                       '((2 1 1 1 1 1 1 1 1 1 1)
+                                         (0 0 1 1 1 1 1 1 1 1 1)
+                                         (0 0 0 1 1 1 1 1 1 1 1)
+                                         (0 0 0 2 1 1 1 1 1 1 1)
+                                         (0 0 0 0 1 1 1 1 1 1 1)
+                                         (0 0 0 0 2 1 1 1 1 1 1)
+                                         (0 0 0 0 0 1 1 1 1 1 1)
+                                         (0 0 0 0 0 1 1 1 1 1 1)
+                                         (0 0 0 0 0 2 1 1 1 1 1))
+                                       '((0 0 0 0 0 0 2 1 1 1 1)
+                                         (0 0 0 0 0 0 0 1 1 1 1)
+                                         (0 0 0 0 0 0 0 1 1 1 1)
+                                         (0 0 0 0 0 0 0 2 1 1 1)
+                                         (0 0 0 0 0 0 0 0 1 1 1)
+                                         (0 0 0 0 0 0 0 0 2 1 1)
+                                         (0 0 0 0 0 0 0 0 0 0 2))
+                                       nil nil
+                                       ;; 2x
+                                       '((0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1))
+                                       '((1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1)
+                                         (0 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1)
+                                         (0 0 0 2 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1)
+                                         (0 0 0 0 2 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1)
+                                         (0 0 0 0 0 2 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1)
+                                         (0 0 0 0 0 0 2 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1)
+                                         (0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1)
+                                         (0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1)
+                                         (0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1)
+                                         (0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1)
+                                         (0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1)
+                                         (0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1)
+                                         (0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1)
+                                         (0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1)
+                                         (0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1)
+                                         (0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1)
+                                         (0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1)
+                                         (0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1))
+                                       '((0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1)
+                                         (0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1)
+                                         (0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1)
+                                         (0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1)
+                                         (0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1)
+                                         (0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1)
+                                         (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1)
+                                         (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1)
+                                         (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1)
+                                         (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1)
+                                         (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 2 1 1 1 1 1)
+                                         (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 2 1 1 1 1)
+                                         (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1)
+                                         (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0))))
+
+(defmacro awesome-tab-separator-zigzag (dir)
+  "Generate a zigzag pattern XPM function for DIR."
+  (awesome-tab-separator-pattern-defun "zigzag" dir 3
+                                       '((1 1 1)
+                                         (0 1 1)
+                                         (0 0 1)
+                                         (0 0 0)
+                                         (0 0 1)
+                                         (0 1 1))
+                                       nil nil nil nil
+                                       ;; 2x
+                                       '((1 1 1 1 1 1)
+                                         (0 1 1 1 1 1)
+                                         (0 0 1 1 1 1)
+                                         (0 0 0 1 1 1)
+                                         (0 0 0 0 1 1)
+                                         (0 0 0 0 0 1)
+                                         (0 0 0 0 0 0)
+                                         (0 0 0 0 0 1)
+                                         (0 0 0 0 1 1)
+                                         (0 0 0 1 1 1)
+                                         (0 0 1 1 1 1)
+                                         (0 1 1 1 1 1))))
+
+(defmacro awesome-tab-separator-nil (dir)
+  "Generate a XPM function that returns nil for DIR."
+  `(defun ,(intern (format "powerline-nil-%s" (symbol-name dir)))
+       (face1 face2 &optional height)
+     nil))
+
+(defmacro awesome-tab-separator-utf-8 (dir)
+  "Generate function that returns raw utf-8 symbols."
+  (let ((dir-name (symbol-name dir))
+        (src-face (if (eq dir 'left) 'face1 'face2))
+        (dst-face (if (eq dir 'left) 'face2 'face1)))
+    `(defun ,(intern (format "powerline-utf-8-%s" dir-name))
+         (face1 face2 &optional height)
+       (powerline-raw
+        (char-to-string ,(intern (format "powerline-utf-8-separator-%s"
+                                         dir-name)))
+        (list :foreground (awesome-tab-separator-background-color ,src-face)
+              :background (awesome-tab-separator-background-color ,dst-face)
+              :inverse-video nil)))))
+
+(defun awesome-tab-separator-memoize (func)
+  "Memoize FUNC.
+If argument is a symbol then install the memoized function over
+the original function.  Use frame-local memoization."
+  (cl-typecase func
+    (symbol (fset func (awesome-tab-separator-memoize-wrap-frame-local (symbol-function func))) func)
+    (function (awesome-tab-separator-memoize-wrap-frame-local func))))
+
+(defun awesome-tab-separator-memoize-wrap-frame-local (func)
+  "Return the memoized version of FUNC.
+The memoization cache is frame-local."
+  (let ((funcid (cl-gensym)))
+    `(lambda (&rest args)
+       ,(concat (documentation func) (format "\n(memoized function %s)" funcid))
+       (let* ((cache (awesome-tab-separator-create-or-get-cache))
+              (key (cons ',funcid args))
+              (val (gethash key cache)))
+         (if val
+             val
+           (puthash key (apply ,func args) cache))))))
+
+(defun awesome-tab-separator-create-or-get-cache ()
+  "Return a frame-local hash table that acts as a memoization cache for powerline. Create one if the frame doesn't have one yet."
+  (let ((table (frame-parameter nil 'powerline-cache)))
+    (if (hash-table-p table) table (awesome-tab-separator-reset-cache))))
+
+(defun awesome-tab-separator-reset-cache ()
+  "Reset and return the frame-local hash table used for a memoization cache."
+  (let ((table (make-hash-table :test 'equal)))
+    ;; Store it as a frame-local variable
+    (modify-frame-parameters nil `((powerline-cache . ,table)))
+    table))
+
+(awesome-tab-separator-memoize (awesome-tab-separator-wave left))
+(awesome-tab-separator-memoize (awesome-tab-separator-wave right))
+
 (defvar awesome-tab-height 22)
 (defvar awesome-tab-style-left (powerline-wave-right 'awesome-tab-default nil awesome-tab-height))
 (defvar awesome-tab-style-right (powerline-wave-left nil 'awesome-tab-default awesome-tab-height))
@@ -980,6 +1622,18 @@ That is, a string used to represent it on the tab bar."
                                         (awesome-tab-truncate-string  awesome-tab-label-fixed-length bufname)
                                       bufname)))
                           awesome-tab-style-right)))
+
+(defun powerline-render (values)
+  "Render a list of powerline VALUES."
+  (mapconcat 'awesome-tab-separator-render values ""))
+
+(defun awesome-tab-separator-render (item)
+  "Render a powerline ITEM."
+  (cond
+   ((and (listp item) (eq 'image (car item)))
+    (propertize " " 'display item
+                'face (plist-get (cdr item) :face)))
+   (item item)))
 
 (defun awesome-tab-buffer-select-tab (tab)
   "Select tab."
@@ -1311,8 +1965,8 @@ Other buffer group by `awesome-tab-get-group-name' with project name."
         (when (featurep 'helm)
           (require 'helm)
           (helm-build-sync-source "Awesome-Tab Group"
-            :candidates #'awesome-tab-get-groups
-            :action '(("Switch to group" . awesome-tab-switch-group))))))
+                                  :candidates #'awesome-tab-get-groups
+                                  :action '(("Switch to group" . awesome-tab-switch-group))))))
 
 ;; Ivy source for switching group in ivy.
 (defvar ivy-source-awesome-tab-group nil)
