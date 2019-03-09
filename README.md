@@ -10,9 +10,10 @@ Table of Contents
      * [Plugins](#plugins)
      * [Customize](#customize)
         * [Theme](#theme)
+        * [TabStyle](#tabstyle)
         * [HideRules](#hiderules)
         * [GroupRules](#grouprules)
-
+        * [FixedWidth](#fixedwidth)
 
 # What is it?
 
@@ -96,6 +97,34 @@ Ivy fans can use ```awesome-tab-build-ivy-source```
 | awesome-tab-background-color | Background color of awesome-tab |
 | awesome-tab-selected     | Active tab color           |
 | awesome-tab-unselected   | Inactive tab color         |
+
+#### TabStyle
+Default tab style is "wave", you can customize option ```awesome-tab-style``` follow your preferences, below are the different tab style screenshots:
+
+##### alternate
+<img src="./theme/alternate.png">
+
+##### bar
+<img src="./theme/bar.png">
+
+##### box
+<img src="./theme/box.png">
+
+##### chamfer
+<img src="./theme/chamfer.png">
+
+##### rounded
+<img src="./theme/rounded.png">
+
+##### slant
+<img src="./theme/slant.png">
+
+##### wave
+<img src="./theme/wave.png">
+
+##### zigzag
+<img src="./theme/zigzag.png">
+
 
 ##### HideRules
 Awesome tab hide some tabs with regular expression that controller by function ```awesome-tab-hide-tab-function```
@@ -202,7 +231,7 @@ Default functions is ```awesome-tab-adjust-buffer-order``` , you can write your 
       )))
 ```
 
-##### Advanced
+##### FixedWidth
 
 If you'd like all the tab labels using the same length, such as 14, use:
 

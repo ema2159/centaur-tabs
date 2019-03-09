@@ -1227,47 +1227,6 @@ destination color, and 2 is the interpolated color between 0 and 1."
                                          (0 0 0 0 1 1)
                                          (0 0 0 0 0 1))))
 
-(defmacro awesome-tab-separator-contour (dir)
-  "Generate a contour XPM function for DIR."
-  (awesome-tab-separator-pattern-defun "contour" dir 10
-                                       '((0 0 0 0 0 1 1 1 1 1))
-                                       '((1 1 1 1 1 1 1 1 1 1)
-                                         (0 2 1 1 1 1 1 1 1 1)
-                                         (0 0 2 1 1 1 1 1 1 1)
-                                         (0 0 0 2 1 1 1 1 1 1)
-                                         (0 0 0 0 1 1 1 1 1 1)
-                                         (0 0 0 0 2 1 1 1 1 1))
-                                       '((0 0 0 0 0 2 1 1 1 1)
-                                         (0 0 0 0 0 0 1 1 1 1)
-                                         (0 0 0 0 0 0 2 1 1 1)
-                                         (0 0 0 0 0 0 0 2 1 1)
-                                         (0 0 0 0 0 0 0 0 0 0))
-                                       nil nil
-                                       ;; 2x
-                                       '((0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1))
-                                       '((1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1)
-                                         (1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1)
-                                         (0 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1)
-                                         (0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1)
-                                         (0 0 0 0 2 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1)
-                                         (0 0 0 0 0 2 1 1 1 1 1 1 1 1 1 1 1 1 1 1)
-                                         (0 0 0 0 0 0 2 1 1 1 1 1 1 1 1 1 1 1 1 1)
-                                         (0 0 0 0 0 0 0 2 1 1 1 1 1 1 1 1 1 1 1 1)
-                                         (0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1)
-                                         (0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1)
-                                         (0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1)
-                                         (0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1))
-                                       '((0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1)
-                                         (0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1)
-                                         (0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1)
-                                         (0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1)
-                                         (0 0 0 0 0 0 0 0 0 0 0 0 2 1 1 1 1 1 1 1)
-                                         (0 0 0 0 0 0 0 0 0 0 0 0 0 2 1 1 1 1 1 1)
-                                         (0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1)
-                                         (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1)
-                                         (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
-                                         (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0))))
-
 (defmacro awesome-tab-separator-rounded (dir)
   "Generate a rounded XPM function for DIR."
   (awesome-tab-separator-pattern-defun "rounded" dir 6
@@ -1384,12 +1343,6 @@ destination color, and 2 is the interpolated color between 0 and 1."
                                          (0 0 1 1 1 1)
                                          (0 1 1 1 1 1))))
 
-(defmacro awesome-tab-separator-nil (dir)
-  "Generate a XPM function that returns nil for DIR."
-  `(defun ,(intern (format "powerline-nil-%s" (symbol-name dir)))
-       (face1 face2 &optional height)
-     nil))
-
 (defun awesome-tab-separator-memoize (func)
   "Memoize FUNC.
 If argument is a symbol then install the memoized function over
@@ -1431,8 +1384,6 @@ The memoization cache is frame-local."
 (awesome-tab-separator-memoize (awesome-tab-separator-box right))
 (awesome-tab-separator-memoize (awesome-tab-separator-chamfer left))
 (awesome-tab-separator-memoize (awesome-tab-separator-chamfer right))
-(awesome-tab-separator-memoize (awesome-tab-separator-contour left))
-(awesome-tab-separator-memoize (awesome-tab-separator-contour right))
 (awesome-tab-separator-memoize (awesome-tab-separator-rounded left))
 (awesome-tab-separator-memoize (awesome-tab-separator-rounded right))
 (awesome-tab-separator-memoize (awesome-tab-separator-slant left))
@@ -1441,8 +1392,6 @@ The memoization cache is frame-local."
 (awesome-tab-separator-memoize (awesome-tab-separator-wave right))
 (awesome-tab-separator-memoize (awesome-tab-separator-zigzag left))
 (awesome-tab-separator-memoize (awesome-tab-separator-zigzag right))
-(awesome-tab-separator-memoize (awesome-tab-separator-nil left))
-(awesome-tab-separator-memoize (awesome-tab-separator-nil right))
 
 (defvar awesome-tab-style-left nil)
 (defvar awesome-tab-style-right nil)
