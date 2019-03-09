@@ -579,13 +579,6 @@ current cached copy."
 
 ;;; Tabs
 ;;
-(defsubst awesome-tab-line-buttons (tabset)
-  "Return a list of propertized strings for tab bar buttons.
-TABSET is the tab set used to choose the appropriate buttons."
-  (list
-   (1- (length (awesome-tab-tabs tabset)))
-   ))
-
 (defsubst awesome-tab-line-tab (tab)
   "Return the display representation of tab TAB.
 That is, a propertized string used as an `header-line-format' template
@@ -628,7 +621,6 @@ Call `awesome-tab-tab-label-function' to obtain a label for TAB."
               start)
           (setq truncate-lines nil
                 buffer-undo-list t)
-          (apply 'insert (awesome-tab-line-buttons tabset))
           (setq start (point))
           (while (and (cdr elts) ;; Always show the selected tab!
                       (progn
@@ -648,8 +640,7 @@ Call `awesome-tab-tab-label-function' to obtain a label for TAB."
     ;; Cache and return the new tab bar.
     (awesome-tab-set-template
      tabset
-     (list (awesome-tab-line-buttons tabset)
-           (nreverse elts)
+     (list (nreverse elts)
            (propertize "%-"
                        'face (list :background padcolor
                                    :foreground padcolor)
