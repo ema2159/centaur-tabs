@@ -561,41 +561,6 @@ current cached copy."
   "Face used for tab bar buttons."
   :group 'awesome-tab)
 
-;;; Separator
-
-(defvar awesome-tab-height 22)
-(defvar awesome-tab-style-left (powerline-wave-right 'awesome-tab-default nil awesome-tab-height))
-(defvar awesome-tab-style-right (powerline-wave-left nil 'awesome-tab-default awesome-tab-height))
-
-(defsubst awesome-tab-find-image (specs)
-  "Find an image, choosing one of a list of image specifications.
-SPECS is a list of image specifications.  See also `find-image'."
-  (when (display-images-p)
-    (condition-case nil
-        (find-image specs)
-      (error nil))))
-
-(defsubst awesome-tab-disable-image (image)
-  "From IMAGE, return a new image which looks disabled."
-  (setq image (copy-sequence image))
-  (setcdr image (plist-put (cdr image) :conversion 'disabled))
-  image)
-
-(defsubst awesome-tab-normalize-image (image &optional margin)
-  "Make IMAGE centered and transparent.
-If optional MARGIN is non-nil, it must be a number of pixels to add as
-an extra margin around the image."
-  (let ((plist (cdr image)))
-    (or (plist-get plist :ascent)
-        (setq plist (plist-put plist :ascent 'center)))
-    (or (plist-get plist :mask)
-        (setq plist (plist-put plist :mask '(heuristic t))))
-    (or (not (natnump margin))
-        (plist-get plist :margin)
-        (plist-put plist :margin margin))
-    (setcdr image plist))
-  image)
-
 ;;; Tabs
 ;;
 (defsubst awesome-tab-line-buttons (tabset)
@@ -1001,6 +966,10 @@ Return the the first group where the current buffer is."
       (awesome-tab-select-tab-value (current-buffer) tabset))
     tabset))
 
+(defvar awesome-tab-height 22)
+(defvar awesome-tab-style-left (powerline-wave-right 'awesome-tab-default nil awesome-tab-height))
+(defvar awesome-tab-style-right (powerline-wave-left nil 'awesome-tab-default awesome-tab-height))
+
 (defun awesome-tab-buffer-tab-label (tab)
   "Return a label for TAB.
 That is, a string used to represent it on the tab bar."
@@ -1342,8 +1311,8 @@ Other buffer group by `awesome-tab-get-group-name' with project name."
         (when (featurep 'helm)
           (require 'helm)
           (helm-build-sync-source "Awesome-Tab Group"
-                                  :candidates #'awesome-tab-get-groups
-                                  :action '(("Switch to group" . awesome-tab-switch-group))))))
+            :candidates #'awesome-tab-get-groups
+            :action '(("Switch to group" . awesome-tab-switch-group))))))
 
 ;; Ivy source for switching group in ivy.
 (defvar ivy-source-awesome-tab-group nil)
