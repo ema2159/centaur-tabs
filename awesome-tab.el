@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-09-17 22:14:34
-;; Version: 2.6
-;; Last-Updated: 2019-03-09 11:51:38
+;; Version: 2.7
+;; Last-Updated: 2019-03-12 00:18:47
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/awesome-tab.el
 ;; Keywords:
@@ -15,7 +15,7 @@
 ;;
 ;; Features that might be required by this library:
 ;;
-;; `cl' `cl-lib' `color'
+;; `cl' `cl-lib' `color' `which-func'
 ;;
 
 ;;; This file is NOT part of GNU Emacs
@@ -86,6 +86,9 @@
 ;;
 
 ;;; Change log:
+;;
+;; 2019/03/12
+;;      * Display sticky function name in tab.
 ;;
 ;; 2019/03/09
 ;;      * Absorb powerline code, keep single file.
@@ -158,6 +161,7 @@
 (require 'cl)
 (require 'cl-lib)
 (require 'color)
+(require 'which-func)
 
 ;;; Code:
 ;;;;;;;;;;;;;;;;;;;;;;; Awesome-Tab source code ;;;;;;;;;;;;;;;;;;;;;;;
@@ -225,6 +229,12 @@ background color of the `default' face otherwise."
   "The style of tab."
   :group 'awesome-tab
   :type 'string)
+
+(defcustom awesome-tab-display-sticky-function-name t
+  "Non-nil to display sticky function name in tab.
+Sticky function is the function at the top of the current window sticky."
+  :group 'awesome-tab
+  :type 'boolean)
 
 (defvar awesome-tab-hide-tab-function 'awesome-tab-hide-tab
   "Function to hide tab.
@@ -1402,11 +1412,44 @@ That is, a string used to represent it on the tab bar."
   (awesome-tab-render-separator
    (list awesome-tab-style-left
          (format " %s "
-                 (let ((bufname (buffer-name (car tab))))
+                 (let ((bufname (awesome-tab-buffer-name (car tab))))
                    (if (> awesome-tab-label-fixed-length 0)
                        (awesome-tab-truncate-string  awesome-tab-label-fixed-length bufname)
                      bufname)))
          awesome-tab-style-right)))
+
+(defun awesome-tab-buffer-name (tab-buffer)
+  "Get buffer name of tab.
+Will merge sticky function name in tab if option `awesome-tab-display-sticky-function-name' is non-nil."
+  (if (and awesome-tab-display-sticky-function-name
+           (equal tab-buffer (current-buffer)))
+      (if awesome-tab-func-name
+          (format "%s [%s]" (buffer-name tab-buffer) awesome-tab-func-name)
+        (buffer-name tab-buffer))
+    (buffer-name tab-buffer)))
+
+(defvar awesome-tab-last-scroll-y 0
+  "Holds the scroll y of window from the last run of post-command-hooks.")
+
+(make-variable-buffer-local 'awesome-tab-last-scroll-y)
+(make-variable-buffer-local 'awesome-tab-func-name)
+
+(defun awesome-tab-monitor-window-scroll ()
+  "This function is used to monitor the window scroll.
+Currently, this function is only use for option `awesome-tab-display-sticky-function-name'."
+  (when awesome-tab-display-sticky-function-name
+    (let ((scroll-y (window-start (selected-window))))
+      (unless (equal scroll-y awesome-tab-last-scroll-y)
+        (let ((func-name (save-excursion
+                           (goto-char scroll-y)
+                           (which-function))))
+          (unless (equal func-name awesome-tab-func-name)
+            (setq awesome-tab-func-name func-name)
+            (awesome-tab-line-format awesome-tab-current-tabset)
+            )))
+      (setq awesome-tab-last-scroll-y scroll-y))))
+
+(add-hook 'post-command-hook #'awesome-tab-monitor-window-scroll)
 
 (defun awesome-tab-render-separator (values)
   "Render a list of powerline VALUES."
