@@ -1422,10 +1422,9 @@ That is, a string used to represent it on the tab bar."
   "Get buffer name of tab.
 Will merge sticky function name in tab if option `awesome-tab-display-sticky-function-name' is non-nil."
   (if (and awesome-tab-display-sticky-function-name
+           awesome-tab-func-name
            (equal tab-buffer (current-buffer)))
-      (if awesome-tab-func-name
-          (format "%s [%s]" (buffer-name tab-buffer) awesome-tab-func-name)
-        (buffer-name tab-buffer))
+      (format "%s [%s]" (buffer-name tab-buffer) awesome-tab-func-name)
     (buffer-name tab-buffer)))
 
 (defvar awesome-tab-last-scroll-y 0
