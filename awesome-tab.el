@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-09-17 22:14:34
-;; Version: 2.7
-;; Last-Updated: 2019-03-12 00:18:47
+;; Version: 2.8
+;; Last-Updated: 2019-03-14 08:21:56
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/awesome-tab.el
 ;; Keywords:
@@ -86,6 +86,9 @@
 ;;
 
 ;;; Change log:
+;;
+;; 2019/03/14
+;;      * Try to fix numberp error.
 ;;
 ;; 2019/03/12
 ;;      * Display sticky function name in tab.
@@ -1438,14 +1441,15 @@ Will merge sticky function name in tab if option `awesome-tab-display-sticky-fun
 Currently, this function is only use for option `awesome-tab-display-sticky-function-name'."
   (when awesome-tab-display-sticky-function-name
     (let ((scroll-y (window-start (selected-window))))
-      (unless (equal scroll-y awesome-tab-last-scroll-y)
-        (let ((func-name (save-excursion
-                           (goto-char scroll-y)
-                           (which-function))))
-          (unless (equal func-name awesome-tab-func-name)
-            (setq awesome-tab-func-name func-name)
-            (awesome-tab-line-format awesome-tab-current-tabset)
-            )))
+      (when scroll-y
+        (unless (equal scroll-y awesome-tab-last-scroll-y)
+          (let ((func-name (save-excursion
+                             (goto-char scroll-y)
+                             (which-function))))
+            (unless (equal func-name awesome-tab-func-name)
+              (setq awesome-tab-func-name func-name)
+              (awesome-tab-line-format awesome-tab-current-tabset)
+              ))))
       (setq awesome-tab-last-scroll-y scroll-y))))
 
 (add-hook 'post-command-hook #'awesome-tab-monitor-window-scroll)
