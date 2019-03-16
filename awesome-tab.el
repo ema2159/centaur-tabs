@@ -1425,16 +1425,16 @@ That is, a string used to represent it on the tab bar."
   "Get buffer name of tab.
 Will merge sticky function name in tab if option `awesome-tab-display-sticky-function-name' is non-nil."
   (if (and awesome-tab-display-sticky-function-name
-           awesome-tab-func-name
+           awesome-tab-last-sticky-func-name
            (equal tab-buffer (current-buffer)))
-      (format "%s [%s]" (buffer-name tab-buffer) awesome-tab-func-name)
+      (format "%s [%s]" (buffer-name tab-buffer) awesome-tab-last-sticky-func-name)
     (buffer-name tab-buffer)))
 
 (defvar awesome-tab-last-scroll-y 0
   "Holds the scroll y of window from the last run of post-command-hooks.")
 
-(make-variable-buffer-local 'awesome-tab-last-scroll-y)
-(make-variable-buffer-local 'awesome-tab-func-name)
+(defvar awesome-tab-last-sticky-func-name ""
+  "Holds the sticky function name.")
 
 (defun awesome-tab-monitor-window-scroll ()
   "This function is used to monitor the window scroll.
@@ -1446,8 +1446,8 @@ Currently, this function is only use for option `awesome-tab-display-sticky-func
           (let ((func-name (save-excursion
                              (goto-char scroll-y)
                              (which-function))))
-            (unless (equal func-name awesome-tab-func-name)
-              (setq awesome-tab-func-name func-name)
+            (unless (equal func-name awesome-tab-last-sticky-func-name)
+              (setq awesome-tab-last-sticky-func-name func-name)
               (awesome-tab-line-format awesome-tab-current-tabset)
               ))))
       (setq awesome-tab-last-scroll-y scroll-y))))
