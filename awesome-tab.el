@@ -1452,7 +1452,10 @@ Currently, this function is only use for option `awesome-tab-display-sticky-func
                              (which-function))))
             (unless (equal func-name awesome-tab-last-sticky-func-name)
               (setq awesome-tab-last-sticky-func-name func-name)
-              (awesome-tab-line-format awesome-tab-current-tabset)
+
+              ;; Use `ignore-errors' avoid integerp error when execute `awesome-tab-line-format'.
+              (ignore-errors
+                (awesome-tab-line-format awesome-tab-current-tabset))
               ))))
       (setq awesome-tab-last-scroll-y scroll-y))))
 
