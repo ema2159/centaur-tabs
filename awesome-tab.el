@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-09-17 22:14:34
-;; Version: 2.8
-;; Last-Updated: 2019-03-14 08:21:56
+;; Version: 2.9
+;; Last-Updated: 2019-03-16 23:30:26
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/awesome-tab.el
 ;; Keywords:
@@ -86,6 +86,9 @@
 ;;
 
 ;;; Change log:
+;;
+;; 2019/03/16
+;;      * Fix integerp error.
 ;;
 ;; 2019/03/14
 ;;      * Try to fix numberp error.
@@ -1433,15 +1436,16 @@ Will merge sticky function name in tab if option `awesome-tab-display-sticky-fun
 (defvar awesome-tab-last-scroll-y 0
   "Holds the scroll y of window from the last run of post-command-hooks.")
 
-(defvar awesome-tab-last-sticky-func-name ""
+(defvar awesome-tab-last-sticky-func-name nil
   "Holds the sticky function name.")
 
 (defun awesome-tab-monitor-window-scroll ()
   "This function is used to monitor the window scroll.
 Currently, this function is only use for option `awesome-tab-display-sticky-function-name'."
   (when awesome-tab-display-sticky-function-name
-    (let ((scroll-y (window-start (selected-window))))
-      (when scroll-y
+    (let ((scroll-y (window-start)))
+      (when (and scroll-y
+                 (integerp scroll-y))
         (unless (equal scroll-y awesome-tab-last-scroll-y)
           (let ((func-name (save-excursion
                              (goto-char scroll-y)
@@ -1452,7 +1456,7 @@ Currently, this function is only use for option `awesome-tab-display-sticky-func
               ))))
       (setq awesome-tab-last-scroll-y scroll-y))))
 
-(add-hook 'post-command-hook #'awesome-tab-monitor-window-scroll)
+(add-hook 'post-command-hook 'awesome-tab-monitor-window-scroll)
 
 (defun awesome-tab-render-separator (values)
   "Render a list of powerline VALUES."
