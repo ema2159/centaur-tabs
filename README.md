@@ -75,7 +75,17 @@ git clone --depth=1 https://github.com/manateelazycat/awesome-tab.git
 | awesome-tab-keep-match-buffers-in-current-group | Keep buffers match extension of current group                                         |
 | awesome-tab-move-current-tab-to-left            | Move current tab to left                                                              |
 | awesome-tab-move-current-tab-to-right           | Move current tab to right                                                             |
+| awesome-tab-select-visible-tab                  | Select visible tab with given index                                                   |
 
+#### Switch tab with given index
+
+You can bind the number keys to the command ```awesome-tab-select-visible-tab```, such as s-1, s-2, s-3 ... etc.
+
+This function automatically recognizes the number at the end of the keystroke
+and switches to the tab of the corresponding index.
+
+Note that this function switches to the visible range,
+not the actual logical index position of the current group.
 
 ### Plugins
 If you're helm fans, you need add below code in your helm config,

@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-09-17 22:14:34
-;; Version: 2.9
-;; Last-Updated: 2019-03-16 23:30:26
+;; Version: 3.0
+;; Last-Updated: 2019-03-18 23:40:56
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/awesome-tab.el
 ;; Keywords:
@@ -86,6 +86,9 @@
 ;;
 
 ;;; Change log:
+;;
+;; 2019/03/18
+;;      * Add new command `awesome-tab-select-visible-tab'.
 ;;
 ;; 2019/03/16
 ;;      * Fix integerp error.
@@ -1703,6 +1706,34 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
       (awesome-tab-forward-group))
     ))
 
+(defun awesome-tab-select-visible-nth-tab (tab-index)
+  "Select visible tab with `tab-index'.
+Example, when `tab-index' is 1, this function will select the leftmost label in the visible area,
+instead of the first label in the current group.
+
+If `tab-index' is 0, select last tab of current group."
+  (let ((visible-tabs (awesome-tab-view awesome-tab-current-tabset)))
+    (switch-to-buffer
+     (car
+      (if (equal tab-index 0)
+          (car (last visible-tabs))
+        (nth (- tab-index 1) visible-tabs))))))
+
+(defun awesome-tab-select-visible-tab ()
+  "Bind this function with number keystroke, such as s-1, s-2, s-3 ... etc.
+
+This function automatically recognizes the number at the end of the keystroke
+and switches to the tab of the corresponding index.
+
+Note that this function switches to the visible range,
+not the actual logical index position of the current group."
+  (interactive)
+  (let* ((event last-command-event)
+         (key (make-vector 1 event))
+         (key-desc (key-description key)))
+    (awesome-tab-select-visible-nth-tab
+     (string-to-number (nth 1 (split-string key-desc "-"))))))
+
 ;;;;;;;;;;;;;;;;;;;;;;; Utils functions ;;;;;;;;;;;;;;;;;;;;;;;
 (defun awesome-tab-get-groups ()
   ;; Refresh groups.
@@ -1804,8 +1835,8 @@ Other buffer group by `awesome-tab-get-group-name' with project name."
         (when (featurep 'helm)
           (require 'helm)
           (helm-build-sync-source "Awesome-Tab Group"
-                                  :candidates #'awesome-tab-get-groups
-                                  :action '(("Switch to group" . awesome-tab-switch-group))))))
+            :candidates #'awesome-tab-get-groups
+            :action '(("Switch to group" . awesome-tab-switch-group))))))
 
 ;; Ivy source for switching group in ivy.
 (defvar ivy-source-awesome-tab-group nil)
