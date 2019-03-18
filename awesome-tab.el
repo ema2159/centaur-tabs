@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-09-17 22:14:34
-;; Version: 3.0
-;; Last-Updated: 2019-03-18 23:40:56
+;; Version: 3.1
+;; Last-Updated: 2019-03-19 07:08:20
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/awesome-tab.el
 ;; Keywords:
@@ -86,6 +86,9 @@
 ;;
 
 ;;; Change log:
+;;
+;; 2019/03/19
+;;      * If `tab-index' more than length of visible tabs, selet the last tab.
 ;;
 ;; 2019/03/18
 ;;      * Add new command `awesome-tab-select-visible-tab'.
@@ -1711,11 +1714,14 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
 Example, when `tab-index' is 1, this function will select the leftmost label in the visible area,
 instead of the first label in the current group.
 
-If `tab-index' is 0, select last tab of current group."
+If `tab-index' more than length of visible tabs, selet the last tab.
+
+If `tab-index' is 0, select last tab."
   (let ((visible-tabs (awesome-tab-view awesome-tab-current-tabset)))
     (switch-to-buffer
      (car
-      (if (equal tab-index 0)
+      (if (or (equal tab-index 0)
+              (> tab-index (length visible-tabs)))
           (car (last visible-tabs))
         (nth (- tab-index 1) visible-tabs))))))
 
