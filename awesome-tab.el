@@ -667,7 +667,7 @@ Call `awesome-tab-tab-label-function' to obtain a label for TAB."
   "Return the header line templates that represent the tab bar.
 Inhibit display of the tab bar in current window `awesome-tab-hide-tab-function' return nil."
   (cond
-   ((funcall awesome-tab-hide-tab-function (current-buffer))
+   ((awesome-tab-hide-tab-cached (current-buffer))
     ;; Don't show the tab bar.
     (setq header-line-format nil))
    ((awesome-tab-current-tabset t)
@@ -899,7 +899,7 @@ Returns non-nil if the new state is enabled.
 Exclude buffers whose name starts with a space, when they are not
 visiting a file.  The current buffer is always included."
   (awesome-tab-filter-out
-   awesome-tab-hide-tab-function
+   'awesome-tab-hide-tab-cached
    (delq nil
          (mapcar #'(lambda (b)
                      (cond
@@ -1746,6 +1746,7 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
 
 ;; Rules to control buffer's group rules.
 (defvar awesome-tab-groups-hash (make-hash-table :test 'equal))
+(defvar awesome-tab-hide-hash (make-hash-table :test 'equal))
 
 (defun awesome-tab-project-name ()
   (let ((project-name (cdr (project-current))))
@@ -1835,6 +1836,13 @@ Other buffer group by `awesome-tab-get-group-name' with project name."
      (and (string-prefix-p "magit" name)
           (not (file-name-extension name)))
      )))
+
+(defun awesome-tab-hide-tab-cached (buf)
+  (let ((hide (gethash buf awesome-tab-hide-hash 'not-found)))
+    (when (eq hide 'not-found)
+      (setq hide (funcall awesome-tab-hide-tab-function buf))
+      (puthash buf hide awesome-tab-hide-hash))
+    hide))
 
 (defvar awesome-tab-last-focus-buffer nil
   "The last focus buffer.")
