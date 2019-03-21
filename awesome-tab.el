@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-09-17 22:14:34
-;; Version: 3.1
-;; Last-Updated: 2019-03-19 07:08:20
+;; Version: 3.2
+;; Last-Updated: 2019-03-21 22:27:46
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/awesome-tab.el
 ;; Keywords:
@@ -86,6 +86,9 @@
 ;;
 
 ;;; Change log:
+;;
+;; 2019/03/21
+;;      * Make `awesome-tab-last-sticky-func-name' as buffer variable.
 ;;
 ;; 2019/03/19
 ;;      * If `tab-index' more than length of visible tabs, selet the last tab.
@@ -1390,6 +1393,7 @@ That is, a string used to represent it on the tab bar."
   "Get buffer name of tab.
 Will merge sticky function name in tab if option `awesome-tab-display-sticky-function-name' is non-nil."
   (if (and awesome-tab-display-sticky-function-name
+           (boundp 'awesome-tab-last-sticky-func-name)
            awesome-tab-last-sticky-func-name
            (equal tab-buffer (current-buffer)))
       (format "%s [%s]" (buffer-name tab-buffer) awesome-tab-last-sticky-func-name)
@@ -1397,9 +1401,6 @@ Will merge sticky function name in tab if option `awesome-tab-display-sticky-fun
 
 (defvar awesome-tab-last-scroll-y 0
   "Holds the scroll y of window from the last run of post-command-hooks.")
-
-(defvar awesome-tab-last-sticky-func-name nil
-  "Holds the sticky function name.")
 
 (defun awesome-tab-monitor-window-scroll ()
   "This function is used to monitor the window scroll.
@@ -1412,8 +1413,10 @@ Currently, this function is only use for option `awesome-tab-display-sticky-func
           (let ((func-name (save-excursion
                              (goto-char scroll-y)
                              (which-function))))
-            (unless (equal func-name awesome-tab-last-sticky-func-name)
-              (setq awesome-tab-last-sticky-func-name func-name)
+            (when (or
+                   (not (boundp 'awesome-tab-last-sticky-func-name))
+                   (not (equal func-name awesome-tab-last-sticky-func-name)))
+              (set (make-local-variable 'awesome-tab-last-sticky-func-name) func-name)
 
               ;; Use `ignore-errors' avoid integerp error when execute `awesome-tab-line-format'.
               (ignore-errors
@@ -1797,8 +1800,8 @@ Other buffer group by `awesome-tab-get-group-name' with project name."
         (when (featurep 'helm)
           (require 'helm)
           (helm-build-sync-source "Awesome-Tab Group"
-            :candidates #'awesome-tab-get-groups
-            :action '(("Switch to group" . awesome-tab-switch-group))))))
+                                  :candidates #'awesome-tab-get-groups
+                                  :action '(("Switch to group" . awesome-tab-switch-group))))))
 
 ;; Ivy source for switching group in ivy.
 (defvar ivy-source-awesome-tab-group nil)
