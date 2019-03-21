@@ -287,50 +287,6 @@ Default is `awesome-tab-adjust-buffer-order', you can write your own rule.")
         #'(lambda () (force-window-update (selected-window)))
       'force-mode-line-update)))
 
-(defun awesome-tab-shorten (str width)
-  "Return a shortened string from STR that fits in the given display WIDTH.
-WIDTH is specified in terms of character display width in the current
-buffer; see also `char-width'.  If STR display width is greater than
-WIDTH, STR is truncated and an ellipsis string \"...\" is inserted at
-end or in the middle of the returned string, depending on available
-room."
-  (let* ((n  (length str))
-         (sw (string-width str))
-         (el "...")
-         (ew (string-width el))
-         (w  0)
-         (i  0))
-    (cond
-     ;; STR fit in WIDTH, return it.
-     ((<= sw width)
-      str)
-     ;; There isn't enough room for the ellipsis, STR is just
-     ;; truncated to fit in WIDTH.
-     ((<= width ew)
-      (while (< w width)
-        (setq w (+ w (char-width (aref str i)))
-              i (1+ i)))
-      (substring str 0 i))
-     ;; There isn't enough room to insert the ellipsis in the middle
-     ;; of the truncated string, so put the ellipsis at end.
-     ((zerop (setq sw (/ (- width ew) 2)))
-      (setq width (- width ew))
-      (while (< w width)
-        (setq w (+ w (char-width (aref str i)))
-              i (1+ i)))
-      (concat (substring str 0 i) el))
-     ;; Put the ellipsis in the middle of the truncated string.
-     (t
-      (while (< w sw)
-        (setq w (+ w (char-width (aref str i)))
-              i (1+ i)))
-      (setq w (+ w ew))
-      (while (< w width)
-        (setq n (1- n)
-              w (+ w (char-width (aref str n)))))
-      (concat (substring str 0 i) el (substring str n)))
-     )))
-
 ;; Copied from s.el
 (defun awesome-tab-truncate-string (len s &optional ellipsis)
   "If S is longer than LEN, cut it down and add ELLIPSIS to the end.
