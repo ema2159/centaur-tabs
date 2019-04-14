@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-09-17 22:14:34
-;; Version: 3.2
-;; Last-Updated: 2019-03-21 22:27:46
+;; Version: 3.3
+;; Last-Updated: 2019-04-14 10:02:41
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/awesome-tab.el
 ;; Keywords:
@@ -86,6 +86,9 @@
 ;;
 
 ;;; Change log:
+;;
+;; 2019/04/14
+;;      * Make `awesome-tab-last-sticky-func-name' default with nil.
 ;;
 ;; 2019/03/21
 ;;      * Make `awesome-tab-last-sticky-func-name' as buffer variable.
@@ -245,7 +248,7 @@ background color of the `default' face otherwise."
   :group 'awesome-tab
   :type 'string)
 
-(defcustom awesome-tab-display-sticky-function-name t
+(defcustom awesome-tab-display-sticky-function-name nil
   "Non-nil to display sticky function name in tab.
 Sticky function is the function at the top of the current window sticky."
   :group 'awesome-tab
@@ -1800,8 +1803,8 @@ Other buffer group by `awesome-tab-get-group-name' with project name."
         (when (featurep 'helm)
           (require 'helm)
           (helm-build-sync-source "Awesome-Tab Group"
-                                  :candidates #'awesome-tab-get-groups
-                                  :action '(("Switch to group" . awesome-tab-switch-group))))))
+            :candidates #'awesome-tab-get-groups
+            :action '(("Switch to group" . awesome-tab-switch-group))))))
 
 ;; Ivy source for switching group in ivy.
 (defvar ivy-source-awesome-tab-group nil)
