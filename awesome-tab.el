@@ -576,8 +576,15 @@ Call `awesome-tab-tab-label-function' to obtain a label for TAB."
            'face (if (awesome-tab-selected-p tab (awesome-tab-current-tabset))
                      'awesome-tab-selected
                    'awesome-tab-unselected)
-           'pointer 'hand)
-          ))
+           'pointer 'hand
+           'local-map (purecopy (awesome-tab-make-header-line-mouse-map
+                                 'mouse-1
+                                 `(lambda (event) (interactive "e") (awesome-tab-buffer-select-tab ',tab)))))))
+
+(defun awesome-tab-make-header-line-mouse-map (mouse function)
+  (let ((map (make-sparse-keymap)))
+    (define-key map (vector 'header-line mouse) function)
+    map))
 
 (defun awesome-tab-line-format (tabset)
   "Return the `header-line-format' value to display TABSET."
