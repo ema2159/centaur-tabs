@@ -1886,7 +1886,7 @@ Other buffer group by `awesome-tab-get-group-name' with project name."
         (setq awesome-tab-last-focus-buffer current)
 
         ;; Just continue if two buffers are in same group.
-        (when (eq current-group awesome-tab-last-focus-buffer-group)
+        (when (string= current-group awesome-tab-last-focus-buffer-group)
           (let* ((bufset (awesome-tab-get-tabset current-group))
                  (current-group-tabs (awesome-tab-tabs bufset))
                  (current-group-buffers (mapcar 'car current-group-tabs))
