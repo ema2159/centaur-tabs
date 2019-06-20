@@ -7,7 +7,7 @@
 
   Work in progress!!!
 
-* TO DO [0/1]
+* TO DO [0/7]
   - [ ] Integrate all-the-icons
   - [ ] Add selected, unselected, selected-modified and unselected-modified faces
   - [ ] Make function to inherit tabbar faces 
