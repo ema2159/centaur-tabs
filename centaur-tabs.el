@@ -462,19 +462,6 @@ Return the tab selected, or nil if nothing was selected."
   "Return the index of the first visible tab in TABSET."
   (get tabset 'start))
 
-(defun centaur-tabs-icon (tab face)
-  "Return icon for TAB with the background from FACE."
-  (if (centaur-tabs-set-icons)
-    (with-current-buffer (tabbar-tab-value tab)
-      (let ((icon (if (and (buffer-file-name)
-			   (all-the-icons-auto-mode-match?))
-		      (all-the-icons-icon-for-file (file-name-nondirectory (buffer-file-name)))
-		    (all-the-icons-icon-for-mode major-mode)))
-	    (background (face-background face)))
-	(add-face-text-property 0 1 `(:background ,background) t icon)
-	icon))
-    ""))
-
 (defsubst centaur-tabs-view (tabset)
   "Return the list of visible tabs in TABSET.
 That is, the sub-list of tabs starting at the first visible one."
@@ -586,18 +573,28 @@ current cached copy."
 That is, a propertized string used as an `header-line-format' template
 element.
 Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
-  (concat (propertize
-           (if centaur-tabs-tab-label-function
-               (funcall centaur-tabs-tab-label-function tab)
-             tab)
-           'centaur-tabs-tab tab
-           'face (if (centaur-tabs-selected-p tab (centaur-tabs-current-tabset))
-                     'centaur-tabs-selected
-                   'centaur-tabs-unselected)
-           'pointer 'hand
-           'local-map (purecopy (centaur-tabs-make-header-line-mouse-map
-                                 'mouse-1
-                                 `(lambda (event) (interactive "e") (centaur-tabs-buffer-select-tab ',tab)))))))
+  
+  (let* ((icon (with-current-buffer (current-buffer) (if (and (buffer-file-name)
+			(all-the-icons-auto-mode-match?))
+		   (all-the-icons-icon-for-file (file-name-nondirectory (buffer-file-name)))
+		   (all-the-icons-icon-for-mode major-mode))))
+	 (face (if (centaur-tabs-selected-p tab (centaur-tabs-current-tabset))
+		   'centaur-tabs-selected
+		 'centaur-tabs-unselected))
+	 (background (face-background face)))
+    (add-face-text-property 0 1 `(:background ,background) t icon)
+    (concat
+     icon
+     (propertize
+      (if centaur-tabs-tab-label-function
+	  (funcall centaur-tabs-tab-label-function tab)
+	tab)
+      'centaur-tabs-tab tab
+      'face face
+      'pointer 'hand
+      'local-map (purecopy (centaur-tabs-make-header-line-mouse-map
+			    'mouse-1
+			    `(lambda (event) (interactive "e") (centaur-tabs-buffer-select-tab ',tab))))))))
 
 (defun centaur-tabs-make-header-line-mouse-map (mouse function)
   (let ((map (make-sparse-keymap)))
@@ -1410,8 +1407,7 @@ That is, a string used to represent it on the tab bar."
   ;; Render tab.
   (centaur-tabs-render-separator
    (list centaur-tabs-style-left
-	 ;; (centaur-tabs-icon tab 'default)
-	 (format " %s "
+	 (format "%s "
 		 (let ((bufname (centaur-tabs-buffer-name (car tab))))
                    (if (> centaur-tabs-label-fixed-length 0)
                        (centaur-tabs-truncate-string  centaur-tabs-label-fixed-length bufname)
