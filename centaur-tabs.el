@@ -359,6 +359,12 @@ You should use this hook to reset dependent data.")
         centaur-tabs-tabsets-tabset nil)
   (run-hooks 'centaur-tabs-quit-hook))
 
+(defun centaur-tabs-inherit-tabbar-faces ()
+  "Function for using already existing faces for other tab plugins."
+  (custom-set-faces
+   '(centaur-tabs-selected ((t (:inherit tabbar-selected))))
+   '(centaur-tabs-unselected ((t (:inherit tabbar-unselected))))))
+
 ;; Define an "hygienic" function free of side effect between its local
 ;; variables and those of the callee.
 (eval-and-compile
@@ -565,6 +571,15 @@ current cached copy."
      ))
   "Face used for tab bar buttons."
   :group 'centaur-tabs)
+
+(defface tabbar-selected
+  '((t :inherit default))
+  "Face used to inherit tabbar-selected face")
+(defface tabbar-unselected
+  '((t
+     (:inherit default)))
+  "Face used to inherit tabbar-unselected face")
+
 
 ;;; Tabs
 ;;

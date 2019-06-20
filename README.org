@@ -7,10 +7,10 @@
 
   Work in progress!!!
 
-* TO DO [0/7]
+* TO DO [1/7]
   - [ ] Integrate all-the-icons
   - [ ] Add selected, unselected, selected-modified and unselected-modified faces
-  - [ ] Make function to inherit tabbar faces 
+  - [X] Make function to inherit tabbar faces 
   - [ ] Create PR to different theme packages for this package 
   - [ ] Add modified marker icon option
   - [ ] Add sideline for selected tab (atom style)
