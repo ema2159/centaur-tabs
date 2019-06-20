@@ -254,6 +254,11 @@ Sticky function is the function at the top of the current window sticky."
   :group 'centaur-tabs
   :type 'boolean)
 
+(defcustom centaur-tabs-set-icons t
+  "When non nil, display an icon from all-the-icons alongside the tab name."
+  :group 'centaur-tabs
+  :type 'boolean)
+
 (defvar centaur-tabs-hide-tab-function 'centaur-tabs-hide-tab
   "Function to hide tab.
 This fucntion accepet tab name, tab will hide if this function return ni.")
@@ -456,6 +461,19 @@ Return the tab selected, or nil if nothing was selected."
 (defsubst centaur-tabs-start (tabset)
   "Return the index of the first visible tab in TABSET."
   (get tabset 'start))
+
+(defun centaur-tabs-icon (tab face)
+  "Return icon for TAB with the background from FACE."
+  (if (centaur-tabs-set-icons)
+    (with-current-buffer (tabbar-tab-value tab)
+      (let ((icon (if (and (buffer-file-name)
+			   (all-the-icons-auto-mode-match?))
+		      (all-the-icons-icon-for-file (file-name-nondirectory (buffer-file-name)))
+		    (all-the-icons-icon-for-mode major-mode)))
+	    (background (face-background face)))
+	(add-face-text-property 0 1 `(:background ,background) t icon)
+	icon))
+    ""))
 
 (defsubst centaur-tabs-view (tabset)
   "Return the list of visible tabs in TABSET.
@@ -1392,8 +1410,9 @@ That is, a string used to represent it on the tab bar."
   ;; Render tab.
   (centaur-tabs-render-separator
    (list centaur-tabs-style-left
-         (format " %s "
-                 (let ((bufname (centaur-tabs-buffer-name (car tab))))
+	 ;; (centaur-tabs-icon tab 'default)
+	 (format " %s "
+		 (let ((bufname (centaur-tabs-buffer-name (car tab))))
                    (if (> centaur-tabs-label-fixed-length 0)
                        (centaur-tabs-truncate-string  centaur-tabs-label-fixed-length bufname)
                      bufname)))
