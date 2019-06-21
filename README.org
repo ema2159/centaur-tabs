@@ -7,12 +7,12 @@
 
   Work in progress!!!
 
-* TO DO [3/9]
+* TO DO [2/9]
   - [X] Integrate all-the-icons
   - [ ] Improve all the icons placing and background
   - [ ] Add selected, unselected, selected-modified and unselected-modified faces
   - [X] Make function to inherit tabbar faces 
-  - [X] Group tabs by projectile's project (was already implemented)
+  - [ ] Group tabs by projectile's project (was already implemented but not for projectile)
   - [ ] Create PR to different theme packages for this package 
   - [ ] Add modified marker icon option
   - [ ] Add sideline for selected tab (atom style)
