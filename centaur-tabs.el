@@ -546,6 +546,17 @@ current cached copy."
   (centaur-tabs-set-template centaur-tabs-tabsets-tabset nil)
   centaur-tabs-tabsets-tabset)
 
+(defun centaur-tabs-icon (tab face)
+  "Generate all-the-icons icon for TAB using FACE's background."
+  (with-current-buffer (car tab)
+    (let ((icon (if (and (buffer-file-name)
+  			 (all-the-icons-auto-mode-match?))
+  		    (all-the-icons-icon-for-file (file-name-nondirectory (buffer-file-name)))
+  		  (all-the-icons-icon-for-mode major-mode)))
+  	  (background (face-background face)))
+      (add-face-text-property 0 1 `(:background ,background) t icon)
+      icon)))
+
 ;;; Faces
 ;;
 (defface centaur-tabs-default
