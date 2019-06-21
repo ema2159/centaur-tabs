@@ -599,18 +599,11 @@ current cached copy."
 That is, a propertized string used as an `header-line-format' template
 element.
 Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
-  
-  (let* ((icon (with-current-buffer (current-buffer) (if (and (buffer-file-name)
-			(all-the-icons-auto-mode-match?))
-		   (all-the-icons-icon-for-file (file-name-nondirectory (buffer-file-name)))
-		   (all-the-icons-icon-for-mode major-mode))))
-	 (face (if (centaur-tabs-selected-p tab (centaur-tabs-current-tabset))
+  (let* ((face (if (centaur-tabs-selected-p tab (centaur-tabs-current-tabset))
 		   'centaur-tabs-selected
-		 'centaur-tabs-unselected))
-	 (background (face-background face)))
-    (add-face-text-property 0 1 `(:background ,background) t icon)
+		 'centaur-tabs-unselected)))
     (concat
-     icon
+     (centaur-tabs-icon tab face)
      (propertize
       (if centaur-tabs-tab-label-function
 	  (funcall centaur-tabs-tab-label-function tab)
@@ -1788,7 +1781,7 @@ not the actual logical index position of the current group."
 (setq uniquify-buffer-name-style 'post-forward-angle-brackets)
 (setq uniquify-after-kill-buffer-p t)
 
-(dolist (hook awesometab-hide-tabs-hooks)
+(dolist (hook centaur-tabs-hide-tabs-hooks)
   (add-hook hook '(lambda () (setq-local header-line-format nil))))
 
 ;; Rules to control buffer's group rules.
