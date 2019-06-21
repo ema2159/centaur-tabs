@@ -223,7 +223,7 @@ the group name uses the name of this variable."
   :group 'centaur-tabs
   :type 'int)
 
-(defcustom awesometab-hide-tabs-hooks
+(defcustom centaur-tabs-hide-tabs-hooks
   '(magit-status-mode-hook magit-popup-mode-hook reb-mode-hook)
   "Some buffer's header line is empty that make its window insufficient of space to display all content.
 Feel free to add hook in this option. ;)"
