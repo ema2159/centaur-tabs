@@ -1426,7 +1426,7 @@ That is, a string used to represent it on the tab bar."
   ;; Render tab.
   (centaur-tabs-render-separator
    (list centaur-tabs-style-left
-	 (format "%s "
+	 (format " %s "
 		 (let ((bufname (centaur-tabs-buffer-name (car tab))))
                    (if (> centaur-tabs-label-fixed-length 0)
                        (centaur-tabs-truncate-string  centaur-tabs-label-fixed-length bufname)
