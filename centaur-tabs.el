@@ -363,7 +363,11 @@ You should use this hook to reset dependent data.")
   "Function for using already existing faces for other tab plugins."
   (custom-set-faces
    '(centaur-tabs-selected ((t (:inherit tabbar-selected))))
-   '(centaur-tabs-unselected ((t (:inherit tabbar-unselected))))))
+   '(centaur-tabs-unselected ((t (:inherit tabbar-unselected))))
+   (set-face-attribute 'centaur-tabs-selected nil
+		       :background (face-background 'tabbar-selected))
+   (set-face-attribute 'centaur-tabs-unselected nil
+		       :background (face-background 'tabbar-unselected))))
 
 ;; Define an "hygienic" function free of side effect between its local
 ;; variables and those of the callee.
