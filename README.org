@@ -8,7 +8,7 @@
   Work in progress!!!
   
   It currently looks like this:
-  [[file:screenshot.png][Screenshot]]
+  [[./screenshot.png]]
 
 * TO DO [3/10]
   - [X] Integrate all-the-icons
