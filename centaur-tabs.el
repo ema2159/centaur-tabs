@@ -1,4 +1,4 @@
-;;; centaur-tabs.el --- Provide an out of box configuration to use tab in Emacs.
+;;; centaur-tabs.el --- provide an out of box configuration to use tab in emacs.
 
 ;; Filename: centaur-tabs.el
 ;; Description: Provide an out of box configuration to use centaur-tabs in Emacs.
@@ -587,11 +587,18 @@ current cached copy."
 (defun centaur-tabs-icon (tab face)
   "Generate all-the-icons icon for TAB using FACE's background."
   (with-current-buffer (car tab)
-    (let ((icon (if (and (buffer-file-name)
-	     (all-the-icons-auto-mode-match?))
-	(all-the-icons-icon-for-file (file-name-nondirectory (buffer-file-name)))
-	(all-the-icons-icon-for-mode major-mode)))
-	  (background (face-background face)))
+    (let* ((icon (if (and (buffer-file-name)
+			 (all-the-icons-auto-mode-match?))
+		    (all-the-icons-icon-for-file (file-name-nondirectory (buffer-file-name)))
+		   (all-the-icons-icon-for-mode major-mode)))
+	   (background (face-background face))
+	   (original-props (get-text-property 0 'face icon)))
+      (remove-text-properties 0 1 '(face nil) icon)
+      ;; Pop :background from face so it doesn't accumulate
+      ;; The unless part is to omit the initial case when :background hasn't been added
+      (unless (eq (length original-props) 6)
+	(pop original-props))
+      (add-face-text-property 0 1 original-props nil icon)
       (add-face-text-property 0 1 `(:background ,background) nil icon)
       icon)))
 
