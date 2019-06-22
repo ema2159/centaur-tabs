@@ -7,9 +7,10 @@
 
   Work in progress!!!
 
-* TO DO [2/9]
+* TO DO [3/10]
   - [X] Integrate all-the-icons
-  - [ ] Improve all the icons placing and background
+  - [ ] Improve all the icons placing
+  - [X] Fix all the icons background
   - [ ] Add selected, unselected, selected-modified and unselected-modified faces
   - [X] Make function to inherit tabbar faces 
   - [ ] Group tabs by projectile's project (was already implemented but not for projectile)
