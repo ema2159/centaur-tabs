@@ -18,4 +18,5 @@
   - [ ] Add modified marker icon option
   - [ ] Add sideline for selected tab (atom style)
   - [ ] Add tab styles (Atom, Sublime, VS Code...)
+  - [ ] Make icon insert after the separator
  
