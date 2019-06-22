@@ -6,6 +6,9 @@
   Forked from: [[https://github.com/manateelazycat/awesome-tab][awesome-tab]].
 
   Work in progress!!!
+  
+  It currently looks like this:
+  [[file:screenshot.png][Screenshot]]
 
 * TO DO [3/10]
   - [X] Integrate all-the-icons
@@ -19,4 +22,5 @@
   - [ ] Add sideline for selected tab (atom style)
   - [ ] Add tab styles (Atom, Sublime, VS Code...)
   - [ ] Make icon insert after the separator
+    
  
