@@ -615,6 +615,14 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
 	 (icon (centaur-tabs-icon tab face)))
     (concat
      (propertize
+      " "
+      'centaur-tabs-tab tab
+      'face face
+      'pointer 'hand
+      'local-map (purecopy (centaur-tabs-make-header-line-mouse-map
+			    'mouse-1
+			    `(lambda (event) (interactive "e") (centaur-tabs-buffer-select-tab ',tab)))))
+     (propertize
       icon
       'centaur-tabs-tab tab
       'pointer 'hand
@@ -1443,7 +1451,7 @@ That is, a string used to represent it on the tab bar."
   ;; Render tab.
   (centaur-tabs-render-separator
    (list centaur-tabs-style-left
-	 (format " %s "
+	 (format "%s "
 		 (let ((bufname (centaur-tabs-buffer-name (car tab))))
                    (if (> centaur-tabs-label-fixed-length 0)
                        (centaur-tabs-truncate-string  centaur-tabs-label-fixed-length bufname)
