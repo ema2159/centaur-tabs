@@ -544,22 +544,11 @@ current cached copy."
   centaur-tabs-current-tabset)
 
 (defun centaur-tabs-get-tabsets-tabset ()
-  "Return the tab set of selected tabs in existing tab sets."
+  "Return the tab set of selected tabs in existing tabsets."
   (set centaur-tabs-tabsets-tabset (centaur-tabs-map-tabsets 'centaur-tabs-selected-tab))
   (centaur-tabs-scroll centaur-tabs-tabsets-tabset 0)
   (centaur-tabs-set-template centaur-tabs-tabsets-tabset nil)
   centaur-tabs-tabsets-tabset)
-
-(defun centaur-tabs-icon (tab face)
-  "Generate all-the-icons icon for TAB using FACE's background."
-  (with-current-buffer (car tab)
-    (let ((icon (if (and (buffer-file-name)
-  			 (all-the-icons-auto-mode-match?))
-  		    (all-the-icons-icon-for-file (file-name-nondirectory (buffer-file-name)))
-  		  (all-the-icons-icon-for-mode major-mode)))
-  	  (background (face-background face)))
-      (add-face-text-property 0 1 `(:background ,background) t icon)
-      icon)))
 
 ;;; Faces
 ;;
@@ -595,6 +584,16 @@ current cached copy."
      (:inherit default)))
   "Face used to inherit tabbar-unselected face")
 
+(defun centaur-tabs-icon (tab face)
+  "Generate all-the-icons icon for TAB using FACE's background."
+  (with-current-buffer (car tab)
+    (let ((icon (if (and (buffer-file-name)
+	     (all-the-icons-auto-mode-match?))
+	(all-the-icons-icon-for-file (file-name-nondirectory (buffer-file-name)))
+	(all-the-icons-icon-for-mode major-mode)))
+	  (background (face-background face)))
+      (add-face-text-property 0 1 `(:background ,background) nil icon)
+      icon)))
 
 ;;; Tabs
 ;;
@@ -605,9 +604,10 @@ element.
 Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
   (let* ((face (if (centaur-tabs-selected-p tab (centaur-tabs-current-tabset))
 		   'centaur-tabs-selected
-		 'centaur-tabs-unselected)))
+		 'centaur-tabs-unselected))
+	 (icon (centaur-tabs-icon tab face)))
     (concat
-     (centaur-tabs-icon tab face)
+     icon
      (propertize
       (if centaur-tabs-tab-label-function
 	  (funcall centaur-tabs-tab-label-function tab)
