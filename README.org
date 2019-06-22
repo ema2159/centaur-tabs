@@ -25,3 +25,75 @@
   - [ ] Make icon insert after the separator
     
  
+* How to contribute
+  You can contribute by downloading the centaur-tabs.el file and loading it with ~use-package~ like this:
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package centaur-tabs
+    :load-path "~/.emacs.d/other/centaur-tabs"
+    :config
+    (setq centaur-tabs-background-color (face-background 'default))
+    (centaur-tabs-inherit-tabbar-faces)
+    (setq centaur-tabs-style "bar")
+    (setq centaur-tabs-height 30)
+    (setq centaur-tabs-set-icons t)
+    (centaur-tabs-mode t)
+    (defun centaur-tabs-buffer-groups ()
+      "`centaur-tabs-buffer-groups' control buffers' group rules.
+
+  Group centaur-tabs with mode if buffer is derived from `eshell-mode' `emacs-lisp-mode' `dired-mode' `org-mode' `magit-mode'.
+  All buffer name start with * will group to \"Emacs\".
+  Other buffer group by `centaur-tabs-get-group-name' with project name."
+      (list
+       (cond
+	((or (string-equal "*" (substring (buffer-name) 0 1))
+	     (memq major-mode '(magit-process-mode
+				magit-status-mode
+				magit-diff-mode
+				magit-log-mode
+				magit-file-mode
+				magit-blob-mode
+				magit-blame-mode
+				)))
+	 "Emacs")
+	((derived-mode-p 'prog-mode)
+	 "Editing")
+	((derived-mode-p 'dired-mode)
+	 "Dired")
+	((memq major-mode '(helpful-mode
+			    help-mode))
+	 "Help")
+	((memq major-mode '(org-mode
+			    org-agenda-clockreport-mode
+			    org-src-mode
+			    org-agenda-mode
+			    org-beamer-mode
+			    org-indent-mode
+			    org-bullets-mode
+			    org-cdlatex-mode
+			    org-agenda-log-mode
+			    diary-mode))
+	 "OrgMode")
+	(t
+	 (centaur-tabs-get-group-name (current-buffer))))))
+    :hook
+    (dashboard-mode . centaur-tabs-local-mode)
+    (term-mode . centaur-tabs-local-mode)
+    (calendar-mode . centaur-tabs-local-mode)
+    (dired-mode . centaur-tabs-local-mode)
+    (org-agenda-mode . centaur-tabs-local-mode)
+    (magit-log-mode . centaur-tabs-local-mode)
+    (magit-diff-mode . centaur-tabs-local-mode)
+    (magit-status-mode . centaur-tabs-local-mode)
+    (magit-process-mode . centaur-tabs-local-mode)
+    (magit-stashes-mode . centaur-tabs-local-mode)
+    (helpful-mode . centaur-tabs-local-mode)
+    (help-mode . centaur-tabs-local-mode)
+    (fundamental-mode . centaur-tabs-local-mode)
+    (lisp-interaction-mode . centaur-tabs-local-mode)
+    :bind
+    ("C-<prior>" . centaur-tabs-backward)
+    ("C-<next>" . centaur-tabs-forward))
+#+END_SRC
+
+and then creating a pull request with the changes you consider will improve the package. The package is not ready yet to be in MELPA, but hopefully soon it will be.
