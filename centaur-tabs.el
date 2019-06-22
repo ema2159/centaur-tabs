@@ -259,6 +259,44 @@ Sticky function is the function at the top of the current window sticky."
   :group 'centaur-tabs
   :type 'boolean)
 
+;;; Faces
+;;
+(defface centaur-tabs-default
+  '((t
+     (:background "black" :foreground "black")))
+  "Default face used in the tab bar."
+  :group 'centaur-tabs)
+
+(defface centaur-tabs-unselected
+  '((t
+     (:background "#3D3C3D" :foreground "grey50")))
+  "Face used for unselected tabs."
+  :group 'centaur-tabs)
+
+(defface centaur-tabs-selected
+  '((t (:background "#31343E" :foreground "white")))
+  "Face used for the selected tab."
+  :group 'centaur-tabs)
+
+(defface centaur-tabs-button
+  '((t
+     :box nil
+     ))
+  "Face used for tab bar buttons."
+  :group 'centaur-tabs)
+
+(defface tabbar-selected
+  '((t :inherit default))
+  "Face used to inherit tabbar-selected face")
+(defface tabbar-unselected
+  '((t
+     (:inherit default)))
+  "Face used to inherit tabbar-unselected face")
+
+(defface centaur-active-bar-face
+  '((t (:background "green")))
+  "Face used for the dirname part of the buffer path.")
+
 (defvar centaur-tabs-hide-tab-function 'centaur-tabs-hide-tab
   "Function to hide tab.
 This fucntion accepet tab name, tab will hide if this function return ni.")
@@ -368,6 +406,40 @@ You should use this hook to reset dependent data.")
 		       :background (face-background 'tabbar-selected))
    (set-face-attribute 'centaur-tabs-unselected nil
 		       :background (face-background 'tabbar-unselected))))
+
+(defun centaur-tabs--make-xpm (face width height)
+  "Create an XPM bitmap via FACE WIDTH and HEIGHT.
+Taken from doom-modeline."
+  (when (and (display-graphic-p)
+             (image-type-available-p 'xpm))
+    (propertize
+     " " 'display
+     (let ((data (make-list height (make-list width 1)))
+           (color (or (face-background face nil t) "None")))
+       (ignore-errors
+         (create-image
+          (concat
+           (format
+            "/* XPM */\nstatic char * percent[] = {\n\"%i %i 2 1\",\n\". c %s\",\n\"  c %s\","
+            (length (car data)) (length data) color color)
+           (apply #'concat
+                  (cl-loop with idx = 0
+                           with len = (length data)
+                           for dl in data
+                           do (cl-incf idx)
+                           collect
+                           (concat
+                            "\""
+                            (cl-loop for d in dl
+                                     if (= d 0) collect (string-to-char " ")
+                                     else collect (string-to-char "."))
+                            (if (eq idx len) "\"};" "\",\n")))))
+          'xpm t :ascent 'center))))))
+
+(defvar centaur-tabs-active-bar
+  (centaur-tabs--make-xpm 'centaur-active-bar-face
+                                 4
+                                 centaur-tabs-height))
 
 ;; Define an "hygienic" function free of side effect between its local
 ;; variables and those of the callee.
@@ -550,40 +622,6 @@ current cached copy."
   (centaur-tabs-set-template centaur-tabs-tabsets-tabset nil)
   centaur-tabs-tabsets-tabset)
 
-;;; Faces
-;;
-(defface centaur-tabs-default
-  '((t
-     (:background "black" :foreground "black")))
-  "Default face used in the tab bar."
-  :group 'centaur-tabs)
-
-(defface centaur-tabs-unselected
-  '((t
-     (:background "#3D3C3D" :foreground "grey50")))
-  "Face used for unselected tabs."
-  :group 'centaur-tabs)
-
-(defface centaur-tabs-selected
-  '((t (:background "#31343E" :foreground "white")))
-  "Face used for the selected tab."
-  :group 'centaur-tabs)
-
-(defface centaur-tabs-button
-  '((t
-     :box nil
-     ))
-  "Face used for tab bar buttons."
-  :group 'centaur-tabs)
-
-(defface tabbar-selected
-  '((t :inherit default))
-  "Face used to inherit tabbar-selected face")
-(defface tabbar-unselected
-  '((t
-     (:inherit default)))
-  "Face used to inherit tabbar-unselected face")
-
 (defun centaur-tabs-icon (tab face)
   "Generate all-the-icons icon for TAB using FACE's background."
       (with-current-buffer (car tab)
@@ -614,12 +652,22 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
 		 'centaur-tabs-unselected))
 	 (icon (if centaur-tabs-set-icons
 		 (centaur-tabs-icon tab face)
+		 ""))
+	 (bar (if (centaur-tabs-selected-p tab (centaur-tabs-current-tabset))
+		  centaur-tabs-active-bar
 		 "")))
     (concat
      (propertize
-      " "
+      bar
       'centaur-tabs-tab tab
+      'pointer 'hand
+      'local-map (purecopy (centaur-tabs-make-header-line-mouse-map
+     			    'mouse-1
+     			    `(lambda (event) (interactive "e") (centaur-tabs-buffer-select-tab ',tab)))))
+     (propertize
+      " "
       'face face
+      'centaur-tabs-tab tab
       'pointer 'hand
       'local-map (purecopy (centaur-tabs-make-header-line-mouse-map
 			    'mouse-1
