@@ -607,7 +607,13 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
 		 'centaur-tabs-unselected))
 	 (icon (centaur-tabs-icon tab face)))
     (concat
-     icon
+     (propertize
+      icon
+      'centaur-tabs-tab tab
+      'pointer 'hand
+      'local-map (purecopy (centaur-tabs-make-header-line-mouse-map
+			    'mouse-1
+			    `(lambda (event) (interactive "e") (centaur-tabs-buffer-select-tab ',tab)))))
      (propertize
       (if centaur-tabs-tab-label-function
 	  (funcall centaur-tabs-tab-label-function tab)
