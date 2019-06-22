@@ -586,21 +586,21 @@ current cached copy."
 
 (defun centaur-tabs-icon (tab face)
   "Generate all-the-icons icon for TAB using FACE's background."
-  (with-current-buffer (car tab)
-    (let* ((icon (if (and (buffer-file-name)
-			 (all-the-icons-auto-mode-match?))
-		    (all-the-icons-icon-for-file (file-name-nondirectory (buffer-file-name)))
-		   (all-the-icons-icon-for-mode major-mode)))
-	   (background (face-background face))
-	   (original-props (get-text-property 0 'face icon)))
-      (remove-text-properties 0 1 '(face nil) icon)
-      ;; Pop :background from face so it doesn't accumulate
-      ;; The unless part is to omit the initial case when :background hasn't been added
-      (unless (eq (length original-props) 6)
-	(pop original-props))
-      (add-face-text-property 0 1 original-props nil icon)
-      (add-face-text-property 0 1 `(:background ,background) nil icon)
-      icon)))
+      (with-current-buffer (car tab)
+	(let* ((icon (if (and (buffer-file-name)
+			      (all-the-icons-auto-mode-match?))
+			 (all-the-icons-icon-for-file (file-name-nondirectory (buffer-file-name)))
+		       (all-the-icons-icon-for-mode major-mode)))
+	       (background (face-background face))
+	       (original-props (get-text-property 0 'face icon)))
+	  (remove-text-properties 0 1 '(face nil) icon)
+	  ;; Pop :background from face so it doesn't accumulate
+	  ;; The unless part is to omit the initial case when :background hasn't been added
+	  (unless (eq (length original-props) 6)
+	    (pop original-props))
+	  (add-face-text-property 0 1 original-props nil icon)
+	  (add-face-text-property 0 1 `(:background ,background) nil icon)
+	  icon)))
 
 ;;; Tabs
 ;;
@@ -612,7 +612,9 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
   (let* ((face (if (centaur-tabs-selected-p tab (centaur-tabs-current-tabset))
 		   'centaur-tabs-selected
 		 'centaur-tabs-unselected))
-	 (icon (centaur-tabs-icon tab face)))
+	 (icon (if centaur-tabs-set-icons
+		 (centaur-tabs-icon tab face)
+		 "")))
     (concat
      (propertize
       " "
@@ -1450,13 +1452,14 @@ That is, a string used to represent it on the tab bar."
     (centaur-tabs-select-separator-style centaur-tabs-style))
   ;; Render tab.
   (centaur-tabs-render-separator
-   (list centaur-tabs-style-left
-	 (format "%s "
-		 (let ((bufname (centaur-tabs-buffer-name (car tab))))
-                   (if (> centaur-tabs-label-fixed-length 0)
-                       (centaur-tabs-truncate-string  centaur-tabs-label-fixed-length bufname)
-                     bufname)))
-         centaur-tabs-style-right)))
+   (list
+    centaur-tabs-style-left
+    (format "%s "
+	    (let ((bufname (centaur-tabs-buffer-name (car tab))))
+	      (if (> centaur-tabs-label-fixed-length 0)
+		  (centaur-tabs-truncate-string  centaur-tabs-label-fixed-length bufname)
+		bufname)))
+    centaur-tabs-style-right)))
 
 (defun centaur-tabs-buffer-name (tab-buffer)
   "Get buffer name of tab.

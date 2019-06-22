@@ -8,6 +8,7 @@
   Work in progress!!!
   
   It currently looks like this:
+
   [[./screenshot.png]]
 
 * TO DO [3/10]
