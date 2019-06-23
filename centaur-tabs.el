@@ -243,6 +243,11 @@ background color of the `default' face otherwise."
   :group 'centaur-tabs
   :type 'int)
 
+(defcustom centaur-tabs-bar-height (+ 6 centaur-tabs-height)
+  "The height of bar."
+  :group 'centaur-tabs
+  :type 'int)
+
 (defcustom centaur-tabs-style "wave"
   "The style of tab."
   :group 'centaur-tabs
@@ -256,6 +261,11 @@ Sticky function is the function at the top of the current window sticky."
 
 (defcustom centaur-tabs-set-icons t
   "When non nil, display an icon from all-the-icons alongside the tab name."
+  :group 'centaur-tabs
+  :type 'boolean)
+
+(defcustom centaur-tabs-set-bar t
+  "When non nil, display a bar at the left of the currently selected tab."
   :group 'centaur-tabs
   :type 'boolean)
 
@@ -651,19 +661,26 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
 		   'centaur-tabs-selected
 		 'centaur-tabs-unselected))
 	 (icon (if centaur-tabs-set-icons
-		 (centaur-tabs-icon tab face)
+		   (propertize
+		    (centaur-tabs-icon tab face)
+		    'centaur-tabs-tab tab
+		    'pointer 'hand
+		    'local-map (purecopy (centaur-tabs-make-header-line-mouse-map
+					  'mouse-1
+					  `(lambda (event) (interactive "e") (centaur-tabs-buffer-select-tab ',tab)))))
 		 ""))
-	 (bar (if (centaur-tabs-selected-p tab (centaur-tabs-current-tabset))
-		  centaur-tabs-active-bar
-		 "")))
+	 (bar (if (and (centaur-tabs-selected-p tab (centaur-tabs-current-tabset))
+		       centaur-tabs-set-bar)
+		  (propertize
+		   centaur-tabs-active-bar
+		   'centaur-tabs-tab tab
+		   'pointer 'hand
+		   'local-map (purecopy (centaur-tabs-make-header-line-mouse-map
+					 'mouse-1
+					 `(lambda (event) (interactive "e") (centaur-tabs-buffer-select-tab ',tab)))))
+		"")))
     (concat
-     (propertize
-      bar
-      'centaur-tabs-tab tab
-      'pointer 'hand
-      'local-map (purecopy (centaur-tabs-make-header-line-mouse-map
-     			    'mouse-1
-     			    `(lambda (event) (interactive "e") (centaur-tabs-buffer-select-tab ',tab)))))
+     bar
      (propertize
       " "
       'face face
@@ -672,13 +689,7 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
       'local-map (purecopy (centaur-tabs-make-header-line-mouse-map
 			    'mouse-1
 			    `(lambda (event) (interactive "e") (centaur-tabs-buffer-select-tab ',tab)))))
-     (propertize
-      icon
-      'centaur-tabs-tab tab
-      'pointer 'hand
-      'local-map (purecopy (centaur-tabs-make-header-line-mouse-map
-			    'mouse-1
-			    `(lambda (event) (interactive "e") (centaur-tabs-buffer-select-tab ',tab)))))
+     icon
      (propertize
       (if centaur-tabs-tab-label-function
 	  (funcall centaur-tabs-tab-label-function tab)
