@@ -23,6 +23,7 @@
   - [X] Add sideline for selected tab (atom style)
   - [ ] Add tab styles (Atom, Sublime, VS Code...)
   - [X] Make icon insert after the separator
+  - [X] Add a customizable close button
     
  
 * How to contribute
@@ -35,8 +36,10 @@
     (setq centaur-tabs-background-color (face-background 'default))
     (centaur-tabs-inherit-tabbar-faces)
     (setq centaur-tabs-style "bar")
-    (setq centaur-tabs-height 30)
+    (setq centaur-tabs-height 32)
     (setq centaur-tabs-set-icons t)
+    (setq centaur-tabs-set-bar t)
+    ;; (setq centaur-tabs-set-close-button nil)
     (centaur-tabs-mode t)
     (defun centaur-tabs-buffer-groups ()
       "`centaur-tabs-buffer-groups' control buffers' group rules.
@@ -93,7 +96,9 @@
     (lisp-interaction-mode . centaur-tabs-local-mode)
     :bind
     ("C-<prior>" . centaur-tabs-backward)
-    ("C-<next>" . centaur-tabs-forward))
+    ("C-<next>" . centaur-tabs-forward)
+    :custom-face
+    (centaur-active-bar-face ((t (:inherit doom-modeline-bar)))))
 #+END_SRC
 
 and then creating a pull request with the changes you consider will improve the package. The package is not ready yet to be in MELPA, but hopefully soon it will be.
