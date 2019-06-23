@@ -277,7 +277,7 @@ Sticky function is the function at the top of the current window sticky."
 (defvar centaur-tabs-close-button (make-string 1 #x00D7)
   "When non nil, display a clickable x button for closing the tabs.")
 
-(defcustom centaur-tabs-set-modified-marker t
+(defcustom centaur-tabs-set-modified-marker nil
   "When non nil, display a marker when the buffer is modified."
   :group 'centaur-tabs
   :type 'boolean)
