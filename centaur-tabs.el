@@ -295,9 +295,14 @@ Sticky function is the function at the top of the current window sticky."
   "Face used for tab bar buttons."
   :group 'centaur-tabs)
 
+(defface tabbar-default
+  '((t :inherit default))
+  "Face used to inherit tabbar-default face")
+
 (defface tabbar-selected
   '((t :inherit default))
   "Face used to inherit tabbar-selected face")
+
 (defface tabbar-unselected
   '((t
      (:inherit default)))
@@ -414,8 +419,11 @@ You should use this hook to reset dependent data.")
 (defun centaur-tabs-inherit-tabbar-faces ()
   "Function for using already existing faces for other tab plugins."
   (custom-set-faces
+   '(centaur-tabs-default ((t (:inherit tabbar-default))))
    '(centaur-tabs-selected ((t (:inherit tabbar-selected))))
    '(centaur-tabs-unselected ((t (:inherit tabbar-unselected))))
+   (set-face-attribute 'centaur-tabs-default nil
+		       :background (face-background 'tabbar-default))
    (set-face-attribute 'centaur-tabs-selected nil
 		       :background (face-background 'tabbar-selected))
    (set-face-attribute 'centaur-tabs-unselected nil
