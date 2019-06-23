@@ -11,7 +11,7 @@
 
   [[./screenshot.png]]
 
-* TO DO [7/12]
+* TO DO [8/12]
   - [X] Integrate all-the-icons
   - [ ] Improve all the icons placing
   - [X] Fix all the icons background
@@ -19,7 +19,7 @@
   - [X] Make function to inherit tabbar faces 
   - [ ] Group tabs by projectile's project (was already implemented but not for projectile)
   - [ ] Create PR to different theme packages for this package 
-  - [ ] Add modified marker icon option
+  - [X] Add modified marker icon option
   - [X] Add sideline for selected tab (atom style)
   - [ ] Add tab styles (Atom, Sublime, VS Code...)
   - [X] Make icon insert after the separator

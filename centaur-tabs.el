@@ -274,10 +274,16 @@ Sticky function is the function at the top of the current window sticky."
   :group 'centaur-tabs
   :type 'boolean)
 
+(defvar centaur-tabs-close-button (make-string 1 #x00D7)
+  "When non nil, display a clickable x button for closing the tabs.")
+
 (defcustom centaur-tabs-set-modified-marker t
   "When non nil, display a marker when the buffer is modified."
   :group 'centaur-tabs
   :type 'boolean)
+
+(defvar centaur-tabs-modified-marker (concat " " (make-string 1 #x25CE))
+  "When non nil, display a marker when the buffer is modified.")
 
 ;;; Faces
 ;;
@@ -780,9 +786,7 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
 	 (modified-marker (if (and centaur-tabs-set-modified-marker
 				   modified-p)
 			      (propertize
-			       (with-temp-buffer
-				 (insert (make-string 1 #x02022))
-				 (buffer-string))
+			       centaur-tabs-modified-marker
 			       'face (if selected-p
 					 'centaur-tabs-modified-marker-selected
 				       'centaur-tabs-modified-marker-unselected)
@@ -791,26 +795,25 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
 			       'local-map (purecopy (centaur-tabs-make-header-line-mouse-map
 						     'mouse-1
 						     `(lambda (event) (interactive "e") (centaur-tabs-buffer-select-tab ',tab)))))
+			    (propertize
+			     " "
+			     'face (if selected-p
+				       'centaur-tabs-modified-marker-selected
+				     'centaur-tabs-modified-marker-unselected)
+			     'pointer 'hand
+			     'centaur-tabs-tab tab
+			     'local-map (purecopy (centaur-tabs-make-header-line-mouse-map
+						   'mouse-1
+						   `(lambda (event) (interactive "e") (centaur-tabs-buffer-select-tab ',tab)))))))
+	 (close-button (if centaur-tabs-set-close-button
 			   (propertize
-			    " "
+			    centaur-tabs-close-button
 			    'face (if selected-p
-				      'centaur-tabs-modified-marker-selected
-				    'centaur-tabs-modified-marker-unselected)
+				      'centaur-tabs-close-selected
+				    'centaur-tabs-close-unselected)
 			    'pointer 'hand
 			    'centaur-tabs-tab tab
 			    'local-map (purecopy (centaur-tabs-make-header-line-mouse-map
-						  'mouse-1
-						  `(lambda (event) (interactive "e") (centaur-tabs-buffer-select-tab ',tab)))))))
-	 (close-button (if centaur-tabs-set-close-button
-			   (propertize (with-temp-buffer
-					 (insert (make-string 1 #x00D7))
-					 (buffer-string))
-				       'face (if selected-p
-						 'centaur-tabs-close-selected
-					       'centaur-tabs-close-unselected)
-				       'pointer 'hand
-				       'centaur-tabs-tab tab
-				       'local-map (purecopy (centaur-tabs-make-header-line-mouse-map
 						  'mouse-1
 						  `(lambda (event) (interactive "e") (centaur-tabs-buffer-close-tab ',tab)))))
 			 "")))
