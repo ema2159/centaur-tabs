@@ -2,20 +2,12 @@
 
 ;; Filename: centaur-tabs.el
 ;; Description: Provide an out of box configuration to use centaur-tabs in Emacs.
-;; Author: Andy Stewart <lazycat.manatee@gmail.com>
-;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
-;; Copyright (C) 2018, Andy Stewart, all rights reserved.
-;; Created: 2018-09-17 22:14:34
-;; Version: 3.3
-;; Last-Updated: 2019-04-14 10:02:41
-;;           By: Andy Stewart
-;; URL: http://www.emacswiki.org/emacs/download/centaur-tabs.el
-;; Keywords:
-;; Compatibility: GNU Emacs 27.0.50
+;; Author: Emmanuel Bustos <ema2159@gmail.com>
+;; Maintainer: Emmanuel Bustos <ema2159@gmail.com>
+;; Created: 2019-21-19 22:14:34
+;; Version: 4
+;; Known Compatibility: GNU Emacs 26.2
 ;;
-;; Features that might be required by this library:
-;;
-;; `cl' `cl-lib' `color' `which-func'
 ;;
 
 ;;; This file is NOT part of GNU Emacs
@@ -39,140 +31,7 @@
 
 ;;; Commentary:
 ;;
-;; Provide an out of box configuration to use tab in Emacs.
-;;
-
-;;; Installation:
-;;
-;; Put centaur-tabs.el to your load-path.
-;; The load-path is usually ~/elisp/.
-;; It's set in your ~/.emacs like this:
-;; (add-to-list 'load-path (expand-file-name "~/elisp"))
-;;
-;; And the following to your ~/.emacs startup file.
-;;
-;; (require 'centaur-tabs)
-;; (centaur-tabs-mode t)
-;;
-;; No need more.
-;;
-;; You can use below commands for you need:
-;;
-;; `centaur-tabs-switch-group'
-;; `centaur-tabs-select-beg-tab'
-;; `centaur-tabs-select-end-tab'
-;; `centaur-tabs-forward-tab-other-window'
-;; `centaur-tabs-backward-tab-other-window'
-;; `centaur-tabs-kill-other-buffers-in-current-group'
-;; `centaur-tabs-kill-all-buffers-in-current-group'
-;; `centaur-tabs-kill-match-buffers-in-current-group'
-;; `centaur-tabs-keep-match-buffers-in-current-group'
-;; `centaur-tabs-move-current-tab-to-left'
-;; `centaur-tabs-move-current-tab-to-right'
-;;
-;; If you're helm fans, you need add below code in your helm config:
-;;
-;; (centaur-tabs-build-helm-source)
-;;
-;; Then add `helm-source-centaur-tabs-group' in `helm-source-list'
-;;
-
-;;; Customize:
-;;
-;; `centaur-tabs-background-color'
-;; `centaur-tabs-selected'
-;; `centaur-tabs-unselected'
-;; `centaur-tabs-label-fixed-length'
-;;
-
-;;; Change log:
-;;
-;; 2019/04/14
-;;      * Make `centaur-tabs-last-sticky-func-name' default with nil.
-;;
-;; 2019/03/21
-;;      * Make `centaur-tabs-last-sticky-func-name' as buffer variable.
-;;
-;; 2019/03/19
-;;      * If `tab-index' more than length of visible tabs, selet the last tab.
-;;
-;; 2019/03/18
-;;      * Add new command `centaur-tabs-select-visible-tab'.
-;;
-;; 2019/03/16
-;;      * Fix integerp error.
-;;
-;; 2019/03/14
-;;      * Try to fix numberp error.
-;;
-;; 2019/03/12
-;;      * Display sticky function name in tab.
-;;
-;; 2019/03/09
-;;      * Absorb powerline code, keep single file.
-;;      * Remove some separator face that not suitable for displaying tab.
-;;      * Add option `centaur-tabs-style'.
-;;
-;; 2019/03/07
-;;      * Add `cl' dependence.
-;;
-;; 2019/03/03
-;;      * Automatically adsorb tabs after switching tabs, making switch tabs quickly.
-;;      * Fix many typo errors.
-;;      * Add `centaur-tabs-adjust-buffer-order-function'.
-;;      * Don't trigger by centaur-tabs command, it's annoying.
-;;
-;; 2019/02/23
-;;      * Significantly optimize the performance of switching tab by avoiding excessive calls `project-current'.
-;;      * Use `powerline' render tab, it's beautiful!!!
-;;
-;; 2018/12/27
-;;      * Tab will hide if ```centaur-tabs-hide-tab-function``` return t, you can write your own code to customize hide rules.
-;;
-;; 2018/11/16
-;;  * Open new tab on right of current one.
-;;
-;; 2018/11/14
-;;      * Remove wheel features, emacser should only use the keyboard to operate Emacs.
-;;
-;; 2018/11/01
-;;      * Remove `projectile' depend.
-;;
-;; 2018/10/29
-;;      * Add `mwheel' depend.
-;;
-;; 2018/09/29
-;;      * Add new command `centaur-tabs-kill-other-buffers-in-current-group'
-;;      * Not enable mode default.
-;;
-;; 2018/09/25
-;;      * Adjust magit regexp to only match magit buffer, not file that named with magit.
-;;
-;; 2018/09/22
-;;      * Adjust `centaur-tabs-buffer-list' to hide unused buffer to user.
-;;
-;; 2018/09/20
-;;      * Remove empty header line from magit buffers.
-;;      * Add new function `centaur-tabs-kill-match-buffers-in-current-group', it's handy in mixin mode, such as web-mode.
-;;      * Add new function `centaur-tabs-keep-match-buffers-in-current-group', it's handy in mixin mode, such as web-mode.
-;;      * Fix error cause by `centaur-tabs-kill-buffer-match-rule'.
-;;
-;; 2018/09/18
-;;      * Fix unselect tab height and add option `centaur-tabs-hide-tab-rules'
-;;      * Use `centaur-tabs-groups-hash' store every buffer's project name avoid performance issue cause by `projectile-project-name'.
-;;
-;; 2018/09/17
-;;      * First released.
-;;
-
-;;; Acknowledgements:
-;;
-;; casouri: documentation and many useful patches.
-;;
-
-;;; TODO
-;;
-;;
+;; Provide an out of box configuration to use tabs in Emacs.
 ;;
 
 ;;; Require
@@ -213,13 +72,12 @@ visible."
   :type 'boolean)
 
 (defcustom centaur-tabs-common-group-name "Common"
-  "If the current buffer does not belong to any project,
-the group name uses the name of this variable."
+  "If the current buffer does not belong to any project the group name uses the name of this variable."
   :group 'centaur-tabs
   :type 'string)
 
 (defcustom centaur-tabs-label-fixed-length 0
-  "Fixed length of label. Set to 0 if dynamic."
+  "Fixed length of label.  Set to 0 if dynamic."
   :group 'centaur-tabs
   :type 'int)
 
