@@ -293,6 +293,17 @@ Sticky function is the function at the top of the current window sticky."
   "Face used for the selected tab."
   :group 'centaur-tabs)
 
+(defface centaur-tabs-unselected-modified
+  '((t
+     (:background "#3D3C3D" :foreground "grey50")))
+  "Face used for unselected-modified tabs."
+  :group 'centaur-tabs)
+
+(defface centaur-tabs-selected-modified
+  '((t (:background "#31343E" :foreground "white")))
+  "Face used for the selected-modified tab."
+  :group 'centaur-tabs)
+
 (defface centaur-tabs-close-unselected
   '((t
      (:inherit centaur-tabs-unselected)))
@@ -316,6 +327,15 @@ Sticky function is the function at the top of the current window sticky."
   '((t
      (:inherit default)))
   "Face used to inherit tabbar-unselected face")
+
+(defface tabbar-selected-modified
+  '((t :inherit default))
+  "Face used to inherit tabbar-selected-modified face")
+
+(defface tabbar-unselected-modified
+  '((t
+     (:inherit default)))
+  "Face used to inherit tabbar-unselected-modified face")
 
 (defface centaur-active-bar-face
   '((t (:background "green")))
@@ -431,12 +451,18 @@ You should use this hook to reset dependent data.")
    '(centaur-tabs-default ((t (:inherit tabbar-default))))
    '(centaur-tabs-selected ((t (:inherit tabbar-selected))))
    '(centaur-tabs-unselected ((t (:inherit tabbar-unselected))))
+   '(centaur-tabs-selected-modified ((t (:inherit tabbar-selected-modified))))
+   '(centaur-tabs-unselected-modified ((t (:inherit tabbar-unselected-modified))))
    (set-face-attribute 'centaur-tabs-default nil
 		       :background (face-background 'tabbar-default))
    (set-face-attribute 'centaur-tabs-selected nil
 		       :background (face-background 'tabbar-selected))
    (set-face-attribute 'centaur-tabs-unselected nil
-		       :background (face-background 'tabbar-unselected))))
+		       :background (face-background 'tabbar-unselected))
+   (set-face-attribute 'centaur-tabs-selected-modified nil
+		       :background (face-background 'tabbar-selected-modified))
+   (set-face-attribute 'centaur-tabs-unselected-modified nil
+		       :background (face-background 'tabbar-unselected-modified))))
 
 (defun centaur-tabs--make-xpm (face width height)
   "Create an XPM bitmap via FACE WIDTH and HEIGHT.
@@ -682,6 +708,25 @@ current cached copy."
       (kill-buffer buffer))
     (centaur-tabs-display-update)))
 
+;; Hooks for modification
+(defun on-saving-buffer ()
+  "Function to be run after the buffer is saved."
+  (centaur-tabs-set-template centaur-tabs-current-tabset nil)
+  (centaur-tabs-display-update))
+(defun on-modifying-buffer ()
+  "Function to be run after the buffer is first changed."
+  (set-buffer-modified-p (buffer-modified-p))
+  (centaur-tabs-set-template centaur-tabs-current-tabset nil)
+  (centaur-tabs-display-update))
+(defun after-modifying-buffer (begin end length)
+  "Function to be run after the buffer is changed."
+  (set-buffer-modified-p (buffer-modified-p))
+  (centaur-tabs-set-template centaur-tabs-current-tabset nil)
+  (centaur-tabs-display-update))
+(add-hook 'after-save-hook 'on-saving-buffer)
+(add-hook 'first-change-hook 'on-modifying-buffer)
+(add-hook 'after-change-functions 'after-modifying-buffer)
+
 ;;; Tabs
 ;;
 (defsubst centaur-tabs-line-tab (tab)
@@ -689,10 +734,16 @@ current cached copy."
 That is, a propertized string used as an `header-line-format' template
 element.
 Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
-  (let* ((face (if (centaur-tabs-selected-p tab (centaur-tabs-current-tabset))
-		   'centaur-tabs-selected
-		 'centaur-tabs-unselected))
-	 (bar (if (and (centaur-tabs-selected-p tab (centaur-tabs-current-tabset))
+  (let* ((selected-p (centaur-tabs-selected-p tab (centaur-tabs-current-tabset)))
+	 (modified-p (buffer-modified-p (centaur-tabs-tab-value tab)))
+	 (face (if selected-p
+		   (if modified-p
+		       'centaur-tabs-selected-modified
+		     'centaur-tabs-selected)
+		 (if modified-p
+		     'centaur-tabs-unselected-modified
+		   'centaur-tabs-unselected)))
+	 (bar (if (and selected-p
 		       centaur-tabs-set-bar)
 		  (propertize
 		   centaur-tabs-active-bar
@@ -715,7 +766,7 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
 			   (propertize (with-temp-buffer
 					 (insert (make-string 1 #x00D7))
 					 (buffer-string))
-				       'face (if (centaur-tabs-selected-p tab (centaur-tabs-current-tabset))
+				       'face (if selected-p
 						 'centaur-tabs-close-selected
 					       'centaur-tabs-close-unselected)
 				       'pointer 'hand
