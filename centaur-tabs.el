@@ -264,7 +264,7 @@ Sticky function is the function at the top of the current window sticky."
   :group 'centaur-tabs
   :type 'boolean)
 
-(defcustom centaur-tabs-set-bar t
+(defcustom centaur-tabs-set-bar nil
   "When non nil, display a bar at the left of the currently selected tab."
   :group 'centaur-tabs
   :type 'boolean)
@@ -337,6 +337,10 @@ group.  Notice that it is better that a buffer belongs to one group.")
 (defvar centaur-tabs-adjust-buffer-order-function 'centaur-tabs-adjust-buffer-order
   "Function to adjust buffer order after switch tab.
 Default is `centaur-tabs-adjust-buffer-order', you can write your own rule.")
+
+;; Separators
+(defvar centaur-tabs-style-left nil)
+(defvar centaur-tabs-style-right nil)
 
 ;;; Misc.
 ;;
@@ -680,7 +684,11 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
 					 'mouse-1
 					 `(lambda (event) (interactive "e") (centaur-tabs-buffer-select-tab ',tab)))))
 		"")))
+    (when (or (not centaur-tabs-style-left)
+	      (not centaur-tabs-style-right))
+      (centaur-tabs-select-separator-style centaur-tabs-style))
     (concat
+     (centaur-tabs-separator-render centaur-tabs-style-left face)
      bar
      (propertize
       " "
@@ -700,7 +708,8 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
       'pointer 'hand
       'local-map (purecopy (centaur-tabs-make-header-line-mouse-map
 			    'mouse-1
-			    `(lambda (event) (interactive "e") (centaur-tabs-buffer-select-tab ',tab))))))))
+			    `(lambda (event) (interactive "e") (centaur-tabs-buffer-select-tab ',tab)))))
+     (centaur-tabs-separator-render centaur-tabs-style-right face))))
 
 (defun centaur-tabs-make-header-line-mouse-map (mouse function)
   (let ((map (make-sparse-keymap)))
@@ -1496,9 +1505,6 @@ The memoization cache is frame-local."
 (centaur-tabs-separator-memoize (centaur-tabs-separator-zigzag left))
 (centaur-tabs-separator-memoize (centaur-tabs-separator-zigzag right))
 
-(defvar centaur-tabs-style-left nil)
-(defvar centaur-tabs-style-right nil)
-
 (defun centaur-tabs-select-separator-style (tab-style)
   (setq centaur-tabs-style-left (funcall (intern (format "powerline-%s-right" tab-style)) 'centaur-tabs-default nil centaur-tabs-height))
   (setq centaur-tabs-style-right (funcall (intern (format "powerline-%s-left" tab-style)) nil 'centaur-tabs-default centaur-tabs-height)))
@@ -1507,19 +1513,12 @@ The memoization cache is frame-local."
   "Return a label for TAB.
 That is, a string used to represent it on the tab bar."
   ;; Init tab style.
-  (when (or (not centaur-tabs-style-left)
-	    (not centaur-tabs-style-right))
-    (centaur-tabs-select-separator-style centaur-tabs-style))
   ;; Render tab.
-  (centaur-tabs-render-separator
-   (list
-    centaur-tabs-style-left
     (format "%s "
 	    (let ((bufname (centaur-tabs-buffer-name (car tab))))
 	      (if (> centaur-tabs-label-fixed-length 0)
 		  (centaur-tabs-truncate-string  centaur-tabs-label-fixed-length bufname)
-		bufname)))
-    centaur-tabs-style-right)))
+		bufname))))
 
 (defun centaur-tabs-buffer-name (tab-buffer)
   "Get buffer name of tab.
@@ -1558,17 +1557,13 @@ Currently, this function is only use for option `centaur-tabs-display-sticky-fun
 
 (add-hook 'post-command-hook 'centaur-tabs-monitor-window-scroll)
 
-(defun centaur-tabs-render-separator (values)
-  "Render a list of powerline VALUES."
-  (mapconcat 'centaur-tabs-separator-render values ""))
-
-(defun centaur-tabs-separator-render (item)
-  "Render separator."
+(defun centaur-tabs-separator-render (item face)
+  "Render ITEM using FACE."
   (cond
    ((and (listp item) (eq 'image (car item)))
     (propertize " " 'display item
-		'face (plist-get (cdr item) :face)))
-   (item item)))
+		'face face))
+   (t item)))
 
 (defun centaur-tabs-buffer-select-tab (tab)
   "Select tab."
