@@ -269,6 +269,11 @@ Sticky function is the function at the top of the current window sticky."
   :group 'centaur-tabs
   :type 'boolean)
 
+(defcustom centaur-tabs-set-close-button t
+  "When non nil, display a bar at the left of the currently selected tab."
+  :group 'centaur-tabs
+  :type 'boolean)
+
 ;;; Faces
 ;;
 (defface centaur-tabs-default
@@ -288,11 +293,15 @@ Sticky function is the function at the top of the current window sticky."
   "Face used for the selected tab."
   :group 'centaur-tabs)
 
-(defface centaur-tabs-button
+(defface centaur-tabs-close-unselected
   '((t
-     :box nil
-     ))
-  "Face used for tab bar buttons."
+     (:inherit centaur-tabs-unselected)))
+  "Face used for unselected tabs."
+  :group 'centaur-tabs)
+
+(defface centaur-tabs-close-selected
+  '((t (:inherit centaur-tabs-selected)))
+  "Face used for the selected tab."
   :group 'centaur-tabs)
 
 (defface tabbar-default
@@ -650,8 +659,10 @@ current cached copy."
     (with-current-buffer (car tab)
       (let* ((icon (if (and (buffer-file-name)
 			    (all-the-icons-auto-mode-match?))
-		       (all-the-icons-icon-for-file (file-name-nondirectory (buffer-file-name)))
-		     (all-the-icons-icon-for-mode major-mode)))
+		       (all-the-icons-icon-for-file (file-name-nondirectory (buffer-file-name))
+						    :v-adjust 0.01)
+		     (all-the-icons-icon-for-mode major-mode
+						  :v-adjust 0.01)))
 	     (background (face-background face))
 	     (original-props (get-text-property 0 'face icon)))
 	(remove-text-properties 0 1 '(face nil) icon)
@@ -663,6 +674,14 @@ current cached copy."
 	(add-face-text-property 0 1 `(:background ,background) nil icon)
 	icon))))
 
+;; Utility functions
+(defun centaur-tabs-buffer-close-tab (tab)
+  "Function for closing TAB."
+  (let ((buffer (centaur-tabs-tab-value tab)))
+    (with-current-buffer buffer
+      (kill-buffer buffer))
+    (centaur-tabs-display-update)))
+
 ;;; Tabs
 ;;
 (defsubst centaur-tabs-line-tab (tab)
@@ -673,15 +692,6 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
   (let* ((face (if (centaur-tabs-selected-p tab (centaur-tabs-current-tabset))
 		   'centaur-tabs-selected
 		 'centaur-tabs-unselected))
-	 (icon (if centaur-tabs-set-icons
-		   (propertize
-		    (centaur-tabs-icon tab face)
-		    'centaur-tabs-tab tab
-		    'pointer 'hand
-		    'local-map (purecopy (centaur-tabs-make-header-line-mouse-map
-					  'mouse-1
-					  `(lambda (event) (interactive "e") (centaur-tabs-buffer-select-tab ',tab)))))
-		 ""))
 	 (bar (if (and (centaur-tabs-selected-p tab (centaur-tabs-current-tabset))
 		       centaur-tabs-set-bar)
 		  (propertize
@@ -691,7 +701,31 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
 		   'local-map (purecopy (centaur-tabs-make-header-line-mouse-map
 					 'mouse-1
 					 `(lambda (event) (interactive "e") (centaur-tabs-buffer-select-tab ',tab)))))
-		"")))
+		""))
+	 (icon (if centaur-tabs-set-icons
+		   (propertize
+		    (centaur-tabs-icon tab face)
+		    'centaur-tabs-tab tab
+		    'pointer 'hand
+		    'local-map (purecopy (centaur-tabs-make-header-line-mouse-map
+					  'mouse-1
+					  `(lambda (event) (interactive "e") (centaur-tabs-buffer-select-tab ',tab)))))
+		 ""))
+	 (close-button (if centaur-tabs-set-close-button
+			   (propertize (with-temp-buffer
+					 (insert (make-string 1 #x00D7))
+					 (buffer-string))
+				       'face (if (centaur-tabs-selected-p tab (centaur-tabs-current-tabset))
+						 'centaur-tabs-close-selected
+					       'centaur-tabs-close-unselected)
+				       'pointer 'hand
+				       'centaur-tabs-tab tab
+				       'local-map (purecopy (centaur-tabs-make-header-line-mouse-map
+						  'mouse-1
+						  `(lambda (event) (interactive "e") (centaur-tabs-buffer-close-tab ',tab)))))
+				       ;; 'local-map keymap
+				       ;; 'tabbar-action 'close-tab)
+			 "")))
     (when (or (not centaur-tabs-style-left)
 	      (not centaur-tabs-style-right))
       (centaur-tabs-select-separator-style centaur-tabs-style))
@@ -717,6 +751,7 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
       'local-map (purecopy (centaur-tabs-make-header-line-mouse-map
 			    'mouse-1
 			    `(lambda (event) (interactive "e") (centaur-tabs-buffer-select-tab ',tab)))))
+     close-button
      (centaur-tabs-separator-render centaur-tabs-style-right face))))
 
 (defun centaur-tabs-make-header-line-mouse-map (mouse function)
@@ -1522,7 +1557,7 @@ The memoization cache is frame-local."
 That is, a string used to represent it on the tab bar."
   ;; Init tab style.
   ;; Render tab.
-    (format "%s "
+    (format " %s "
 	    (let ((bufname (centaur-tabs-buffer-name (car tab))))
 	      (if (> centaur-tabs-label-fixed-length 0)
 		  (centaur-tabs-truncate-string  centaur-tabs-label-fixed-length bufname)
