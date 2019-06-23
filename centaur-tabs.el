@@ -270,7 +270,12 @@ Sticky function is the function at the top of the current window sticky."
   :type 'boolean)
 
 (defcustom centaur-tabs-set-close-button t
-  "When non nil, display a bar at the left of the currently selected tab."
+  "When non nil, display a clickable x button for closing the tabs."
+  :group 'centaur-tabs
+  :type 'boolean)
+
+(defcustom centaur-tabs-set-modified-marker t
+  "When non nil, display a marker when the buffer is modified."
   :group 'centaur-tabs
   :type 'boolean)
 
@@ -307,12 +312,22 @@ Sticky function is the function at the top of the current window sticky."
 (defface centaur-tabs-close-unselected
   '((t
      (:inherit centaur-tabs-unselected)))
-  "Face used for unselected tabs."
+  "Face used for unselected close button."
   :group 'centaur-tabs)
 
 (defface centaur-tabs-close-selected
   '((t (:inherit centaur-tabs-selected)))
-  "Face used for the selected tab."
+  "Face used for selected close button."
+  :group 'centaur-tabs)
+
+(defface centaur-tabs-modified-marker-selected
+  '((t (:inherit centaur-tabs-selected)))
+  "Face used for selected modified marker."
+  :group 'centaur-tabs)
+
+(defface centaur-tabs-modified-marker-unselected
+  '((t (:inherit centaur-tabs-unselected)))
+  "Face used for unselected modified marker."
   :group 'centaur-tabs)
 
 (defface tabbar-default
@@ -460,9 +475,9 @@ You should use this hook to reset dependent data.")
    (set-face-attribute 'centaur-tabs-unselected nil
 		       :background (face-background 'tabbar-unselected))
    (set-face-attribute 'centaur-tabs-selected-modified nil
-		       :background (face-background 'tabbar-selected-modified))
+		       :background (face-background 'centaur-tabs-selected))
    (set-face-attribute 'centaur-tabs-unselected-modified nil
-		       :background (face-background 'tabbar-unselected-modified))))
+		       :background (face-background 'centaur-tabs-unselected))))
 
 (defun centaur-tabs--make-xpm (face width height)
   "Create an XPM bitmap via FACE WIDTH and HEIGHT.
@@ -762,6 +777,30 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
 					  'mouse-1
 					  `(lambda (event) (interactive "e") (centaur-tabs-buffer-select-tab ',tab)))))
 		 ""))
+	 (modified-marker (if (and centaur-tabs-set-modified-marker
+				   modified-p)
+			      (propertize
+			       (with-temp-buffer
+				 (insert (make-string 1 #x02022))
+				 (buffer-string))
+			       'face (if selected-p
+					 'centaur-tabs-modified-marker-selected
+				       'centaur-tabs-modified-marker-unselected)
+			       'pointer 'hand
+			       'centaur-tabs-tab tab
+			       'local-map (purecopy (centaur-tabs-make-header-line-mouse-map
+						     'mouse-1
+						     `(lambda (event) (interactive "e") (centaur-tabs-buffer-select-tab ',tab)))))
+			   (propertize
+			    " "
+			    'face (if selected-p
+				      'centaur-tabs-modified-marker-selected
+				    'centaur-tabs-modified-marker-unselected)
+			    'pointer 'hand
+			    'centaur-tabs-tab tab
+			    'local-map (purecopy (centaur-tabs-make-header-line-mouse-map
+						  'mouse-1
+						  `(lambda (event) (interactive "e") (centaur-tabs-buffer-select-tab ',tab)))))))
 	 (close-button (if centaur-tabs-set-close-button
 			   (propertize (with-temp-buffer
 					 (insert (make-string 1 #x00D7))
@@ -774,8 +813,6 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
 				       'local-map (purecopy (centaur-tabs-make-header-line-mouse-map
 						  'mouse-1
 						  `(lambda (event) (interactive "e") (centaur-tabs-buffer-close-tab ',tab)))))
-				       ;; 'local-map keymap
-				       ;; 'tabbar-action 'close-tab)
 			 "")))
     (when (or (not centaur-tabs-style-left)
 	      (not centaur-tabs-style-right))
@@ -802,6 +839,7 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
       'local-map (purecopy (centaur-tabs-make-header-line-mouse-map
 			    'mouse-1
 			    `(lambda (event) (interactive "e") (centaur-tabs-buffer-select-tab ',tab)))))
+     modified-marker
      close-button
      (centaur-tabs-separator-render centaur-tabs-style-right face))))
 
@@ -1608,7 +1646,7 @@ The memoization cache is frame-local."
 That is, a string used to represent it on the tab bar."
   ;; Init tab style.
   ;; Render tab.
-    (format " %s "
+    (format " %s"
 	    (let ((bufname (centaur-tabs-buffer-name (car tab))))
 	      (if (> centaur-tabs-label-fixed-length 0)
 		  (centaur-tabs-truncate-string  centaur-tabs-label-fixed-length bufname)
