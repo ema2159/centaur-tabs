@@ -62,7 +62,7 @@
     (setq centaur-tabs-set-bar t)
    #+END_SRC
    The color can be customized via the centaur-active-bar-face face (see my personal configuration for reference).
-   [[./theme/bar.png]]
+   [[./images/bar.png]]
 ** Customize the close button
    To disable the close button
    #+BEGIN_SRC emacs-lisp :tangle yes
@@ -161,6 +161,7 @@
   - [X] Make icon insert after the separator
   - [X] Add a customizable close button
   - [ ] Improve ~after-modifying-buffer~ funciton so it's called just when needed
+  - [ ] Fix messages buffer icon and font-lock-keyword-face errors
     
 * My personal configuration 
 In the ~:custom-face~ section it uses the doom-modeline-bar face to theme the centaur-tabs-bar so it nicely matches the color.

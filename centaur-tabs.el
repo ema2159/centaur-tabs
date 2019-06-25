@@ -561,6 +561,7 @@ current cached copy."
   "Generate all-the-icons icon for TAB using FACE's background."
   (when (featurep 'all-the-icons)
     (with-current-buffer (car tab)
+      (ignore-errors
       (let* ((icon (if (and (buffer-file-name)
 			    (all-the-icons-auto-mode-match?))
 		       (all-the-icons-icon-for-file (file-name-nondirectory (buffer-file-name))
@@ -576,7 +577,7 @@ current cached copy."
 	  (pop original-props))
 	(add-face-text-property 0 1 original-props nil icon)
 	(add-face-text-property 0 1 `(:background ,background) nil icon)
-	icon))))
+	icon)))))
 
 ;; Utility functions
 (defun centaur-tabs-buffer-close-tab (tab)
