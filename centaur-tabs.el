@@ -83,8 +83,7 @@ visible."
 
 (defcustom centaur-tabs-hide-tabs-hooks
   '(magit-status-mode-hook magit-popup-mode-hook reb-mode-hook)
-  "Some buffer's header line is empty that make its window insufficient of space to display all content.
-Feel free to add hook in this option. ;)"
+  "Set hooks to buffer in which it isn't desired to have tabs."
   :type '(repeat symbol)
   :group 'centaur-tabs)
 
@@ -486,8 +485,8 @@ That is, the sub-list of tabs starting at the first visible one."
   (nthcdr (centaur-tabs-start tabset) (centaur-tabs-tabs tabset)))
 
 (defun centaur-tabs-add-tab (tabset object)
-  "Return tab if it has opend.
-Otherwise insert new tab on right of current tab."
+  "Check if OBJECT tab is already open in TABSET.
+Otherwise insert it."
   (let ((tabs (centaur-tabs-tabs tabset)))
     (if (centaur-tabs-get-tab object tabset)
 	tabs
@@ -495,10 +494,10 @@ Otherwise insert new tab on right of current tab."
 	     (selected (centaur-tabs-selected-tab tabset))
 	     (selected-index (cl-position (car selected) (mapcar 'car tabs))))
 	(centaur-tabs-set-template tabset nil)
-	(set tabset (centaur-tabs-insert-at tabs selected-index tab))
-	))))
+	(set tabset (centaur-tabs-insert-at tabs selected-index tab))))))
 
 (defun centaur-tabs-insert-at (list index insert-element)
+  "Insert INSERT-ELEMENT in LIST at index INDEX."
   (let ((counter 0)
 	(result '()))
     (dolist (element list)
@@ -598,7 +597,9 @@ current cached copy."
   (centaur-tabs-set-template centaur-tabs-current-tabset nil)
   (centaur-tabs-display-update))
 (defun after-modifying-buffer (begin end length)
-  "Function to be run after the buffer is changed."
+  "Function to be run after the buffer is changed.
+BEGIN, END and LENGTH are just standard arguments for after-changes-function
+hooked functions"
   (set-buffer-modified-p (buffer-modified-p))
   (centaur-tabs-set-template centaur-tabs-current-tabset nil)
   (centaur-tabs-display-update))

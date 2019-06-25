@@ -1,9 +1,9 @@
 #+TITLE: Centaur tabs
 #+CREATOR: Emmanuel Bustos T.
 
-* What is this?
   [[./images/centaur.png]]
-
+  
+* What is this?
   This projects aims to become an aesthetic, functional and efficient tabs plugin for Emacs with a lot of customization options. 
   Although this is a fork from [[https://github.com/manateelazycat/awesome-tab][awesome-tab]] (that I forked with the permission from the author) it's been heavily modified so now it may be considered a different package.
 
@@ -160,6 +160,7 @@
   - [ ] Add tab styles (Atom, Sublime, VS Code...)
   - [X] Make icon insert after the separator
   - [X] Add a customizable close button
+  - [ ] Improve ~after-modifying-buffer~ funciton so it's called just when needed
     
 * My personal configuration 
 In the ~:custom-face~ section it uses the doom-modeline-bar face to theme the centaur-tabs-bar so it nicely matches the color.
