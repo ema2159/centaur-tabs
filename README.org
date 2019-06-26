@@ -27,7 +27,7 @@
   #+BEGIN_SRC emacs-lisp :tangle yes
     (add-to-list 'load-path "~/.emacs.d/other/centaur-tabs")
     (centaur-tabs-mode t)
-    (global-set-key (kbd "C-<prior>")  'centaur-tabs-backwar)
+    (global-set-key (kbd "C-<prior>")  'centaur-tabs-backward)
     (global-set-key (kbd "C-<next>") 'centaur-tabs-forward)
   #+END_SRC
 
