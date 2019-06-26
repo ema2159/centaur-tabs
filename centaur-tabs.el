@@ -47,6 +47,8 @@
   "Display a tab bar in the header line."
   :group 'convenience)
 
+;;; Faces
+;;
 (defcustom centaur-tabs-cycle-scope nil
   "*Specify the scope of cyclic navigation through tabs.
 The following scopes are possible:
@@ -105,7 +107,7 @@ background color of the `default' face otherwise."
   :group 'centaur-tabs
   :type 'int)
 
-(defcustom centaur-tabs-style "wave"
+(defcustom centaur-tabs-style "bar"
   "The style of tab."
   :group 'centaur-tabs
   :type 'string)
@@ -116,7 +118,7 @@ Sticky function is the function at the top of the current window sticky."
   :group 'centaur-tabs
   :type 'boolean)
 
-(defcustom centaur-tabs-set-icons t
+(defcustom centaur-tabs-set-icons nil
   "When non nil, display an icon from all-the-icons alongside the tab name."
   :group 'centaur-tabs
   :type 'boolean)
