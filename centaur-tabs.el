@@ -139,7 +139,7 @@ Sticky function is the function at the top of the current window sticky."
   :group 'centaur-tabs
   :type 'boolean)
 
-(defvar centaur-tabs-modified-marker (concat " " (make-string 1 #x25CE))
+(defvar centaur-tabs-modified-marker (concat " " (make-string 1 #x23FA))
   "When non nil, display a marker when the buffer is modified.")
 
 ;;; Faces

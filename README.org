@@ -13,16 +13,23 @@
 
 * Installation
   I'm currently working so this package can be downloaded from MELPA. Meanwhile, you can download the centaur-tabs.el file, put it on your .emacs.d and load it like this using ~use-package~: 
+  #+BEGIN_SRC emacs-lisp :tangle yes
+    (use-package centaur-tabs
+      :load-path "~/.emacs.d/other/centaur-tabs"
+      :config
+      (centaur-tabs-mode t)
+      :bind
+      ("C-<prior>" . centaur-tabs-backward)
+      ("C-<next>" . centaur-tabs-forward))
+  #+END_SRC
 
-#+BEGIN_SRC emacs-lisp :tangle yes
-  (use-package centaur-tabs
-    :load-path "~/.emacs.d/other/centaur-tabs"
-    :config
+  Or if you use require:
+  #+BEGIN_SRC emacs-lisp :tangle yes
+    (add-to-list 'load-path "~/.emacs.d/other/centaur-tabs")
     (centaur-tabs-mode t)
-    :bind
-    ("C-<prior>" . centaur-tabs-backward)
-    ("C-<next>" . centaur-tabs-forward))
-#+END_SRC
+    (global-set-key (kbd "C-<prior>")  'centaur-tabs-backwar)
+    (global-set-key (kbd "C-<next>") 'centaur-tabs-forward)
+  #+END_SRC
 
 * Customization
   This package is heavily customizable, with many options available to the user. Here are some of them:
@@ -147,7 +154,24 @@
 	  (centaur-tabs-get-group-name (current-buffer))))))
    #+END_SRC
    
-* TO DO [9/12]
+** Enable Vim like tab motions
+   To enable Vim like tab changing binds
+   #+BEGIN_SRC emacs-lisp :tangle yes
+     (define-key evil-normal-state-map (kbd "g t") 'centaur-tabs-forward)
+     (define-key evil-normal-state-map (kbd "g T") 'centaur-tabs-backward)
+   #+END_SRC
+   
+   or with ~use-package~:
+   #+BEGIN_SRC emacs-lisp :tangle yes
+     (use-package centaur-tabs
+       ...
+       :bind
+       (:map evil-normal-state-map
+	("g t" . centaur-tabs-forward)
+	("g T" . centaur-tabs-backward))
+       ...)
+   #+END_SRC
+* TO DO [9/15]
   - [X] Integrate all-the-icons
   - [X] Improve all the icons placing
   - [X] Fix all the icons background
@@ -160,8 +184,9 @@
   - [ ] Add tab styles (Atom, Sublime, VS Code...)
   - [X] Make icon insert after the separator
   - [X] Add a customizable close button
-  - [ ] Improve ~after-modifying-buffer~ funciton so it's called just when needed
+  - [ ] Improve ~after-modifying-buffer~ function so it's called just when needed
   - [ ] Fix messages buffer icon and font-lock-keyword-face errors
+  - [ ] Check for Elscreen compatibility
     
 * My personal configuration 
 In the ~:custom-face~ section it uses the doom-modeline-bar face to theme the centaur-tabs-bar so it nicely matches the color.
