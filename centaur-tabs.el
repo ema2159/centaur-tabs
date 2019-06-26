@@ -143,7 +143,7 @@ Sticky function is the function at the top of the current window sticky."
   :group 'centaur-tabs
   :type 'boolean)
 
-(defcustom centaur-tabs-modified-marker (concat " " (make-string 1 #x23FA))
+(defcustom centaur-tabs-modified-marker (make-string 1 #x23FA)
   "When non nil, display a marker when the buffer is modified."
   :group 'centaur-tabs
   :type 'string)
@@ -638,7 +638,10 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
 		   'pointer 'hand
 		   'local-map (purecopy (centaur-tabs-make-header-line-mouse-map
 					 'mouse-1
-					 `(lambda (event) (interactive "e") (centaur-tabs-buffer-select-tab ',tab)))))
+					 `(lambda (event) (interactive "e")
+					    (let ((window (posn-window (event-start event))))
+					      (when (windowp window) (select-window window)))
+					    (centaur-tabs-buffer-select-tab ',tab)))))
 		""))
 	 (icon (if centaur-tabs-set-icons
 		   (propertize
@@ -647,41 +650,52 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
 		    'pointer 'hand
 		    'local-map (purecopy (centaur-tabs-make-header-line-mouse-map
 					  'mouse-1
-					  `(lambda (event) (interactive "e") (centaur-tabs-buffer-select-tab ',tab)))))
+					  `(lambda (event) (interactive "e")
+					     (let ((window (posn-window (event-start event))))
+					       (when (windowp window) (select-window window)))
+					     (centaur-tabs-buffer-select-tab ',tab)))))
 		 ""))
-	 (modified-marker (if (and centaur-tabs-set-modified-marker
-				   modified-p)
-			      (propertize
-			       centaur-tabs-modified-marker
-			       'face (if selected-p
-					 'centaur-tabs-modified-marker-selected
-				       'centaur-tabs-modified-marker-unselected)
-			       'pointer 'hand
-			       'centaur-tabs-tab tab
-			       'local-map (purecopy (centaur-tabs-make-header-line-mouse-map
-						     'mouse-1
-						     `(lambda (event) (interactive "e") (centaur-tabs-buffer-select-tab ',tab)))))
-			    (propertize
-			     " "
-			     'face (if selected-p
-				       'centaur-tabs-modified-marker-selected
-				     'centaur-tabs-modified-marker-unselected)
-			     'pointer 'hand
-			     'centaur-tabs-tab tab
-			     'local-map (purecopy (centaur-tabs-make-header-line-mouse-map
-						   'mouse-1
-						   `(lambda (event) (interactive "e") (centaur-tabs-buffer-select-tab ',tab)))))))
+	 (modified-marker (propertize
+			   (concat
+			    " "
+			    (and centaur-tabs-set-modified-marker
+				 modified-p
+				 (not centaur-tabs-set-close-button)
+				 centaur-tabs-modified-marker)) ;; Returns last one if all are not nil
+			   'face (if selected-p
+				     'centaur-tabs-modified-marker-selected
+				   'centaur-tabs-modified-marker-unselected)
+			   'pointer 'hand
+			   'centaur-tabs-tab tab
+			   'local-map (purecopy (centaur-tabs-make-header-line-mouse-map
+						 'mouse-1
+						 `(lambda (event) (interactive "e")
+						    (let ((window (posn-window (event-start event))))
+						      (when (windowp window) (select-window window)))
+						    (centaur-tabs-buffer-select-tab ',tab))))))
 	 (close-button (if centaur-tabs-set-close-button
-			   (propertize
-			    centaur-tabs-close-button
-			    'face (if selected-p
-				      'centaur-tabs-close-selected
-				    'centaur-tabs-close-unselected)
-			    'pointer 'hand
-			    'centaur-tabs-tab tab
-			    'local-map (purecopy (centaur-tabs-make-header-line-mouse-map
-						  'mouse-1
-						  `(lambda (event) (interactive "e") (centaur-tabs-buffer-close-tab ',tab)))))
+			   (if (and centaur-tabs-set-modified-marker
+				    modified-p)
+			       (propertize
+				centaur-tabs-modified-marker
+				'face (if selected-p
+					  'centaur-tabs-modified-marker-selected
+					'centaur-tabs-modified-marker-unselected)
+				'pointer 'hand
+				'centaur-tabs-tab tab
+				'local-map (purecopy (centaur-tabs-make-header-line-mouse-map
+						      'mouse-1
+						      `(lambda (event) (interactive "e") (centaur-tabs-buffer-close-tab ',tab)))))
+			     (propertize
+			      centaur-tabs-close-button
+			      'face (if selected-p
+					'centaur-tabs-close-selected
+				      'centaur-tabs-close-unselected)
+			      'pointer 'hand
+			      'centaur-tabs-tab tab
+			      'local-map (purecopy (centaur-tabs-make-header-line-mouse-map
+						    'mouse-1
+						    `(lambda (event) (interactive "e") (centaur-tabs-buffer-close-tab ',tab))))))
 			 "")))
     (when (or (not centaur-tabs-style-left)
 	      (not centaur-tabs-style-right))
@@ -696,7 +710,10 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
       'pointer 'hand
       'local-map (purecopy (centaur-tabs-make-header-line-mouse-map
 			    'mouse-1
-			    `(lambda (event) (interactive "e") (centaur-tabs-buffer-select-tab ',tab)))))
+			    `(lambda (event) (interactive "e")
+			       (let ((window (posn-window (event-start event))))
+				 (when (windowp window) (select-window window)))
+			       (centaur-tabs-buffer-select-tab ',tab)))))
      icon
      (propertize
       (if centaur-tabs-tab-label-function
@@ -707,7 +724,10 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
       'pointer 'hand
       'local-map (purecopy (centaur-tabs-make-header-line-mouse-map
 			    'mouse-1
-			    `(lambda (event) (interactive "e") (centaur-tabs-buffer-select-tab ',tab)))))
+			    `(lambda (event) (interactive "e")
+			       (let ((window (posn-window (event-start event))))
+				 (when (windowp window) (select-window window)))
+			       (centaur-tabs-buffer-select-tab ',tab)))))
      modified-marker
      close-button
      (centaur-tabs-separator-render centaur-tabs-style-right face))))
