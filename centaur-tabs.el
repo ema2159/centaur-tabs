@@ -133,19 +133,27 @@ Sticky function is the function at the top of the current window sticky."
   :group 'centaur-tabs
   :type 'boolean)
 
-(defvar centaur-tabs-close-button (make-string 1 #x00D7)
-  "When non nil, display a clickable x button for closing the tabs.")
+(defcustom centaur-tabs-close-button (make-string 1 #x00D7)
+  "When non nil, display a clickable x button for closing the tabs."
+  :group 'centaur-tabs
+  :type 'string)
 
 (defcustom centaur-tabs-set-modified-marker nil
   "When non nil, display a marker when the buffer is modified."
   :group 'centaur-tabs
   :type 'boolean)
 
-(defvar centaur-tabs-modified-marker (concat " " (make-string 1 #x23FA))
-  "When non nil, display a marker when the buffer is modified.")
+(defcustom centaur-tabs-modified-marker (concat " " (make-string 1 #x23FA))
+  "When non nil, display a marker when the buffer is modified."
+  :group 'centaur-tabs
+  :type 'string)
 
 ;;; Faces
 ;;
+(defface centaur-tabs-active-bar-face
+  '((t (:background "cyan")))
+  "Face used for the dirname part of the buffer path.")
+
 (defface centaur-tabs-default
   '((t
      (:background "black" :foreground "black")))
