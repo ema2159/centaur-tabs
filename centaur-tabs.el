@@ -194,12 +194,12 @@ Sticky function is the function at the top of the current window sticky."
   :group 'centaur-tabs)
 
 (defface centaur-tabs-modified-marker-selected
-  '((t (:inherit centaur-tabs-selected)))
+  `((t (:inherit centaur-tabs-selected :foreground ,(face-background 'centaur-tabs-active-bar-face))))
   "Face used for selected modified marker."
   :group 'centaur-tabs)
 
 (defface centaur-tabs-modified-marker-unselected
-  '((t (:inherit centaur-tabs-unselected)))
+  `((t (:inherit centaur-tabs-unselected :foreground ,(face-background 'centaur-tabs-active-bar-face))))
   "Face used for unselected modified marker."
   :group 'centaur-tabs)
 
@@ -224,10 +224,6 @@ Sticky function is the function at the top of the current window sticky."
   '((t
      (:inherit default)))
   "Face used to inherit tabbar-unselected-modified face")
-
-(defface centaur-active-bar-face
-  '((t (:background "green")))
-  "Face used for the dirname part of the buffer path.")
 
 (defvar centaur-tabs-hide-tab-function 'centaur-tabs-hide-tab
   "Function to hide tab.
@@ -382,7 +378,7 @@ Taken from doom-modeline."
 	  'xpm t :ascent 'center))))))
 
 (defvar centaur-tabs-active-bar
-  (centaur-tabs--make-xpm 'centaur-active-bar-face
+  (centaur-tabs--make-xpm 'centaur-tabs-active-bar-face
 			  2
 			  centaur-tabs-bar-height))
 
