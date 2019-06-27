@@ -1272,7 +1272,7 @@ BODY-2X is an optional argument."
     `(defun ,(intern (format "powerline-%s-%s" name (symbol-name dir)))
 	 (face1 face2 &optional height)
        (when window-system
-	 (unless height (setq height (centaur-tabs-separator-separator-height)))
+	 (unless height (setq height centaur-tabs-height))
 	 (let* ,(append `((color1 (when ,src-face
 				    (centaur-tabs-separator-hex-color (centaur-tabs-separator-background-color ,src-face))))
 			  (color2 (when ,dst-face
