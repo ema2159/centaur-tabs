@@ -85,7 +85,7 @@
    #+BEGIN_SRC emacs-lisp :tangle yes
      (setq centaur-tabs-set-modified-marker t)
    #+END_SRC
-   To change the displayed string for the close button
+   To change the displayed string for the modified-marker
    #+BEGIN_SRC emacs-lisp :tangle yes
      (setq centaur-tabs-modified-marker "*")
    #+END_SRC
@@ -171,7 +171,7 @@
 	("g T" . centaur-tabs-backward))
        ...)
    #+END_SRC
-* TO DO [9/15]
+* TO DO [10/15]
   - [X] Integrate all-the-icons
   - [X] Improve all the icons placing
   - [X] Fix all the icons background
@@ -185,7 +185,7 @@
   - [X] Make icon insert after the separator
   - [X] Add a customizable close button
   - [ ] Improve ~after-modifying-buffer~ function so it's called just when needed
-  - [ ] Fix messages buffer icon and font-lock-keyword-face errors
+  - [X] Fix messages buffer icon an FontAwesome errors
   - [ ] Check for Elscreen compatibility
     
 * My personal configuration 

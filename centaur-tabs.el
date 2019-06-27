@@ -579,7 +579,7 @@ current cached copy."
 	(remove-text-properties 0 1 '(face nil) icon)
 	;; Pop :background from face so it doesn't accumulate
 	;; The unless part is to omit the initial case when :background hasn't been added
-	(unless (eq (length original-props) 6)
+	(unless (<= (length original-props) 6)
 	  (pop original-props))
 	(add-face-text-property 0 1 original-props nil icon)
 	(add-face-text-property 0 1 `(:background ,background) nil icon)
