@@ -133,7 +133,7 @@ Sticky function is the function at the top of the current window sticky."
   :group 'centaur-tabs
   :type 'boolean)
 
-(defcustom centaur-tabs-close-button (make-string 1 #x00D7)
+(defcustom centaur-tabs-close-button (concat " " (make-string 1 #x00D7))
   "When non nil, display a clickable x button for closing the tabs."
   :group 'centaur-tabs
   :type 'string)
@@ -143,7 +143,7 @@ Sticky function is the function at the top of the current window sticky."
   :group 'centaur-tabs
   :type 'boolean)
 
-(defcustom centaur-tabs-modified-marker (make-string 1 #x23FA)
+(defcustom centaur-tabs-modified-marker (concat " " (make-string 1 #x23FA))
   "When non nil, display a marker when the buffer is modified."
   :group 'centaur-tabs
   :type 'string)
@@ -656,12 +656,11 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
 					     (centaur-tabs-buffer-select-tab ',tab)))))
 		 ""))
 	 (modified-marker (propertize
-			   (concat
-			    " "
-			    (and centaur-tabs-set-modified-marker
-				 modified-p
-				 (not centaur-tabs-set-close-button)
-				 centaur-tabs-modified-marker)) ;; Returns last one if all are not nil
+			   (if (and centaur-tabs-set-modified-marker
+				modified-p
+				(not centaur-tabs-set-close-button))
+			       centaur-tabs-modified-marker
+			     "") ;; Returns last one if all are not nil
 			   'face (if selected-p
 				     'centaur-tabs-modified-marker-selected
 				   'centaur-tabs-modified-marker-unselected)
@@ -730,7 +729,7 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
 			       (centaur-tabs-buffer-select-tab ',tab)))))
      modified-marker
      close-button
-     (centaur-tabs-separator-render centaur-tabs-style-right face))))
+(centaur-tabs-separator-render centaur-tabs-style-right face))))
 
 (defun centaur-tabs-make-header-line-mouse-map (mouse function)
   "Function for mapping FUNCTION to mouse button MOUSE."
