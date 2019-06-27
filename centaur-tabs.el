@@ -194,12 +194,12 @@ Sticky function is the function at the top of the current window sticky."
   :group 'centaur-tabs)
 
 (defface centaur-tabs-modified-marker-selected
-  `((t (:inherit centaur-tabs-selected :foreground ,(face-background 'centaur-tabs-active-bar-face))))
+  `((t (:inherit centaur-tabs-selected)))
   "Face used for selected modified marker."
   :group 'centaur-tabs)
 
 (defface centaur-tabs-modified-marker-unselected
-  `((t (:inherit centaur-tabs-unselected :foreground ,(face-background 'centaur-tabs-active-bar-face))))
+  `((t (:inherit centaur-tabs-unselected)))
   "Face used for unselected modified marker."
   :group 'centaur-tabs)
 
@@ -350,7 +350,7 @@ You should use this hook to reset dependent data.")
 
 (defun centaur-tabs--make-xpm (face width height)
   "Create an XPM bitmap via FACE WIDTH and HEIGHT.
-Taken from doom-modeline."
+Taken from `doom-modeline'."
   (when (and (display-graphic-p)
 	     (image-type-available-p 'xpm))
     (propertize
@@ -713,6 +713,7 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
      (centaur-tabs-separator-render centaur-tabs-style-right face))))
 
 (defun centaur-tabs-make-header-line-mouse-map (mouse function)
+  "Function for mapping FUNCTION to mouse button MOUSE."
   (let ((map (make-sparse-keymap)))
     (define-key map (vector 'header-line mouse) function)
     map))
@@ -786,7 +787,7 @@ Inhibit display of the tab bar in current window `centaur-tabs-hide-tab-function
 
 ;;; Cyclic navigation through tabs
 ;;
-(defun centaur-tabs-cycle (&optional backward type)
+(defun centaur-tabs-cycle (&optional backward)
   "Cycle to the next available tab.
 The scope of the cyclic navigation through tabs is specified by the
 option `centaur-tabs-cycle-scope'.
@@ -992,11 +993,8 @@ Returns non-nil if the new state is enabled.
   "Display buffers in the tab bar."
   :group 'centaur-tabs)
 
-(defun centaur-tabs-filter (condp lst)
-  (delq nil
-	(mapcar (lambda (x) (and (funcall condp x) x)) lst)))
-
 (defun centaur-tabs-filter-out (condp lst)
+  "Filter list LST with using CONDP as the filtering condition."
   (delq nil
 	(mapcar (lambda (x) (if (funcall condp x) nil x)) lst)))
 
@@ -1030,7 +1028,7 @@ visiting a file.  The current buffer is always included."
 (defvar centaur-tabs--buffers nil)
 
 (defun centaur-tabs-buffer-update-groups ()
-  "Update tab sets from groups of existing buffers.
+  "Update tabsets from groups of existing buffers.
 Return the the first group where the current buffer is."
   (let ((bl (sort
 	     (mapcar
@@ -1104,7 +1102,8 @@ Return the the first group where the current buffer is."
 	  (string-to-number
 	   (and (string-match "darwin\\([0-9]+\\)" system-configuration)
 		(match-string-no-properties 1 system-configuration)))))
-  "Boolean variable to determine whether to use Apple RGB colorspace to render images.
+  "Boolean variable to determine whether to use Apple RGB colorspace.
+used to render images.
 
 t on macOS 10.7+ and `ns-use-srgb-colorspace' is t, nil otherwise.
 
@@ -1169,9 +1168,9 @@ RED, GREEN and BLUE should be between 0.0 and 1.0, inclusive."
 							      second-pattern-height-sym)
   "Create let-var bindings and a function body from PATTERNS.
 The `car' and `cdr' parts of the result can be passed to the
-function `centaur-tabs-separator-wrap-defun' as its `let-vars' and `body' arguments,
-respectively.  HEIGHT-EXP is an expression calculating the image
-height and it should contain a free variable `height'.
+function `centaur-tabs-separator-wrap-defun' as its `let-vars'
+and `body' arguments,respectively.  HEIGHT-EXP is an expression
+ calculating the image height and it should contain a free variable `height'.
 PATTERN-HEIGHT-SYM and SECOND-PATTERN-HEIGHT-SYM are symbols used
 for let-var binding variables."
   (let* ((pattern (centaur-tabs-separator-pattern (mapcar 'centaur-tabs-separator-pattern-to-string (car patterns))))
@@ -1214,9 +1213,11 @@ CENTER
 SECOND-PATTERN ...
 FOOTER
 
-PATTERN and SECOND-PATTERN repeat infinitely to fill the space needed to generate a full height XPM.
+PATTERN and SECOND-PATTERN repeat infinitely to fill the space needed to
+generate a full height XPM.
 
-PATTERN, HEADER, FOOTER, SECOND-PATTERN, CENTER are of the form ((COLOR ...) (COLOR ...) ...).
+PATTERN, HEADER, FOOTER, SECOND-PATTERN, CENTER are of the form
+\((COLOR ...) (COLOR ...) ...).
 
 COLOR can be one of 0, 1, or 2, where 0 is the source color, 1 is the
 destination color, and 2 is the interpolated color between 0 and 1."
@@ -1235,6 +1236,7 @@ destination color, and 2 is the interpolated color between 0 and 1."
 				       (cdr bindings-body) (cdr bindings-body-2x))))
 
 (defun centaur-tabs-separator-background-color (face)
+  "Set the separator background color using FACE."
   (face-attribute face
 		  (if (face-attribute face :inverse-video nil 'default)
 		      :foreground
@@ -1243,7 +1245,9 @@ destination color, and 2 is the interpolated color between 0 and 1."
 		  'default))
 
 (defun centaur-tabs-separator-wrap-defun (name dir width let-vars body &optional body-2x)
-  "Generate a powerline function of NAME in DIR with WIDTH using LET-VARS and BODY."
+  "Generate a powerline function of name NAME in dir DIR.
+This is made with WIDTH using LET-VARS and BODY.
+BODY-2X is an optional argument."
   (let* ((src-face (if (eq dir 'left) 'face1 'face2))
 	 (dst-face (if (eq dir 'left) 'face2 'face1)))
     `(defun ,(intern (format "powerline-%s-%s" name (symbol-name dir)))
@@ -1478,7 +1482,9 @@ The memoization cache is frame-local."
 	   (puthash key (apply ,func args) cache))))))
 
 (defun centaur-tabs-separator-create-or-get-cache ()
-  "Return a frame-local hash table that acts as a memoization cache for powerline. Create one if the frame doesn't have one yet."
+  "Return a frame-local hash table that acts as a memoization cache.
+The cache is for the powerline.
+Create one if the frame doesn't have one yet."
   (let ((table (frame-parameter nil 'powerline-cache)))
     (if (hash-table-p table) table (centaur-tabs-separator-reset-cache))))
 
@@ -1507,6 +1513,7 @@ The memoization cache is frame-local."
 (centaur-tabs-separator-memoize (centaur-tabs-separator-zigzag right))
 
 (defun centaur-tabs-select-separator-style (tab-style)
+  "Set the separator style to TAB-STYLE."
   (setq centaur-tabs-style-left (funcall (intern (format "powerline-%s-right" tab-style)) 'centaur-tabs-default nil centaur-tabs-height))
   (setq centaur-tabs-style-right (funcall (intern (format "powerline-%s-left" tab-style)) nil 'centaur-tabs-default centaur-tabs-height)))
 
@@ -1522,7 +1529,7 @@ That is, a string used to represent it on the tab bar."
 		bufname))))
 
 (defun centaur-tabs-buffer-name (tab-buffer)
-  "Get buffer name of tab.
+  "Get buffer name of tab using TAB-BUFFER.
 Will merge sticky function name in tab if option `centaur-tabs-display-sticky-function-name' is non-nil."
   (if (and centaur-tabs-display-sticky-function-name
 	   (boundp 'centaur-tabs-last-sticky-func-name)
@@ -1567,7 +1574,7 @@ Currently, this function is only use for option `centaur-tabs-display-sticky-fun
    (t item)))
 
 (defun centaur-tabs-buffer-select-tab (tab)
-  "Select tab."
+  "Select TAB."
   (let ((buffer (centaur-tabs-tab-value tab)))
     (switch-to-buffer buffer)
     (centaur-tabs-buffer-show-groups nil)
@@ -1627,7 +1634,7 @@ Run as `centaur-tabs-quit-hook'."
 
 ;;;;;;;;;;;;;;;;;;;;;;; Interactive functions ;;;;;;;;;;;;;;;;;;;;;;;
 (defun centaur-tabs-switch-group (&optional groupname)
-  "Switch tab groups using ido."
+  "Switch tab groups using ido.  GROUPNAME can optionaly be provided."
   (interactive)
   (let* ((tab-buffer-list (mapcar
 			   #'(lambda (b)
@@ -1702,7 +1709,7 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
 	  (if old-bufs ; if this is false, then the current tab is the rightmost
 	      (push (car old-bufs) new-bufs))
 	  (push the-buffer new-bufs)) ; this is the tab that was to be moved
-      (error "Error: current buffer's name was not found in Centaur-Tabs's buffer list."))
+      (error "Error: current buffer's name was not found in Centaur-Tabs's buffer list"))
     (setq new-bufs (reverse new-bufs))
     (setq new-bufs (append new-bufs (cdr old-bufs)))
     (set bufset new-bufs)
@@ -1732,7 +1739,7 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
 	    (push not-yet-this-buf new-bufs)
 	    (setq new-bufs (reverse new-bufs))
 	    (setq new-bufs (append new-bufs (cdr old-bufs))))
-	(error "Error: current buffer's name was not found in Centaur-Tabs's buffer list."))
+	(error "Error: current buffer's name was not found in Centaur-Tabs's buffer list"))
       (set bufset new-bufs)
       (centaur-tabs-set-template bufset nil)
       (centaur-tabs-display-update))))
@@ -1797,10 +1804,9 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
     ))
 
 (defun centaur-tabs-select-visible-nth-tab (tab-index)
-  "Select visible tab with `tab-index'.
-Example, when `tab-index' is 1, this function will select the leftmost label in the visible area,
-instead of the first label in the current group.
-
+  "Select visible tab with TAB-INDEX'.
+Example, when `tab-index' is 1, this function will select the leftmost label in
+the visible area,  instead of the first label in the current group.
 If `tab-index' more than length of visible tabs, selet the last tab.
 
 If `tab-index' is 0, select last tab."
@@ -1829,14 +1835,14 @@ not the actual logical index position of the current group."
 
 ;;;;;;;;;;;;;;;;;;;;;;; Utils functions ;;;;;;;;;;;;;;;;;;;;;;;
 (defun centaur-tabs-get-groups ()
-  ;; Refresh groups.
+  "Refresh tabs groups."
   (set centaur-tabs-tabsets-tabset (centaur-tabs-map-tabsets 'centaur-tabs-selected-tab))
   (mapcar #'(lambda (group)
 	      (format "%s" (cdr group)))
 	  (centaur-tabs-tabs centaur-tabs-tabsets-tabset)))
 
 (defun centaur-tabs-get-extensions ()
-  ;; Refresh groups.
+  "Get file extension of tabs."
   (set centaur-tabs-tabsets-tabset (centaur-tabs-map-tabsets 'centaur-tabs-selected-tab))
   (let ((extension-names '()))
     (mapc #'(lambda (buffer)
@@ -1849,6 +1855,7 @@ not the actual logical index position of the current group."
     extension-names))
 
 (defmacro centaur-tabs-kill-buffer-match-rule (match-rule)
+  "If buffer match MATCH-RULE,  kill it."
   `(save-excursion
      (mapc #'(lambda (buffer)
 	       (with-current-buffer buffer
@@ -1873,12 +1880,14 @@ not the actual logical index position of the current group."
 (defvar centaur-tabs-hide-hash (make-hash-table :test 'equal))
 
 (defun centaur-tabs-project-name ()
+  "Get project name for tabs."
   (let ((project-name (cdr (project-current))))
     (if project-name
 	(format "Project: %s" (expand-file-name project-name))
       centaur-tabs-common-group-name)))
 
 (defun centaur-tabs-get-group-name (buf)
+  "Get group name of buffer BUF."
   (let ((group-name (gethash buf centaur-tabs-groups-hash)))
     ;; Return group name cache if it exists for improve performance.
     (if group-name
@@ -1893,7 +1902,8 @@ not the actual logical index position of the current group."
 (defun centaur-tabs-buffer-groups ()
   "`centaur-tabs-buffer-groups' control buffers' group rules.
 
-Group centaur-tabs with mode if buffer is derived from `eshell-mode' `emacs-lisp-mode' `dired-mode' `org-mode' `magit-mode'.
+Group centaur-tabs with mode if buffer is derived from `eshell-mode'
+`emacs-lisp-mode' `dired-mode' `org-mode' `magit-mode'.
 All buffer name start with * will group to \"Emacs\".
 Other buffer group by `centaur-tabs-get-group-name' with project name."
   (list
@@ -1923,6 +1933,7 @@ Other buffer group by `centaur-tabs-get-group-name' with project name."
 (defvar helm-source-centaur-tabs-group nil)
 
 (defun centaur-tabs-build-helm-source ()
+  "Display a list of current buffer groupps in Helm."
   (interactive)
   (setq helm-source-centaur-tabs-group
 	(when (featurep 'helm)
@@ -1935,6 +1946,7 @@ Other buffer group by `centaur-tabs-get-group-name' with project name."
 (defvar ivy-source-centaur-tabs-group nil)
 
 (defun centaur-tabs-build-ivy-source ()
+  "Display a list of current buffer groupps in Ivy."
   (interactive)
   (setq ivy-source-centaur-tabs-group
 	(when (featurep 'ivy)
@@ -1945,6 +1957,7 @@ Other buffer group by `centaur-tabs-get-group-name' with project name."
 	   :action #'centaur-tabs-switch-group))))
 
 (defun centaur-tabs-hide-tab (x)
+  "Do no to show buffer X in tabs."
   (let ((name (format "%s" x)))
     (or
      ;; Current window is not dedicated window.
@@ -1962,6 +1975,8 @@ Other buffer group by `centaur-tabs-get-group-name' with project name."
      )))
 
 (defun centaur-tabs-hide-tab-cached (buf)
+  "Cached vesion of `centaur-tabs-hide-tab' to improve performance.
+Operates over buffer BUF"
   (let ((hide (gethash buf centaur-tabs-hide-hash 'not-found)))
     (when (eq hide 'not-found)
       (setq hide (funcall centaur-tabs-hide-tab-function buf))
@@ -1975,6 +1990,7 @@ Other buffer group by `centaur-tabs-get-group-name' with project name."
   "The group name of last focus buffer.")
 
 (defun centaur-tabs-remove-nth-element (nth list)
+  "Remove NTH element from LIST."
   (if (zerop nth) (cdr list)
     (let ((last (nthcdr (1- nth) list)))
       (setcdr last (cddr last))
