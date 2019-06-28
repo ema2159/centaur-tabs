@@ -133,7 +133,7 @@ Sticky function is the function at the top of the current window sticky."
   :group 'centaur-tabs
   :type 'boolean)
 
-(defcustom centaur-tabs-close-button (concat " " (make-string 1 #x00D7))
+(defcustom centaur-tabs-close-button (make-string 1 #x00D7)
   "When non nil, display a clickable x button for closing the tabs."
   :group 'centaur-tabs
   :type 'string)
@@ -143,7 +143,7 @@ Sticky function is the function at the top of the current window sticky."
   :group 'centaur-tabs
   :type 'boolean)
 
-(defcustom centaur-tabs-modified-marker (concat " " (make-string 1 #x23FA))
+(defcustom centaur-tabs-modified-marker (make-string 1 #x23FA)
   "When non nil, display a marker when the buffer is modified."
   :group 'centaur-tabs
   :type 'string)
@@ -694,6 +694,7 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
 			      'pointer 'hand
 			      'centaur-tabs-tab tab
 			      'help-echo "Close buffer"
+			      'mouse-face 'underline
 			      'local-map (purecopy (centaur-tabs-make-header-line-mouse-map
 						    'mouse-1
 						    `(lambda (event) (interactive "e") (centaur-tabs-buffer-close-tab ',tab))))))
@@ -722,6 +723,17 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
 	tab)
       'centaur-tabs-tab tab
       'face face
+      'pointer 'hand
+      'local-map (purecopy (centaur-tabs-make-header-line-mouse-map
+			    'mouse-1
+			    `(lambda (event) (interactive "e")
+			       (let ((window (posn-window (event-start event))))
+				 (when (windowp window) (select-window window)))
+			       (centaur-tabs-buffer-select-tab ',tab)))))
+     (propertize
+      " "
+      'face face
+      'centaur-tabs-tab tab
       'pointer 'hand
       'local-map (purecopy (centaur-tabs-make-header-line-mouse-map
 			    'mouse-1
