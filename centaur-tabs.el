@@ -682,6 +682,7 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
 					'centaur-tabs-modified-marker-unselected)
 				'pointer 'hand
 				'centaur-tabs-tab tab
+				'help-echo "Close buffer"
 				'local-map (purecopy (centaur-tabs-make-header-line-mouse-map
 						      'mouse-1
 						      `(lambda (event) (interactive "e") (centaur-tabs-buffer-close-tab ',tab)))))
@@ -692,6 +693,7 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
 				      'centaur-tabs-close-unselected)
 			      'pointer 'hand
 			      'centaur-tabs-tab tab
+			      'help-echo "Close buffer"
 			      'local-map (purecopy (centaur-tabs-make-header-line-mouse-map
 						    'mouse-1
 						    `(lambda (event) (interactive "e") (centaur-tabs-buffer-close-tab ',tab))))))
