@@ -623,11 +623,15 @@ element.
 Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
   (let* ((selected-p (centaur-tabs-selected-p tab (centaur-tabs-current-tabset)))
 	 (modified-p (buffer-modified-p (centaur-tabs-tab-value tab)))
+	 (not-read-only-p (with-current-buffer (centaur-tabs-tab-value tab)
+			    (not buffer-read-only)))
 	 (face (if selected-p
-		   (if modified-p
+		   (if (and modified-p
+			    not-read-only-p)
 		       'centaur-tabs-selected-modified
 		     'centaur-tabs-selected)
-		 (if modified-p
+		 (if (and modified-p
+			  not-read-only-p)
 		     'centaur-tabs-unselected-modified
 		   'centaur-tabs-unselected)))
 	 (bar (if (and selected-p
@@ -657,8 +661,9 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
 		 ""))
 	 (modified-marker (propertize
 			   (if (and centaur-tabs-set-modified-marker
-				modified-p
-				(not centaur-tabs-set-close-button))
+				    modified-p
+				    not-read-only-p
+				    (not centaur-tabs-set-close-button))
 			       centaur-tabs-modified-marker
 			     "") ;; Returns last one if all are not nil
 			   'face (if selected-p
@@ -674,6 +679,7 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
 						    (centaur-tabs-buffer-select-tab ',tab))))))
 	 (close-button (if centaur-tabs-set-close-button
 			   (if (and centaur-tabs-set-modified-marker
+				    not-read-only-p
 				    modified-p)
 			       (propertize
 				centaur-tabs-modified-marker
@@ -743,7 +749,7 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
 			       (centaur-tabs-buffer-select-tab ',tab)))))
      modified-marker
      close-button
-(centaur-tabs-separator-render centaur-tabs-style-right face))))
+     (centaur-tabs-separator-render centaur-tabs-style-right face))))
 
 (defun centaur-tabs-make-header-line-mouse-map (mouse function)
   "Function for mapping FUNCTION to mouse button MOUSE."
