@@ -39,7 +39,6 @@
 ;;
 
 ;;; Require
-(require 'cl)
 (require 'cl-lib)
 (require 'color)
 (require 'which-func)
@@ -2074,7 +2073,7 @@ Operates over buffer BUF"
 	    (when (and current-buffer-index
 		       previous-buffer-index
 		       (> (abs (- current-buffer-index previous-buffer-index)) 1))
-	      (let* ((copy-group-tabs (copy-list current-group-tabs))
+	      (let* ((copy-group-tabs (cl-copy-list current-group-tabs))
 		     (previous-tab (nth previous-buffer-index copy-group-tabs))
 		     (current-tab (nth current-buffer-index copy-group-tabs))
 		     (base-group-tabs (centaur-tabs-remove-nth-element previous-buffer-index copy-group-tabs))
