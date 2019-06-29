@@ -1919,7 +1919,7 @@ not the actual logical index position of the current group."
 (setq uniquify-after-kill-buffer-p t)
 
 (dolist (hook centaur-tabs-hide-tabs-hooks)
-  (add-hook hook '(lambda () (setq-local header-line-format nil))))
+  (add-hook hook (lambda () (setq-local header-line-format nil))))
 
 ;; Rules to control buffer's group rules.
 (defvar centaur-tabs-groups-hash (make-hash-table :test 'equal))
