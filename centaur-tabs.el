@@ -1,12 +1,16 @@
-;;; centaur-tabs.el --- provide an out of box configuration to use tab in emacs.
+;;; centaur-tabs.el --- Provide an out of box configuration to use tabs -*- lexical-binding: t; -*-
+
+;; Copyright (C) 2019  Emmanuel Bustos
 
 ;; Filename: centaur-tabs.el
-;; Description: Provide an out of box configuration to use centaur-tabs in Emacs.
+;; Description: Provide an out of box configuration to use highly customizable tabs.
+;; URL: https://github.com/ema2159/centaur-tabs
 ;; Author: Emmanuel Bustos <ema2159@gmail.com>
 ;; Maintainer: Emmanuel Bustos <ema2159@gmail.com>
 ;; Created: 2019-21-19 22:14:34
 ;; Version: 4
 ;; Known Compatibility: GNU Emacs 26.2
+;; Package-Requires: ((emacs "24.3")
 ;;
 ;;
 
