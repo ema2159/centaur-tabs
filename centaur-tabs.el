@@ -1137,6 +1137,10 @@ Return the the first group where the current buffer is."
 
 ;;; Separator
 ;;
+
+(defvar ns-use-srgb-colorspace nil
+  "Variable used for Apple's RGB colorspace.")
+
 (defvar centaur-tabs-image-apple-rgb
   (and (eq (window-system) 'ns)
        ns-use-srgb-colorspace
@@ -1975,7 +1979,7 @@ Other buffer group by `centaur-tabs-get-group-name' with project name."
 (defvar helm-source-centaur-tabs-group nil)
 
 (defun centaur-tabs-build-helm-source ()
-  "Display a list of current buffer groupps in Helm."
+  "Display a list of current buffer groups in Helm."
   (interactive)
   (setq helm-source-centaur-tabs-group
 	(when (featurep 'helm)
@@ -1988,7 +1992,7 @@ Other buffer group by `centaur-tabs-get-group-name' with project name."
 (defvar ivy-source-centaur-tabs-group nil)
 
 (defun centaur-tabs-build-ivy-source ()
-  "Display a list of current buffer groupps in Ivy."
+  "Display a list of current buffer groups in Ivy."
   (interactive)
   (setq ivy-source-centaur-tabs-group
 	(when (featurep 'ivy)
