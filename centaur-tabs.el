@@ -336,17 +336,17 @@ You should use this hook to reset dependent data.")
    '(centaur-tabs-selected ((t (:inherit tabbar-selected))))
    '(centaur-tabs-unselected ((t (:inherit tabbar-unselected))))
    '(centaur-tabs-selected-modified ((t (:inherit tabbar-selected-modified))))
-   '(centaur-tabs-unselected-modified ((t (:inherit tabbar-unselected-modified))))
+   '(centaur-tabs-unselected-modified ((t (:inherit tabbar-unselected-modified)))))
    (set-face-attribute 'centaur-tabs-default nil
-		       :background (face-background 'tabbar-default))
+		       :background (face-background 'tabbar-default nil t))
    (set-face-attribute 'centaur-tabs-selected nil
-		       :background (face-background 'tabbar-selected))
+		       :background (face-background 'tabbar-selected nil t))
    (set-face-attribute 'centaur-tabs-unselected nil
-		       :background (face-background 'tabbar-unselected))
+		       :background (face-background 'tabbar-unselected nil t))
    (set-face-attribute 'centaur-tabs-selected-modified nil
-		       :background (face-background 'centaur-tabs-selected))
+		       :background (face-background 'centaur-tabs-selected nil t))
    (set-face-attribute 'centaur-tabs-unselected-modified nil
-		       :background (face-background 'centaur-tabs-unselected))))
+		       :background (face-background 'centaur-tabs-unselected nil t)))
 
 (defun centaur-tabs--make-xpm (face width height)
   "Create an XPM bitmap via FACE WIDTH and HEIGHT.
