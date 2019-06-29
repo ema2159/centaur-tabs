@@ -597,25 +597,25 @@ current cached copy."
     (centaur-tabs-display-update)))
 
 ;; Hooks for modification
-(defun on-saving-buffer ()
+(defun centaur-tabs-on-saving-buffer ()
   "Function to be run after the buffer is saved."
   (centaur-tabs-set-template centaur-tabs-current-tabset nil)
   (centaur-tabs-display-update))
-(defun on-modifying-buffer ()
+(defun centaur-tabs-on-modifying-buffer ()
   "Function to be run after the buffer is first changed."
   (set-buffer-modified-p (buffer-modified-p))
   (centaur-tabs-set-template centaur-tabs-current-tabset nil)
   (centaur-tabs-display-update))
-(defun after-modifying-buffer (begin end length)
+(defun centaur-tabs-after-modifying-buffer (_begin _end _length)
   "Function to be run after the buffer is changed.
 BEGIN, END and LENGTH are just standard arguments for after-changes-function
 hooked functions"
   (set-buffer-modified-p (buffer-modified-p))
   (centaur-tabs-set-template centaur-tabs-current-tabset nil)
   (centaur-tabs-display-update))
-(add-hook 'after-save-hook 'on-saving-buffer)
-(add-hook 'first-change-hook 'on-modifying-buffer)
-(add-hook 'after-change-functions 'after-modifying-buffer)
+(add-hook 'after-save-hook 'centaur-tabs-on-saving-buffer)
+(add-hook 'first-change-hook 'centaur-tabs-on-modifying-buffer)
+(add-hook 'after-change-functions 'centaur-tabs-after-modifying-buffer)
 
 ;;; Tabs
 ;;
