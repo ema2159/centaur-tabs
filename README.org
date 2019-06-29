@@ -34,7 +34,7 @@
 * Customization
   This package is heavily customizable, with many options available to the user. Here are some of them:
 ** Background color
-   To display a background according to the current theme do:
+   To display a background according to the current theme do (not needed if theme already themes centaur-tabs):
    #+BEGIN_SRC emacs-lisp :tangle yes
      (setq centaur-tabs-background-color (face-background 'default))
    #+END_SRC
@@ -46,13 +46,37 @@
 
    The options available are:
    - "alternate"
+
+  [[./images/alternate.png]]
+
    - "bar"
+
+  [[./images/bar.png]]
+
    - "box"
+
+  [[./images/box.png]]
+
    - "chamfer"
+
+  [[./images/chamfer.png]]
+
    - "rounded"
+
+  [[./images/rounded.png]]
+
    - "slant"
+
+  [[./images/slant.png]]
+
    - "wave"
+
+  [[./images/wave.png]]
+
    - "zigzag"
+
+  [[./images/zigzag.png]]
+  
 ** Tab height
    To change the tab height do
    #+BEGIN_SRC emacs-lisp :tangle yes
@@ -80,7 +104,7 @@
      (setq centaur-tabs-close-button "X")
    #+END_SRC
    Also there are two faces to customize the close button string: centaur-tabs-close-unselected and centaur-tabs-close-selected
-** Customize the modified marker
+** Customizes the modified marker
    To display a marker indicating that a buffer has been modified (atom-style)
    #+BEGIN_SRC emacs-lisp :tangle yes
      (setq centaur-tabs-set-modified-marker t)
@@ -90,6 +114,8 @@
      (setq centaur-tabs-modified-marker "*")
    #+END_SRC
    Also there are two faces to customize the close button string: centaur-tabs-modified-marker-unselected and centaur-tabs-modified-marker-selected
+
+  [[./images/marker.png]]
 ** Inherit tabbar faces:
    Many theme plugins have already themed other tab plugins (~doom-themes~ for example). This package is able to use those tab plugin faces to theme itself. In a near future, many PRs will be sent so this package gets properly themed.
    To use the already existing tabbar faces use:
@@ -270,3 +296,4 @@ In the ~:custom-face~ section it uses the doom-modeline-bar face to theme the ce
 
 * How to contribute
   You can contribute by forking the repo and then creating a pull request with the changes you consider will improve the package. I'll be glad to receive help.
+  
