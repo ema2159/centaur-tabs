@@ -1,4 +1,4 @@
-;;; centaur-tabs.el --- Provide an out of box configuration to use tabs -*- lexical-binding: t; -*-
+;;; centaur-tabs.el --- Provide an out of box configuration to use tabs
 
 ;; Copyright (C) 2019  Emmanuel Bustos
 
@@ -642,7 +642,6 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
 		  (propertize
 		   centaur-tabs-active-bar
 		   'centaur-tabs-tab tab
-		   'pointer 'hand
 		   'local-map (purecopy (centaur-tabs-make-header-line-mouse-map
 					 'mouse-1
 					 `(lambda (event) (interactive "e")
@@ -654,7 +653,6 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
 		   (propertize
 		    (centaur-tabs-icon tab face)
 		    'centaur-tabs-tab tab
-		    'pointer 'hand
 		    'local-map (purecopy (centaur-tabs-make-header-line-mouse-map
 					  'mouse-1
 					  `(lambda (event) (interactive "e")
@@ -672,7 +670,6 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
 			   'face (if selected-p
 				     'centaur-tabs-modified-marker-selected
 				   'centaur-tabs-modified-marker-unselected)
-			   'pointer 'hand
 			   'centaur-tabs-tab tab
 			   'local-map (purecopy (centaur-tabs-make-header-line-mouse-map
 						 'mouse-1
@@ -689,9 +686,10 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
 				'face (if selected-p
 					  'centaur-tabs-modified-marker-selected
 					'centaur-tabs-modified-marker-unselected)
-				'pointer 'hand
 				'centaur-tabs-tab tab
 				'help-echo "Close buffer"
+				'pointer 'default
+				'mouse-face '(:foreground "#888")
 				'local-map (purecopy (centaur-tabs-make-header-line-mouse-map
 						      'mouse-1
 						      `(lambda (event) (interactive "e") (centaur-tabs-buffer-close-tab ',tab)))))
@@ -700,10 +698,10 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
 			      'face (if selected-p
 					'centaur-tabs-close-selected
 				      'centaur-tabs-close-unselected)
-			      'pointer 'hand
 			      'centaur-tabs-tab tab
 			      'help-echo "Close buffer"
-			      'mouse-face 'underline
+			      'pointer 'default
+			      'mouse-face '(:foreground "#888")
 			      'local-map (purecopy (centaur-tabs-make-header-line-mouse-map
 						    'mouse-1
 						    `(lambda (event) (interactive "e") (centaur-tabs-buffer-close-tab ',tab))))))
@@ -718,7 +716,6 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
       " "
       'face face
       'centaur-tabs-tab tab
-      'pointer 'hand
       'local-map (purecopy (centaur-tabs-make-header-line-mouse-map
 			    'mouse-1
 			    `(lambda (event) (interactive "e")
@@ -732,7 +729,6 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
 	tab)
       'centaur-tabs-tab tab
       'face face
-      'pointer 'hand
       'local-map (purecopy (centaur-tabs-make-header-line-mouse-map
 			    'mouse-1
 			    `(lambda (event) (interactive "e")
@@ -743,7 +739,6 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
       " "
       'face face
       'centaur-tabs-tab tab
-      'pointer 'hand
       'local-map (purecopy (centaur-tabs-make-header-line-mouse-map
 			    'mouse-1
 			    `(lambda (event) (interactive "e")
