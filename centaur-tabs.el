@@ -10,7 +10,7 @@
 ;; Created: 2019-21-19 22:14:34
 ;; Version: 4
 ;; Known Compatibility: GNU Emacs 26.2
-;; Package-Requires: ((emacs "24.3")
+;; Package-Requires: ((emacs "24.4"))
 ;;
 ;;
 
@@ -1138,8 +1138,7 @@ Return the the first group where the current buffer is."
 ;;; Separator
 ;;
 
-(defvar ns-use-srgb-colorspace nil
-  "Variable used for Apple's RGB colorspace.")
+(defvar ns-use-srgb-colorspace)
 
 (defvar centaur-tabs-image-apple-rgb
   (and (eq (window-system) 'ns)
@@ -1703,14 +1702,14 @@ Run as `centaur-tabs-quit-hook'."
   (interactive)
   (centaur-tabs-select-beg-tab t))
 
-(defun centaur-tabs-select-beg-tab (&optional backward type)
+(defun centaur-tabs-select-beg-tab (&optional backward _type)
   "Select beginning tab of current tabs.
 If BACKWARD is non-nil, move backward, otherwise move forward.
 TYPE is default option."
   (interactive)
   (let* ((tabset (centaur-tabs-current-tabset t))
 	 (ttabset (centaur-tabs-get-tabsets-tabset))
-	 (cycle (if (and (eq centaur-tabs-cycle-scope 'groups)
+	 (_cycle (if (and (eq centaur-tabs-cycle-scope 'groups)
 			 (not (cdr (centaur-tabs-tabs ttabset))))
 		    'tabs
 		  centaur-tabs-cycle-scope))
@@ -1741,7 +1740,6 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
   (interactive)
   (let* ((bufset (centaur-tabs-current-tabset t))
 	 (old-bufs (centaur-tabs-tabs bufset))
-	 (first-buf (car old-bufs))
 	 (new-bufs (list)))
     (while (and
 	    old-bufs

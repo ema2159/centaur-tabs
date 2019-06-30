@@ -12,7 +12,7 @@
   [[./screenshot.png]]
 
 * Installation
-  I'm currently working so this package can be downloaded from MELPA. Meanwhile, you can download the centaur-tabs.el file, put it on your .emacs.d and load it like this using ~use-package~: 
+  I'm currently working so this package can be downloaded from MELPA. Meanwhile, you can download the centaur-tabs.el file, put it on your .emacs.d, byte compile it and load it like this using ~use-package~: 
   #+BEGIN_SRC emacs-lisp :tangle yes
     (use-package centaur-tabs
       :load-path "~/.emacs.d/other/centaur-tabs"
