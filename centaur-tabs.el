@@ -1750,7 +1750,8 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
   (interactive)
   (let* ((bufset (centaur-tabs-current-tabset t))
 	 (old-bufs (centaur-tabs-tabs bufset))
-	 (new-bufs (list)))
+	 (new-bufs (list))
+         the-buffer)
     (while (and
 	    old-bufs
 	    (not (string= (buffer-name) (format "%s" (car (car old-bufs))))))
@@ -1776,7 +1777,8 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
   (let* ((bufset (centaur-tabs-current-tabset t))
 	 (old-bufs (centaur-tabs-tabs bufset))
 	 (first-buf (car old-bufs))
-	 (new-bufs (list)))
+	 (new-bufs (list))
+         not-yet-this-buf)
     (if (string= (buffer-name) (format "%s" (car first-buf)))
 	old-bufs                     ; the current tab is the leftmost
       (setq not-yet-this-buf first-buf)
