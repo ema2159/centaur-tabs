@@ -613,9 +613,9 @@ hooked functions"
   (set-buffer-modified-p (buffer-modified-p))
   (centaur-tabs-set-template centaur-tabs-current-tabset nil)
   (centaur-tabs-display-update))
-(add-hook 'after-save-hook 'centaur-tabs-on-saving-buffer)
-(add-hook 'first-change-hook 'centaur-tabs-on-modifying-buffer)
-(add-hook 'after-change-functions 'centaur-tabs-after-modifying-buffer)
+(add-hook 'after-save-hook #'centaur-tabs-on-saving-buffer)
+(add-hook 'first-change-hook #'centaur-tabs-on-modifying-buffer)
+(add-hook 'after-change-functions #'centaur-tabs-after-modifying-buffer)
 
 ;;; Tabs
 ;;
@@ -791,7 +791,7 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
 		      (progn
 			(delete-region start (point-max))
 			(goto-char (point-max))
-			(apply 'insert elts)
+			(apply #'insert elts)
 			(goto-char (point-min))
 			(> (vertical-motion 1) 0)))
 	    (centaur-tabs-scroll tabset 1)
@@ -1182,8 +1182,8 @@ RED, GREEN and BLUE should be between 0.0 and 1.0, inclusive."
   (when color
     (let ((srgb-color (color-name-to-rgb color)))
       (if centaur-tabs-image-apple-rgb
-	  (apply 'color-rgb-to-hex (apply 'centaur-tabs-separator-color-srgb-to-apple-rgb srgb-color))
-	(apply 'color-rgb-to-hex srgb-color)))))
+	  (apply #'color-rgb-to-hex (apply #'centaur-tabs-separator-color-srgb-to-apple-rgb srgb-color))
+	(apply #'color-rgb-to-hex srgb-color)))))
 
 (defun centaur-tabs-separator-pattern (lst)
   "Turn LST into an infinite pattern."
@@ -1193,7 +1193,7 @@ RED, GREEN and BLUE should be between 0.0 and 1.0, inclusive."
 
 (defun centaur-tabs-separator-pattern-to-string (pattern)
   "Convert a PATTERN into a string that can be used in an XPM."
-  (concat "\"" (mapconcat 'number-to-string pattern "") "\","))
+  (concat "\"" (mapconcat #'number-to-string pattern "") "\","))
 
 (defun centaur-tabs-separator-reverse-pattern (pattern)
   "Reverse each line in PATTERN."
@@ -1608,7 +1608,7 @@ Currently, this function is only use for option `centaur-tabs-display-sticky-fun
 	      ))))
       (setq centaur-tabs-last-scroll-y scroll-y))))
 
-(add-hook 'post-command-hook 'centaur-tabs-monitor-window-scroll)
+(add-hook 'post-command-hook #'centaur-tabs-monitor-window-scroll)
 
 (defun centaur-tabs-separator-render (item face)
   "Render ITEM using FACE."
@@ -1661,7 +1661,7 @@ Run as `centaur-tabs-init-hook'."
 	centaur-tabs-tab-label-function 'centaur-tabs-buffer-tab-label
 	centaur-tabs-select-tab-function 'centaur-tabs-buffer-select-tab
 	)
-  (add-hook 'kill-buffer-hook 'centaur-tabs-buffer-track-killed))
+  (add-hook 'kill-buffer-hook #'centaur-tabs-buffer-track-killed))
 
 (defun centaur-tabs-buffer-quit ()
   "Quit tab bar buffer.
@@ -1674,8 +1674,8 @@ Run as `centaur-tabs-quit-hook'."
 	)
   (remove-hook 'kill-buffer-hook 'centaur-tabs-buffer-track-killed))
 
-(add-hook 'centaur-tabs-init-hook 'centaur-tabs-buffer-init)
-(add-hook 'centaur-tabs-quit-hook 'centaur-tabs-buffer-quit)
+(add-hook 'centaur-tabs-init-hook #'centaur-tabs-buffer-init)
+(add-hook 'centaur-tabs-quit-hook #'centaur-tabs-buffer-quit)
 
 ;;;;;;;;;;;;;;;;;;;;;;; Interactive functions ;;;;;;;;;;;;;;;;;;;;;;;
 (defun centaur-tabs-switch-group (&optional groupname)
