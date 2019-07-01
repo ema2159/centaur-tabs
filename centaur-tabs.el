@@ -43,6 +43,16 @@
 (require 'color)
 (require 'which-func)
 
+;; Compiler pacifier
+(declare-function ivy-read "ext:ivy.el" t t)
+(declare-function helm-build-sync-source "ext:helm-source.el" t t)
+(declare-function all-the-icons-match? "ext:all-the-icons.el" t t)
+(declare-function all-the-icons-auto-mode-match? "ext:all-the-icons.el" t t)
+(declare-function all-the-icons-icon-for-file "ext:all-the-icons.el" t t)
+(declare-function all-the-icons-icon-for-mode "ext:all-the-icons.el" t t)
+(defvar ivy-source-centaur-tabs-group)
+(defvar helm-source-centaur-tabs-group)
+
 ;;; Code:
 ;;;;;;;;;;;;;;;;;;;;;;; Centaur-Tabs source code ;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -1974,7 +1984,6 @@ Other buffer group by `centaur-tabs-get-group-name' with project name."
      (centaur-tabs-get-group-name (current-buffer))))))
 
 ;; Helm source for switching group in helm.
-(defvar helm-source-centaur-tabs-group nil)
 
 (defun centaur-tabs-build-helm-source ()
   "Display a list of current buffer groups in Helm."
@@ -1987,7 +1996,6 @@ Other buffer group by `centaur-tabs-get-group-name' with project name."
 				  :action '(("Switch to group" . centaur-tabs-switch-group))))))
 
 ;; Ivy source for switching group in ivy.
-(defvar ivy-source-centaur-tabs-group nil)
 
 (defun centaur-tabs-build-ivy-source ()
   "Display a list of current buffer groups in Ivy."
