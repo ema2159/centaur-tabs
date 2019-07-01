@@ -406,7 +406,7 @@ The result is a list just as long as the number of existing tab sets."
   "Make a new tab set whose name is the string NAME.
 It is initialized with tabs build from the list of OBJECTS."
   (let* ((tabset (intern name centaur-tabs-tabsets))
-	 (tabs (mapcar #'(lambda (object)
+	 (tabs (cl-mapcar #'(lambda (object)
 			   (centaur-tabs-make-tab object tabset))
 		       objects)))
     (set tabset tabs)
@@ -430,7 +430,7 @@ That is, remove it from the tab sets store."
 
 (defsubst centaur-tabs-tab-values (tabset)
   "Return the list of tab values in TABSET."
-  (mapcar 'centaur-tabs-tab-value (centaur-tabs-tabs tabset)))
+  (cl-mapcar 'centaur-tabs-tab-value (centaur-tabs-tabs tabset)))
 
 (defsubst centaur-tabs-get-tab (object tabset)
   "Search for a tab with value OBJECT in TABSET.
@@ -501,7 +501,7 @@ Otherwise insert it."
 	tabs
       (let* ((tab (centaur-tabs-make-tab object tabset))
 	     (selected (centaur-tabs-selected-tab tabset))
-	     (selected-index (cl-position (car selected) (mapcar 'car tabs))))
+	     (selected-index (cl-position (car selected) (cl-mapcar 'car tabs))))
 	(centaur-tabs-set-template tabset nil)
 	(set tabset (centaur-tabs-insert-at tabs selected-index tab))))))
 
@@ -1038,7 +1038,7 @@ Returns non-nil if the new state is enabled.
 (defun centaur-tabs-filter-out (condp lst)
   "Filter list LST with using CONDP as the filtering condition."
   (delq nil
-	(mapcar (lambda (x) (if (funcall condp x) nil x)) lst)))
+	(cl-mapcar (lambda (x) (if (funcall condp x) nil x)) lst)))
 
 (defun centaur-tabs-buffer-list ()
   "Return the list of buffers to show in tabs.
@@ -1047,7 +1047,7 @@ visiting a file.  The current buffer is always included."
   (centaur-tabs-filter-out
    'centaur-tabs-hide-tab-cached
    (delq nil
-	 (mapcar #'(lambda (b)
+	 (cl-mapcar #'(lambda (b)
 		     (cond
 		      ;; Always include the current buffer.
 		      ((eq (current-buffer) b) b)
@@ -1073,7 +1073,7 @@ visiting a file.  The current buffer is always included."
   "Update tabsets from groups of existing buffers.
 Return the the first group where the current buffer is."
   (let ((bl (sort
-	     (mapcar
+	     (cl-mapcar
 	      #'(lambda (b)
 		  (with-current-buffer b
 		    (list (current-buffer)
@@ -1107,7 +1107,7 @@ Return the the first group where the current buffer is."
 		 (dolist (tab (centaur-tabs-tabs tabset))
 		   (let ((e (assq (centaur-tabs-tab-value tab) bl)))
 		     (or (and e (memq tabset
-				      (mapcar 'centaur-tabs-get-tabset
+				      (cl-mapcar 'centaur-tabs-get-tabset
 					      (nth 2 e))))
 			 (centaur-tabs-delete-tab tab))))
 		 ;; Return empty tab sets
@@ -1197,7 +1197,7 @@ RED, GREEN and BLUE should be between 0.0 and 1.0, inclusive."
 
 (defun centaur-tabs-separator-reverse-pattern (pattern)
   "Reverse each line in PATTERN."
-  (mapcar 'reverse pattern))
+  (cl-mapcar 'reverse pattern))
 
 (defun centaur-tabs-separator-row-pattern (fill total &optional fade)
   "Make a list that has FILL 0s out of TOTAL 1s with FADE 2s to the right of the fill."
@@ -1218,11 +1218,11 @@ and `body' arguments,respectively.  HEIGHT-EXP is an expression
  calculating the image height and it should contain a free variable `height'.
 PATTERN-HEIGHT-SYM and SECOND-PATTERN-HEIGHT-SYM are symbols used
 for let-var binding variables."
-  (let* ((pattern (centaur-tabs-separator-pattern (mapcar 'centaur-tabs-separator-pattern-to-string (car patterns))))
-	 (header (mapcar 'centaur-tabs-separator-pattern-to-string (nth 1 patterns)))
-	 (footer (mapcar 'centaur-tabs-separator-pattern-to-string (nth 2 patterns)))
-	 (second-pattern (centaur-tabs-separator-pattern (mapcar 'centaur-tabs-separator-pattern-to-string (nth 3 patterns))))
-	 (center (mapcar 'centaur-tabs-separator-pattern-to-string (nth 4 patterns)))
+  (let* ((pattern (centaur-tabs-separator-pattern (cl-mapcar 'centaur-tabs-separator-pattern-to-string (car patterns))))
+	 (header (cl-mapcar 'centaur-tabs-separator-pattern-to-string (nth 1 patterns)))
+	 (footer (cl-mapcar 'centaur-tabs-separator-pattern-to-string (nth 2 patterns)))
+	 (second-pattern (centaur-tabs-separator-pattern (cl-mapcar 'centaur-tabs-separator-pattern-to-string (nth 3 patterns))))
+	 (center (cl-mapcar 'centaur-tabs-separator-pattern-to-string (nth 4 patterns)))
 	 (reserve (+ (length header) (length footer) (length center))))
     (when pattern
       (cons `((,pattern-height-sym (max (- ,height-exp ,reserve) 0))
@@ -1267,7 +1267,7 @@ PATTERN, HEADER, FOOTER, SECOND-PATTERN, CENTER are of the form
 COLOR can be one of 0, 1, or 2, where 0 is the source color, 1 is the
 destination color, and 2 is the interpolated color between 0 and 1."
   (when (eq dir 'right)
-    (setq patterns (mapcar 'centaur-tabs-separator-reverse-pattern patterns)))
+    (setq patterns (cl-mapcar 'centaur-tabs-separator-reverse-pattern patterns)))
   (let ((bindings-body (centaur-tabs-separator-pattern-bindings-body patterns
 								     'height
 								     'pattern-height
@@ -1681,7 +1681,7 @@ Run as `centaur-tabs-quit-hook'."
 (defun centaur-tabs-switch-group (&optional groupname)
   "Switch tab groups using ido.  GROUPNAME can optionaly be provided."
   (interactive)
-  (let* ((tab-buffer-list (mapcar
+  (let* ((tab-buffer-list (cl-mapcar
 			   #'(lambda (b)
 			       (with-current-buffer b
 				 (list (current-buffer)
@@ -1881,7 +1881,7 @@ not the actual logical index position of the current group."
 (defun centaur-tabs-get-groups ()
   "Refresh tabs groups."
   (set centaur-tabs-tabsets-tabset (centaur-tabs-map-tabsets 'centaur-tabs-selected-tab))
-  (mapcar #'(lambda (group)
+  (cl-mapcar #'(lambda (group)
 	      (format "%s" (cdr group)))
 	  (centaur-tabs-tabs centaur-tabs-tabsets-tabset)))
 
@@ -2059,7 +2059,7 @@ Operates over buffer BUF"
 	       (not (minibufferp)))
       (let* ((current (current-buffer))
 	     (previous centaur-tabs-last-focus-buffer)
-	     (current-group (first (funcall centaur-tabs-buffer-groups-function))))
+	     (current-group (cl-first (funcall centaur-tabs-buffer-groups-function))))
 	;; Record last focus buffer.
 	(setq centaur-tabs-last-focus-buffer current)
 
@@ -2067,7 +2067,7 @@ Operates over buffer BUF"
 	(when (string= current-group centaur-tabs-last-focus-buffer-group)
 	  (let* ((bufset (centaur-tabs-get-tabset current-group))
 		 (current-group-tabs (centaur-tabs-tabs bufset))
-		 (current-group-buffers (mapcar 'car current-group-tabs))
+		 (current-group-buffers (cl-mapcar 'car current-group-tabs))
 		 (current-buffer-index (cl-position current current-group-buffers))
 		 (previous-buffer-index (cl-position previous current-group-buffers)))
 
