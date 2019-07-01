@@ -1800,6 +1800,17 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
       (centaur-tabs-set-template bufset nil)
       (centaur-tabs-display-update))))
 
+(defmacro centaur-tabs-kill-buffer-match-rule (match-rule)
+  "If buffer match MATCH-RULE,  kill it."
+  `(save-excursion
+     (mapc #'(lambda (buffer)
+	       (with-current-buffer buffer
+		 (when (string-equal current-group-name (cdr (centaur-tabs-selected-tab (centaur-tabs-current-tabset t))))
+		   (when (funcall ,match-rule buffer)
+		     (kill-buffer buffer))
+		   )))
+	   (buffer-list))))
+
 (defun centaur-tabs-kill-all-buffers-in-current-group ()
   "Kill all buffers in current group."
   (interactive)
@@ -1909,17 +1920,6 @@ not the actual logical index position of the current group."
 		  )))
 	  (buffer-list))
     extension-names))
-
-(defmacro centaur-tabs-kill-buffer-match-rule (match-rule)
-  "If buffer match MATCH-RULE,  kill it."
-  `(save-excursion
-     (mapc #'(lambda (buffer)
-	       (with-current-buffer buffer
-		 (when (string-equal current-group-name (cdr (centaur-tabs-selected-tab (centaur-tabs-current-tabset t))))
-		   (when (funcall ,match-rule buffer)
-		     (kill-buffer buffer))
-		   )))
-	   (buffer-list))))
 
 ;;;;;;;;;;;;;;;;;;;;;;; Default configurations ;;;;;;;;;;;;;;;;;;;;;;;
 
