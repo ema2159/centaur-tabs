@@ -43,6 +43,16 @@
 (require 'color)
 (require 'which-func)
 
+;; Compiler pacifier
+(declare-function ivy-read "ext:ivy.el" t t)
+(declare-function helm-build-sync-source "ext:helm-source.el" t t)
+(declare-function all-the-icons-match? "ext:all-the-icons.el" t t)
+(declare-function all-the-icons-auto-mode-match? "ext:all-the-icons.el" t t)
+(declare-function all-the-icons-icon-for-file "ext:all-the-icons.el" t t)
+(declare-function all-the-icons-icon-for-mode "ext:all-the-icons.el" t t)
+(defvar ivy-source-centaur-tabs-group)
+(defvar helm-source-centaur-tabs-group)
+
 ;;; Code:
 ;;;;;;;;;;;;;;;;;;;;;;; Centaur-Tabs source code ;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -613,9 +623,9 @@ hooked functions"
   (set-buffer-modified-p (buffer-modified-p))
   (centaur-tabs-set-template centaur-tabs-current-tabset nil)
   (centaur-tabs-display-update))
-(add-hook 'after-save-hook 'centaur-tabs-on-saving-buffer)
-(add-hook 'first-change-hook 'centaur-tabs-on-modifying-buffer)
-(add-hook 'after-change-functions 'centaur-tabs-after-modifying-buffer)
+(add-hook 'after-save-hook #'centaur-tabs-on-saving-buffer)
+(add-hook 'first-change-hook #'centaur-tabs-on-modifying-buffer)
+(add-hook 'after-change-functions #'centaur-tabs-after-modifying-buffer)
 
 ;;; Tabs
 ;;
@@ -791,7 +801,7 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
 		      (progn
 			(delete-region start (point-max))
 			(goto-char (point-max))
-			(apply 'insert elts)
+			(apply #'insert elts)
 			(goto-char (point-min))
 			(> (vertical-motion 1) 0)))
 	    (centaur-tabs-scroll tabset 1)
@@ -1182,8 +1192,8 @@ RED, GREEN and BLUE should be between 0.0 and 1.0, inclusive."
   (when color
     (let ((srgb-color (color-name-to-rgb color)))
       (if centaur-tabs-image-apple-rgb
-	  (apply 'color-rgb-to-hex (apply 'centaur-tabs-separator-color-srgb-to-apple-rgb srgb-color))
-	(apply 'color-rgb-to-hex srgb-color)))))
+	  (apply #'color-rgb-to-hex (apply #'centaur-tabs-separator-color-srgb-to-apple-rgb srgb-color))
+	(apply #'color-rgb-to-hex srgb-color)))))
 
 (defun centaur-tabs-separator-pattern (lst)
   "Turn LST into an infinite pattern."
@@ -1193,7 +1203,7 @@ RED, GREEN and BLUE should be between 0.0 and 1.0, inclusive."
 
 (defun centaur-tabs-separator-pattern-to-string (pattern)
   "Convert a PATTERN into a string that can be used in an XPM."
-  (concat "\"" (mapconcat 'number-to-string pattern "") "\","))
+  (concat "\"" (mapconcat #'number-to-string pattern "") "\","))
 
 (defun centaur-tabs-separator-reverse-pattern (pattern)
   "Reverse each line in PATTERN."
@@ -1608,7 +1618,7 @@ Currently, this function is only use for option `centaur-tabs-display-sticky-fun
 	      ))))
       (setq centaur-tabs-last-scroll-y scroll-y))))
 
-(add-hook 'post-command-hook 'centaur-tabs-monitor-window-scroll)
+(add-hook 'post-command-hook #'centaur-tabs-monitor-window-scroll)
 
 (defun centaur-tabs-separator-render (item face)
   "Render ITEM using FACE."
@@ -1661,7 +1671,7 @@ Run as `centaur-tabs-init-hook'."
 	centaur-tabs-tab-label-function 'centaur-tabs-buffer-tab-label
 	centaur-tabs-select-tab-function 'centaur-tabs-buffer-select-tab
 	)
-  (add-hook 'kill-buffer-hook 'centaur-tabs-buffer-track-killed))
+  (add-hook 'kill-buffer-hook #'centaur-tabs-buffer-track-killed))
 
 (defun centaur-tabs-buffer-quit ()
   "Quit tab bar buffer.
@@ -1674,8 +1684,8 @@ Run as `centaur-tabs-quit-hook'."
 	)
   (remove-hook 'kill-buffer-hook 'centaur-tabs-buffer-track-killed))
 
-(add-hook 'centaur-tabs-init-hook 'centaur-tabs-buffer-init)
-(add-hook 'centaur-tabs-quit-hook 'centaur-tabs-buffer-quit)
+(add-hook 'centaur-tabs-init-hook #'centaur-tabs-buffer-init)
+(add-hook 'centaur-tabs-quit-hook #'centaur-tabs-buffer-quit)
 
 ;;;;;;;;;;;;;;;;;;;;;;; Interactive functions ;;;;;;;;;;;;;;;;;;;;;;;
 (defun centaur-tabs-switch-group (&optional groupname)
@@ -1740,7 +1750,8 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
   (interactive)
   (let* ((bufset (centaur-tabs-current-tabset t))
 	 (old-bufs (centaur-tabs-tabs bufset))
-	 (new-bufs (list)))
+	 (new-bufs (list))
+         the-buffer)
     (while (and
 	    old-bufs
 	    (not (string= (buffer-name) (format "%s" (car (car old-bufs))))))
@@ -1766,7 +1777,8 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
   (let* ((bufset (centaur-tabs-current-tabset t))
 	 (old-bufs (centaur-tabs-tabs bufset))
 	 (first-buf (car old-bufs))
-	 (new-bufs (list)))
+	 (new-bufs (list))
+         not-yet-this-buf)
     (if (string= (buffer-name) (format "%s" (car first-buf)))
 	old-bufs                     ; the current tab is the leftmost
       (setq not-yet-this-buf first-buf)
@@ -1787,6 +1799,17 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
       (set bufset new-bufs)
       (centaur-tabs-set-template bufset nil)
       (centaur-tabs-display-update))))
+
+(defmacro centaur-tabs-kill-buffer-match-rule (match-rule)
+  "If buffer match MATCH-RULE,  kill it."
+  `(save-excursion
+     (mapc #'(lambda (buffer)
+	       (with-current-buffer buffer
+		 (when (string-equal current-group-name (cdr (centaur-tabs-selected-tab (centaur-tabs-current-tabset t))))
+		   (when (funcall ,match-rule buffer)
+		     (kill-buffer buffer))
+		   )))
+	   (buffer-list))))
 
 (defun centaur-tabs-kill-all-buffers-in-current-group ()
   "Kill all buffers in current group."
@@ -1898,17 +1921,6 @@ not the actual logical index position of the current group."
 	  (buffer-list))
     extension-names))
 
-(defmacro centaur-tabs-kill-buffer-match-rule (match-rule)
-  "If buffer match MATCH-RULE,  kill it."
-  `(save-excursion
-     (mapc #'(lambda (buffer)
-	       (with-current-buffer buffer
-		 (when (string-equal current-group-name (cdr (centaur-tabs-selected-tab (centaur-tabs-current-tabset t))))
-		   (when (funcall ,match-rule buffer)
-		     (kill-buffer buffer))
-		   )))
-	   (buffer-list))))
-
 ;;;;;;;;;;;;;;;;;;;;;;; Default configurations ;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Uniquify tab name when open multiple buffers with same filename.
@@ -1974,7 +1986,6 @@ Other buffer group by `centaur-tabs-get-group-name' with project name."
      (centaur-tabs-get-group-name (current-buffer))))))
 
 ;; Helm source for switching group in helm.
-(defvar helm-source-centaur-tabs-group nil)
 
 (defun centaur-tabs-build-helm-source ()
   "Display a list of current buffer groups in Helm."
@@ -1987,7 +1998,6 @@ Other buffer group by `centaur-tabs-get-group-name' with project name."
 				  :action '(("Switch to group" . centaur-tabs-switch-group))))))
 
 ;; Ivy source for switching group in ivy.
-(defvar ivy-source-centaur-tabs-group nil)
 
 (defun centaur-tabs-build-ivy-source ()
   "Display a list of current buffer groups in Ivy."
