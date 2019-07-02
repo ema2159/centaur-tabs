@@ -193,9 +193,23 @@
        ...
        :bind
        (:map evil-normal-state-map
-	("g t" . centaur-tabs-forward)
-	("g T" . centaur-tabs-backward))
+	     ("g t" . centaur-tabs-forward)
+	     ("g T" . centaur-tabs-backward))
        ...)
+   #+END_SRC
+** Hiding buffers from tabs
+   You can prevent the access to some buffers via tab motions changing the following function like this:
+   #+BEGIN_SRC emacs-lisp :tangle yes
+     (defun awesome-tab-hide-tab (x)
+       (let ((name (format "%s" x)))
+	 (or
+	  (string-prefix-p "*epc" name)
+	  (string-prefix-p "*helm" name)
+	  (string-prefix-p "*Compile-Log*" name)
+	  (string-prefix-p "*lsp" name)
+	  (and (string-prefix-p "magit" name)
+	       (not (file-name-extension name)))
+	  )))
    #+END_SRC
 * TO DO [10/15]
   - [X] Integrate all-the-icons
