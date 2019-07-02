@@ -42,6 +42,7 @@
 (require 'cl-lib)
 (require 'color)
 (require 'which-func)
+(require 'powerline)
 
 ;; Compiler pacifier
 (declare-function ivy-read "ext:ivy.el" t t)
