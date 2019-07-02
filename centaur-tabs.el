@@ -1349,7 +1349,7 @@ BODY-2X is an optional argument."
 					     body-2x
 					     '("};")))))))))))
 
-(defmacro centaur-tabs-separator-alternate (dir)
+(defun centaur-tabs-separator-alternate (dir)
   "Generate an alternating pattern XPM function for DIR."
   (centaur-tabs-separator-pattern-defun "alternate" dir 4
 					'((2 2 1 1)
@@ -1361,12 +1361,12 @@ BODY-2X is an optional argument."
 					  (0 0 0 0 2 2 2 2)
 					  (0 0 0 0 2 2 2 2))))
 
-(defmacro centaur-tabs-separator-bar (dir)
+(defun centaur-tabs-separator-bar (dir)
   "Generate a bar XPM function for DIR."
   (centaur-tabs-separator-pattern-defun "bar" dir 2
 					'((2 2))))
 
-(defmacro centaur-tabs-separator-box (dir)
+(defun centaur-tabs-separator-box (dir)
   "Generate a box XPM function for DIR."
   (centaur-tabs-separator-pattern-defun "box" dir 2
 					'((0 0)
@@ -1384,7 +1384,7 @@ BODY-2X is an optional argument."
 					  (1 1 1 1)
 					  (1 1 1 1))))
 
-(defmacro centaur-tabs-separator-chamfer (dir)
+(defun centaur-tabs-separator-chamfer (dir)
   "Generate a chamfer XPM function for DIR."
   (centaur-tabs-separator-pattern-defun "chamfer" dir 3
 					'((0 0 0))
@@ -1401,7 +1401,7 @@ BODY-2X is an optional argument."
 					  (0 0 0 0 1 1)
 					  (0 0 0 0 0 1))))
 
-(defmacro centaur-tabs-separator-rounded (dir)
+(defun centaur-tabs-separator-rounded (dir)
   "Generate a rounded XPM function for DIR."
   (centaur-tabs-separator-pattern-defun "rounded" dir 6
 					'((0 0 0 0 0 0))
@@ -1427,7 +1427,7 @@ BODY-2X is an optional argument."
 					  (0 0 0 0 0 0 0 0 0 0 0 1)
 					  (0 0 0 0 0 0 0 0 0 0 0 1))))
 
-(defmacro centaur-tabs-separator-slant (dir)
+(defun centaur-tabs-separator-slant (dir)
   "Generate a slant XPM function for DIR."
   (let* ((row-modifier (if (eq dir 'left) 'identity 'reverse)))
     (centaur-tabs-separator-wrap-defun "slant" dir 'width
@@ -1437,7 +1437,7 @@ BODY-2X is an optional argument."
 				       `((cl-loop for i from 0 to (1- (* height 2))
 						  concat (centaur-tabs-separator-pattern-to-string (,row-modifier (centaur-tabs-separator-row-pattern (/ i 2) (* width 2)))))))))
 
-(defmacro centaur-tabs-separator-wave (dir)
+(defun centaur-tabs-separator-wave (dir)
   "Generate a wave XPM function for DIR."
   (centaur-tabs-separator-pattern-defun "wave" dir 11
 					'((0 0 0 0 0 0 1 1 1 1 1))
@@ -1493,7 +1493,7 @@ BODY-2X is an optional argument."
 					  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1)
 					  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0))))
 
-(defmacro centaur-tabs-separator-zigzag (dir)
+(defun centaur-tabs-separator-zigzag (dir)
   "Generate a zigzag pattern XPM function for DIR."
   (centaur-tabs-separator-pattern-defun "zigzag" dir 3
 					'((1 1 1)
@@ -1552,22 +1552,22 @@ Create one if the frame doesn't have one yet."
     (modify-frame-parameters nil `((powerline-cache . ,table)))
     table))
 
-(centaur-tabs-separator-memoize (centaur-tabs-separator-alternate left))
-(centaur-tabs-separator-memoize (centaur-tabs-separator-alternate right))
-(centaur-tabs-separator-memoize (centaur-tabs-separator-bar left))
-(centaur-tabs-separator-memoize (centaur-tabs-separator-bar right))
-(centaur-tabs-separator-memoize (centaur-tabs-separator-box left))
-(centaur-tabs-separator-memoize (centaur-tabs-separator-box right))
-(centaur-tabs-separator-memoize (centaur-tabs-separator-chamfer left))
-(centaur-tabs-separator-memoize (centaur-tabs-separator-chamfer right))
-(centaur-tabs-separator-memoize (centaur-tabs-separator-rounded left))
-(centaur-tabs-separator-memoize (centaur-tabs-separator-rounded right))
-(centaur-tabs-separator-memoize (centaur-tabs-separator-slant left))
-(centaur-tabs-separator-memoize (centaur-tabs-separator-slant right))
-(centaur-tabs-separator-memoize (centaur-tabs-separator-wave left))
-(centaur-tabs-separator-memoize (centaur-tabs-separator-wave right))
-(centaur-tabs-separator-memoize (centaur-tabs-separator-zigzag left))
-(centaur-tabs-separator-memoize (centaur-tabs-separator-zigzag right))
+(centaur-tabs-separator-memoize (centaur-tabs-separator-alternate 'left))
+(centaur-tabs-separator-memoize (centaur-tabs-separator-alternate 'right))
+(centaur-tabs-separator-memoize (centaur-tabs-separator-bar 'left))
+(centaur-tabs-separator-memoize (centaur-tabs-separator-bar 'right))
+(centaur-tabs-separator-memoize (centaur-tabs-separator-box 'left))
+(centaur-tabs-separator-memoize (centaur-tabs-separator-box 'right))
+(centaur-tabs-separator-memoize (centaur-tabs-separator-chamfer 'left))
+(centaur-tabs-separator-memoize (centaur-tabs-separator-chamfer 'right))
+(centaur-tabs-separator-memoize (centaur-tabs-separator-rounded 'left))
+(centaur-tabs-separator-memoize (centaur-tabs-separator-rounded 'right))
+(centaur-tabs-separator-memoize (centaur-tabs-separator-slant 'left))
+(centaur-tabs-separator-memoize (centaur-tabs-separator-slant 'right))
+(centaur-tabs-separator-memoize (centaur-tabs-separator-wave 'left))
+(centaur-tabs-separator-memoize (centaur-tabs-separator-wave 'right))
+(centaur-tabs-separator-memoize (centaur-tabs-separator-zigzag 'left))
+(centaur-tabs-separator-memoize (centaur-tabs-separator-zigzag 'right))
 
 (defun centaur-tabs-select-separator-style (tab-style)
   "Set the separator style to TAB-STYLE."
