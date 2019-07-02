@@ -126,12 +126,6 @@ background color of the `default' face otherwise."
   :group 'centaur-tabs
   :type 'string)
 
-(defcustom centaur-tabs-display-sticky-function-name nil
-  "Non-nil to display sticky function name in tab.
-Sticky function is the function at the top of the current window sticky."
-  :group 'centaur-tabs
-  :type 'boolean)
-
 (defcustom centaur-tabs-set-icons nil
   "When non nil, display an icon from all-the-icons alongside the tab name."
   :group 'centaur-tabs
@@ -1586,41 +1580,11 @@ That is, a string used to represent it on the tab bar."
 		bufname))))
 
 (defun centaur-tabs-buffer-name (tab-buffer)
-  "Get buffer name of tab using TAB-BUFFER.
-Will merge sticky function name in tab if option `centaur-tabs-display-sticky-function-name' is non-nil."
-  (if (and centaur-tabs-display-sticky-function-name
-	   (boundp 'centaur-tabs-last-sticky-func-name)
-	   centaur-tabs-last-sticky-func-name
-	   (equal tab-buffer (current-buffer)))
-      (format "%s [%s]" (buffer-name tab-buffer) centaur-tabs-last-sticky-func-name)
-    (buffer-name tab-buffer)))
+  "Get buffer name of tab using TAB-BUFFER."
+  (buffer-name tab-buffer))
 
 (defvar centaur-tabs-last-scroll-y 0
   "Holds the scroll y of window from the last run of post-command-hooks.")
-
-(defun centaur-tabs-monitor-window-scroll ()
-  "This function is used to monitor the window scroll.
-Currently, this function is only use for option `centaur-tabs-display-sticky-function-name'."
-  (when centaur-tabs-display-sticky-function-name
-    (let ((scroll-y (window-start)))
-      (when (and scroll-y
-		 (integerp scroll-y))
-	(unless (equal scroll-y centaur-tabs-last-scroll-y)
-	  (let ((func-name (save-excursion
-			     (goto-char scroll-y)
-			     (which-function))))
-	    (when (or
-		   (not (boundp 'centaur-tabs-last-sticky-func-name))
-		   (not (equal func-name centaur-tabs-last-sticky-func-name)))
-	      (set (make-local-variable 'centaur-tabs-last-sticky-func-name) func-name)
-
-	      ;; Use `ignore-errors' avoid integerp error when execute `centaur-tabs-line-format'.
-	      (ignore-errors
-		(centaur-tabs-line-format centaur-tabs-current-tabset))
-	      ))))
-      (setq centaur-tabs-last-scroll-y scroll-y))))
-
-(add-hook 'post-command-hook #'centaur-tabs-monitor-window-scroll)
 
 (defun centaur-tabs-separator-render (item face)
   "Render ITEM using FACE."
