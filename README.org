@@ -200,7 +200,7 @@
 ** Hiding buffers from tabs
    You can prevent the access to some buffers via tab motions changing the following function like this:
    #+BEGIN_SRC emacs-lisp :tangle yes
-     (defun awesome-tab-hide-tab (x)
+     (defun centaur-tabs-hide-tab (x)
        (let ((name (format "%s" x)))
 	 (or
 	  (string-prefix-p "*epc" name)
