@@ -1689,9 +1689,9 @@ TYPE is default option."
 			 (not (cdr (centaur-tabs-tabs ttabset))))
 		    'tabs
 		  centaur-tabs-cycle-scope))
-	 selected tab)
+	 _selected tab)
     (when tabset
-      (setq selected (centaur-tabs-selected-tab tabset))
+      ;; (setq _selected (centaur-tabs-selected-tab tabset))
       (setq tabset (centaur-tabs-tabs tabset)
 	    tab (car (if backward (last tabset) tabset)))
       (centaur-tabs-buffer-select-tab tab))))
@@ -1783,7 +1783,7 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
   (let* ((current-group-name (cdr (centaur-tabs-selected-tab (centaur-tabs-current-tabset t)))))
     ;; Kill all buffers in current group.
     (centaur-tabs-kill-buffer-match-rule
-     (lambda (buffer) t))
+     (lambda (_buffer) t))
     ;; Switch to next group.
     (centaur-tabs-forward-group)
     ))
@@ -1880,7 +1880,7 @@ not the actual logical index position of the current group."
   (let ((extension-names '()))
     (mapc #'(lambda (buffer)
 	      (with-current-buffer buffer
-		(when (string-equal current-group-name (cdr (centaur-tabs-selected-tab (centaur-tabs-current-tabset t))))
+		(when (string-equal 'current-group-name (cdr (centaur-tabs-selected-tab (centaur-tabs-current-tabset t))))
 		  (when (buffer-file-name buffer)
 		    (add-to-list 'extension-names (file-name-extension (buffer-file-name buffer))))
 		  )))
