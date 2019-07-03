@@ -197,7 +197,7 @@
 	     ("g T" . centaur-tabs-backward))
        ...)
    #+END_SRC
-** Hiding buffers from tabs
+** Prevent the access to specified buffers 
    You can prevent the access to some buffers via tab motions changing the following function like this:
    #+BEGIN_SRC emacs-lisp :tangle yes
      (defun centaur-tabs-hide-tab (x)
@@ -211,6 +211,16 @@
 	       (not (file-name-extension name)))
 	  )))
    #+END_SRC
+** Tab cycling
+   The default behaviour from the ~centaur-tabs-forward/backward~ functions is to go through all the tabs in the current group and then change the group. If this is something that is desired to desired to be changed the ~centaur-tabs-cycle-scope~ custom must be changed like this:
+   #+BEGIN_SRC emacs-lisp :tangle yes
+     (setq centaur-tabs-cycle-scope 'tabs)
+   #+END_SRC
+   
+   There are three options:
+   -'default: (Already described)
+   -'tabs: Cycle through visible tabs (that is, the tabs in the current group)
+   -'default: Navigate through tab groups only
 * TO DO [10/15]
   - [X] Integrate all-the-icons
   - [X] Improve all the icons placing
