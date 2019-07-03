@@ -106,7 +106,7 @@
   "Face used for selected close button."
   :group 'centaur-tabs)
 
-(defface centaur-tabs-close-mouse
+(defface centaur-tabs-close-mouse-face
   '((t (:inherit underline)))
   "Face used for close button when hovered with the mouse."
   :group 'centaur-tabs)
@@ -185,7 +185,7 @@ visible."
   :type '(repeat symbol)
   :group 'centaur-tabs)
 
-(defcustom centaur-tabs-background-color "black"
+(defcustom centaur-tabs-background-color (face-background 'centaur-tabs-default)
   "*Background color of the tab bar.
 By default, use the background color specified for the
 `centaur-tabs-default' face (or inherited from another face), or the
@@ -726,7 +726,7 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
 			      'pointer centaur-tabs-mouse-pointer
 			      'centaur-tabs-tab tab
 			      'help-echo "Close buffer"
-			      'mouse-face 'centaur-tabs-close-mouse
+			      'mouse-face 'centaur-tabs-close-mouse-face
 			      'local-map (purecopy (centaur-tabs-make-header-line-mouse-map
 						    'mouse-1
 						    `(lambda (event) (interactive "e") (centaur-tabs-buffer-close-tab ',tab))))))
@@ -829,9 +829,8 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
     (centaur-tabs-set-template
      tabset
      (list (nreverse elts)
-	   (propertize "%-"
-		       'face (list :background padcolor
-				   :foreground padcolor)
+	   (propertize "% "
+		       'face (list :background padcolor)
 		       'pointer 'arrow)))
     ))
 
