@@ -213,6 +213,11 @@ Default is 'hand.  The following scopes are possible:
   "Face used for selected close button."
   :group 'centaur-tabs)
 
+(defface centaur-tabs-close-mouse
+  '((t (:inherit underline)))
+  "Face used for close button when hovered with the mouse."
+  :group 'centaur-tabs)
+
 (defface centaur-tabs-modified-marker-selected
   `((t (:inherit centaur-tabs-selected)))
   "Face used for selected modified marker."
@@ -721,7 +726,7 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
 			      'pointer centaur-tabs-mouse-pointer
 			      'centaur-tabs-tab tab
 			      'help-echo "Close buffer"
-			      'mouse-face 'underline
+			      'mouse-face 'centaur-tabs-close-mouse
 			      'local-map (purecopy (centaur-tabs-make-header-line-mouse-map
 						    'mouse-1
 						    `(lambda (event) (interactive "e") (centaur-tabs-buffer-close-tab ',tab))))))
