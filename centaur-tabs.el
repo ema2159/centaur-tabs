@@ -678,6 +678,8 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
 		    (centaur-tabs-icon tab face)
 		    'centaur-tabs-tab tab
 		    'pointer centaur-tabs-mouse-pointer
+		    'help-echo (with-current-buffer (centaur-tabs-tab-value tab)
+				 (format "%s" (format-mode-line mode-name)))
 		    'local-map (purecopy (centaur-tabs-make-header-line-mouse-map
 					  'mouse-1
 					  `(lambda (event) (interactive "e")
@@ -713,8 +715,8 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
 					  'centaur-tabs-modified-marker-selected
 					'centaur-tabs-modified-marker-unselected)
 				'pointer centaur-tabs-mouse-pointer
-				'centaur-tabs-tab tab
 				'help-echo "Close buffer"
+				'centaur-tabs-tab tab
 				'local-map (purecopy (centaur-tabs-make-header-line-mouse-map
 						      'mouse-1
 						      `(lambda (event) (interactive "e") (centaur-tabs-buffer-close-tab ',tab)))))
@@ -724,8 +726,8 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
 					'centaur-tabs-close-selected
 				      'centaur-tabs-close-unselected)
 			      'pointer centaur-tabs-mouse-pointer
-			      'centaur-tabs-tab tab
 			      'help-echo "Close buffer"
+			      'centaur-tabs-tab tab
 			      'mouse-face 'centaur-tabs-close-mouse-face
 			      'local-map (purecopy (centaur-tabs-make-header-line-mouse-map
 						    'mouse-1
@@ -756,6 +758,8 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
       'centaur-tabs-tab tab
       'face face
       'pointer centaur-tabs-mouse-pointer
+      'help-echo (with-current-buffer (centaur-tabs-tab-value tab)
+			    (buffer-file-name))
       'local-map (purecopy (centaur-tabs-make-header-line-mouse-map
 			    'mouse-1
 			    `(lambda (event) (interactive "e")
