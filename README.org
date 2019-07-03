@@ -216,6 +216,11 @@
    -'default: (Already described)
    -'tabs: Cycle through visible tabs (that is, the tabs in the current group)
    -'default: Navigate through tab groups only
+** Helm integration
+   You can integrate Helm with centaur-tabs for changing tab-groups. Just add helm-source-centaur-tabs-group in helm-source-list. Then you'll be able to use ~(centaur-tabs-build-helm-source)~ function and bind it to any key you want. (I'm not a Helm user so I'll not be able to solve problems related to this).
+** Ivy integration
+   You can integrate Ivy with centaur-tabs for changing tab-groups. Just use the ~(centaur-tabs-build-ivy-source)~ and bind it to any key you want.
+   
 * TO DO [10/15]
   - [X] Integrate all-the-icons
   - [X] Improve all the icons placing
