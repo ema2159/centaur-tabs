@@ -63,6 +63,88 @@
 
 ;;; Faces
 ;;
+(defface centaur-tabs-active-bar-face
+  '((t (:background "cyan")))
+  "Face used for the dirname part of the buffer path.")
+
+(defface centaur-tabs-default
+  '((t
+     (:background "black" :foreground "black")))
+  "Default face used in the tab bar."
+  :group 'centaur-tabs)
+
+(defface centaur-tabs-unselected
+  '((t
+     (:background "#3D3C3D" :foreground "grey50")))
+  "Face used for unselected tabs."
+  :group 'centaur-tabs)
+
+(defface centaur-tabs-selected
+  '((t (:background "#31343E" :foreground "white")))
+  "Face used for the selected tab."
+  :group 'centaur-tabs)
+
+(defface centaur-tabs-unselected-modified
+  '((t
+     (:background "#3D3C3D" :foreground "grey50")))
+  "Face used for unselected-modified tabs."
+  :group 'centaur-tabs)
+
+(defface centaur-tabs-selected-modified
+  '((t (:background "#31343E" :foreground "white")))
+  "Face used for the selected-modified tab."
+  :group 'centaur-tabs)
+
+(defface centaur-tabs-close-unselected
+  '((t
+     (:inherit centaur-tabs-unselected)))
+  "Face used for unselected close button."
+  :group 'centaur-tabs)
+
+(defface centaur-tabs-close-selected
+  '((t (:inherit centaur-tabs-selected)))
+  "Face used for selected close button."
+  :group 'centaur-tabs)
+
+(defface centaur-tabs-close-mouse
+  '((t (:inherit underline)))
+  "Face used for close button when hovered with the mouse."
+  :group 'centaur-tabs)
+
+(defface centaur-tabs-modified-marker-selected
+  `((t (:inherit centaur-tabs-selected)))
+  "Face used for selected modified marker."
+  :group 'centaur-tabs)
+
+(defface centaur-tabs-modified-marker-unselected
+  `((t (:inherit centaur-tabs-unselected)))
+  "Face used for unselected modified marker."
+  :group 'centaur-tabs)
+
+(defface tabbar-default
+  '((t :inherit default))
+  "Face used to inherit tabbar-default face")
+
+(defface tabbar-selected
+  '((t :inherit default))
+  "Face used to inherit tabbar-selected face")
+
+(defface tabbar-unselected
+  '((t
+     (:inherit default)))
+  "Face used to inherit tabbar-unselected face")
+
+(defface tabbar-selected-modified
+  '((t :inherit default))
+  "Face used to inherit tabbar-selected-modified face")
+
+(defface tabbar-unselected-modified
+  '((t
+     (:inherit default)))
+  "Face used to inherit tabbar-unselected-modified face")
+
+;;; Customs
+;;
 (defcustom centaur-tabs-cycle-scope nil
   "*Specify the scope of cyclic navigation through tabs.
 The following scopes are possible:
@@ -167,88 +249,6 @@ Default is 'hand.  The following scopes are possible:
 - hourglass"
   :group 'centaur-tabs
   :type 'variable)
-
-;;; Faces
-;;
-(defface centaur-tabs-active-bar-face
-  '((t (:background "cyan")))
-  "Face used for the dirname part of the buffer path.")
-
-(defface centaur-tabs-default
-  '((t
-     (:background "black" :foreground "black")))
-  "Default face used in the tab bar."
-  :group 'centaur-tabs)
-
-(defface centaur-tabs-unselected
-  '((t
-     (:background "#3D3C3D" :foreground "grey50")))
-  "Face used for unselected tabs."
-  :group 'centaur-tabs)
-
-(defface centaur-tabs-selected
-  '((t (:background "#31343E" :foreground "white")))
-  "Face used for the selected tab."
-  :group 'centaur-tabs)
-
-(defface centaur-tabs-unselected-modified
-  '((t
-     (:background "#3D3C3D" :foreground "grey50")))
-  "Face used for unselected-modified tabs."
-  :group 'centaur-tabs)
-
-(defface centaur-tabs-selected-modified
-  '((t (:background "#31343E" :foreground "white")))
-  "Face used for the selected-modified tab."
-  :group 'centaur-tabs)
-
-(defface centaur-tabs-close-unselected
-  '((t
-     (:inherit centaur-tabs-unselected)))
-  "Face used for unselected close button."
-  :group 'centaur-tabs)
-
-(defface centaur-tabs-close-selected
-  '((t (:inherit centaur-tabs-selected)))
-  "Face used for selected close button."
-  :group 'centaur-tabs)
-
-(defface centaur-tabs-close-mouse
-  '((t (:inherit underline)))
-  "Face used for close button when hovered with the mouse."
-  :group 'centaur-tabs)
-
-(defface centaur-tabs-modified-marker-selected
-  `((t (:inherit centaur-tabs-selected)))
-  "Face used for selected modified marker."
-  :group 'centaur-tabs)
-
-(defface centaur-tabs-modified-marker-unselected
-  `((t (:inherit centaur-tabs-unselected)))
-  "Face used for unselected modified marker."
-  :group 'centaur-tabs)
-
-(defface tabbar-default
-  '((t :inherit default))
-  "Face used to inherit tabbar-default face")
-
-(defface tabbar-selected
-  '((t :inherit default))
-  "Face used to inherit tabbar-selected face")
-
-(defface tabbar-unselected
-  '((t
-     (:inherit default)))
-  "Face used to inherit tabbar-unselected face")
-
-(defface tabbar-selected-modified
-  '((t :inherit default))
-  "Face used to inherit tabbar-selected-modified face")
-
-(defface tabbar-unselected-modified
-  '((t
-     (:inherit default)))
-  "Face used to inherit tabbar-unselected-modified face")
 
 (defvar centaur-tabs-hide-tab-function 'centaur-tabs-hide-tab
   "Function to hide tab.
