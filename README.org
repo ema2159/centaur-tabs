@@ -208,7 +208,7 @@
 	  )))
    #+END_SRC
 ** Tab cycling
-   The default behaviour from the ~centaur-tabs-forward/backward~ functions is to go through all the tabs in the current group and then change the group. If this is something that is desired to desired to be changed the ~centaur-tabs-cycle-scope~ custom must be changed like this:
+   The default behaviour from the ~centaur-tabs-forward/backward~ functions is to go through all the tabs in the current group and then change the group. If this is something that is to desired to be changed the ~centaur-tabs-cycle-scope~ custom must be changed like this:
    #+BEGIN_SRC emacs-lisp :tangle yes
      (setq centaur-tabs-cycle-scope 'tabs)
    #+END_SRC
@@ -222,7 +222,7 @@
 ** Ivy integration
    You can integrate Ivy with centaur-tabs for changing tab-groups. Just use the ~(centaur-tabs-build-ivy-source)~ and bind it to any key you want.
    
-* TO DO [10/15]
+* TO DO [11/16]
   - [X] Integrate all-the-icons
   - [X] Improve all the icons placing
   - [X] Fix all the icons background
@@ -238,10 +238,11 @@
   - [ ] Improve ~after-modifying-buffer~ function so it's called just when needed
   - [X] Fix messages buffer icon an FontAwesome errors
   - [ ] Check for Elscreen compatibility
+  - [X] Add this package to MELPA
     
 * My personal configuration 
-My personal configuration for reference:
-
+  My personal configuration for reference:
+  
 #+BEGIN_SRC emacs-lisp :tangle yes
   (use-package centaur-tabs
     :load-path "~/.emacs.d/other/centaur-tabs"
@@ -307,6 +308,7 @@ My personal configuration for reference:
 * Known supported theme plugins
 ** Currently Themed
    - [[https://github.com/ogdenwebb/emacs-kaolin-themes][Kaolin Themes]]
+   - [[https://github.com/jonathanchu/atom-one-dark-theme][Atom One Dark Theme]]
 ** Sent Pull Request
    - [[https://github.com/hlissner/emacs-doom-themes][Doom Themes]]
    - [[https://github.com/nashamri/spacemacs-theme][Spacemacs Theme]]

@@ -8,7 +8,7 @@
 ;; Author: Emmanuel Bustos <ema2159@gmail.com>
 ;; Maintainer: Emmanuel Bustos <ema2159@gmail.com>
 ;; Created: 2019-21-19 22:14:34
-;; Version: 4
+;; Version: 5
 ;; Known Compatibility: GNU Emacs 26.2
 ;; Package-Requires: ((emacs "24.4"))
 ;;
