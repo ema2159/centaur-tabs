@@ -1201,7 +1201,7 @@ COLOR1 and COLOR2 must be supplied as hex strings with a leading #."
 (defun centaur-tabs-separator-color-srgb-to-apple-rgb (red green blue)
   "Convert RED GREEN BLUE colors from sRGB color space to Apple RGB.
 RED, GREEN and BLUE should be between 0.0 and 1.0, inclusive."
-  (apply 'centaur-tabs-separator-color-xyz-to-apple-rgb (color-srgb-to-xyz red green blue)))
+  (apply #'centaur-tabs-separator-color-xyz-to-apple-rgb (color-srgb-to-xyz red green blue)))
 
 (defun centaur-tabs-separator-hex-color (color)
   "Get the hexadecimal value of COLOR."
@@ -1334,7 +1334,7 @@ BODY-2X is an optional argument."
 			  (color2 (or color2 "None"))
 			  (colori (or colori "None")))
 			let-vars)
-	   (apply 'create-image
+	   (apply #'create-image
 		  ,(append `(concat (format "/* XPM */ static char * %s_%s[] = { \"%s %s 3 1\", \"0 c %s\", \"1 c %s\", \"2 c %s\","
 					    ,(replace-regexp-in-string "-" "_" name)
 					    (symbol-name ',dir)
