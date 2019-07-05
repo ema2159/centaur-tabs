@@ -530,7 +530,7 @@ Otherwise insert it."
 (defun centaur-tabs-insert-at (list index insert-element)
   "Insert INSERT-ELEMENT in LIST at index INDEX."
   (let ((counter 0)
-	(result '()))
+	result)
     (dolist (element list)
       (if (equal counter index)
 	  (setq result (append result (list element insert-element)))
@@ -1897,7 +1897,7 @@ not the actual logical index position of the current group."
 (defun centaur-tabs-get-extensions ()
   "Get file extension of tabs."
   (set centaur-tabs-tabsets-tabset (centaur-tabs-map-tabsets 'centaur-tabs-selected-tab))
-  (let ((extension-names '()))
+  (let (extension-names)
     (mapc #'(lambda (buffer)
 	      (with-current-buffer buffer
 		(when (string-equal 'current-group-name (cdr (centaur-tabs-selected-tab (centaur-tabs-current-tabset t))))
