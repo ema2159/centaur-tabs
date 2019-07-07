@@ -222,14 +222,14 @@
 ** Ivy integration
    You can integrate Ivy with centaur-tabs for changing tab-groups. Just use the ~(centaur-tabs-build-ivy-source)~ and bind it to any key you want.
    
-* TO DO [11/16]
+* TO DO [12/16]
   - [X] Integrate all-the-icons
   - [X] Improve all the icons placing
   - [X] Fix all the icons background
   - [X] Add selected, unselected, selected-modified and unselected-modified faces
   - [X] Make function to inherit tabbar faces 
   - [ ] Group tabs by projectile's project (was already implemented but not for projectile)
-  - [ ] Create PR to different theme packages for this package 
+  - [X] Create PR to different theme packages for this package 
   - [X] Add modified marker icon option
   - [X] Add sideline for selected tab (atom style)
   - [ ] Add tab styles (Atom, Sublime, VS Code...)
@@ -307,10 +307,10 @@
 
 * Known supported theme plugins
 ** Currently Themed
-   - [[https://github.com/ogdenwebb/emacs-kaolin-themes][Kaolin Themes]]
    - [[https://github.com/jonathanchu/atom-one-dark-theme][Atom One Dark Theme]]
-** Sent Pull Request
    - [[https://github.com/hlissner/emacs-doom-themes][Doom Themes]]
+   - [[https://github.com/ogdenwebb/emacs-kaolin-themes][Kaolin Themes]]
+** Sent Pull Request
    - [[https://github.com/nashamri/spacemacs-theme][Spacemacs Theme]]
 * How to contribute
   You can contribute by forking the repo and then creating a pull request with the changes you consider will improve the package. I'll be glad to receive help.
