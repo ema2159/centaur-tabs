@@ -52,6 +52,8 @@
 (declare-function all-the-icons-auto-mode-match? "ext:all-the-icons.el" t t)
 (declare-function all-the-icons-icon-for-file "ext:all-the-icons.el" t t)
 (declare-function all-the-icons-icon-for-mode "ext:all-the-icons.el" t t)
+(declare-function projectile-project-root "ext:projectile.el" t t)
+(declare-function projectile-project-name "ext:projectile.el" t t)
 (defvar ivy-source-centaur-tabs-group)
 (defvar helm-source-centaur-tabs-group)
 
@@ -1970,6 +1972,41 @@ Other buffer group by `centaur-tabs-get-group-name' with project name."
      "OrgMode")
     (t
      (centaur-tabs-get-group-name (current-buffer))))))
+
+(defun centaur-tabs-group-buffer-groups ()
+  "Use centaur-tabs's own buffer grouping function."
+  (interactive)
+  (setq centaur-tabs-buffer-groups-function 'centaur-tabs-buffer-groups))
+
+(defvar centaur-tabs-projectile-buffer-group-calc nil
+  "Set buffer groups for projectile.
+Should be buffer local and speed up calculation of buffer groups.")
+
+(defun centaur-tabs-projectile-buffer-groups ()
+  "Return the list of group names BUFFER belongs to.
+Return only one group for each buffer."
+
+  (if centaur-tabs-projectile-buffer-group-calc
+      (symbol-value 'centaur-tabs-projectile-buffer-group-calc)
+    (set (make-local-variable 'centaur-tabs-projectile-buffer-group-calc)
+
+         (cond
+          ((or (get-buffer-process (current-buffer)) (memq major-mode '(comint-mode compilation-mode))) '("Term"))
+          ((string-equal "*" (substring (buffer-name) 0 1)) '("Misc"))
+          ((condition-case _err
+               (projectile-project-root)
+             (error nil)) (list (projectile-project-name)))
+          ((memq major-mode '(emacs-lisp-mode python-mode emacs-lisp-mode c-mode c++-mode makefile-mode lua-mode vala-mode)) '("Coding"))
+          ((memq major-mode '(javascript-mode js-mode nxhtml-mode html-mode css-mode)) '("HTML"))
+          ((memq major-mode '(org-mode calendar-mode diary-mode)) '("Org"))
+          ((memq major-mode '(dired-mode)) '("Dir"))
+          (t '("Main"))))
+    (symbol-value 'centaur-tabs-projectile-buffer-group-calc)))
+
+(defun centaur-tabs-group-by-projectile-project()
+  "Group by projectile project."
+  (interactive)
+  (setq centaur-tabs-buffer-groups-function 'centaur-tabs-projectile-buffer-groups))
 
 ;; Helm source for switching group in helm.
 
