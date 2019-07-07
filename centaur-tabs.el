@@ -1978,6 +1978,7 @@ Other buffer group by `centaur-tabs-get-group-name' with project name."
   (interactive)
   (setq centaur-tabs-buffer-groups-function 'centaur-tabs-buffer-groups))
 
+;; Taken from tabbar-ruler
 (defvar centaur-tabs-projectile-buffer-group-calc nil
   "Set buffer groups for projectile.
 Should be buffer local and speed up calculation of buffer groups.")
@@ -1996,11 +1997,15 @@ Return only one group for each buffer."
           ((condition-case _err
                (projectile-project-root)
              (error nil)) (list (projectile-project-name)))
-          ((memq major-mode '(emacs-lisp-mode python-mode emacs-lisp-mode c-mode c++-mode makefile-mode lua-mode vala-mode)) '("Coding"))
-          ((memq major-mode '(javascript-mode js-mode nxhtml-mode html-mode css-mode)) '("HTML"))
+          ((memq major-mode '(emacs-lisp-mode python-mode emacs-lisp-mode c-mode
+					      c++-mode javascript-mode js-mode
+					      js2-mode makefile-mode
+					      lua-mode vala-mode)) '("Coding"))
+          ((memq major-mode '(nxhtml-mode html-mode
+					  mhtml-mode css-mode)) '("HTML"))
           ((memq major-mode '(org-mode calendar-mode diary-mode)) '("Org"))
           ((memq major-mode '(dired-mode)) '("Dir"))
-          (t '("Main"))))
+          (t '("Other"))))
     (symbol-value 'centaur-tabs-projectile-buffer-group-calc)))
 
 (defun centaur-tabs-group-by-projectile-project()

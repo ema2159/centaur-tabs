@@ -214,28 +214,37 @@
    #+END_SRC
    
    There are three options:
-   -'default: (Already described)
-   -'tabs: Cycle through visible tabs (that is, the tabs in the current group)
-   -'default: Navigate through tab groups only
+   - 'default: (Already described)
+   - 'tabs: Cycle through visible tabs (that is, the tabs in the current group)
+   - 'groups: Navigate through tab groups only
 ** Helm integration
    You can integrate Helm with centaur-tabs for changing tab-groups. Just add helm-source-centaur-tabs-group in helm-source-list. Then you'll be able to use ~(centaur-tabs-build-helm-source)~ function and bind it to any key you want. (I'm not a Helm user so I'll not be able to solve problems related to this).
 ** Ivy integration
    You can integrate Ivy with centaur-tabs for changing tab-groups. Just use the ~(centaur-tabs-build-ivy-source)~ and bind it to any key you want.
+** Projectile integration
+   You can group your tabs by Projectile's project. Just use the following function in your configuration:
+   #+BEGIN_SRC emacs-lisp :tangle yes
+     (centaur-tabs-group-by-projectile-project)
+   #+END_SRC
    
-* TO DO [12/16]
+   This function can be called interactively to enable Projectile grouping. To go back to centaur-tabs's user defined (or default) buffer grouping function you can interactively call:
+   #+BEGIN_SRC emacs-lisp :tangle yes
+     (centaur-tabs-group-buffer-groups)
+   #+END_SRC
+* TO DO [13/16]
   - [X] Integrate all-the-icons
   - [X] Improve all the icons placing
   - [X] Fix all the icons background
   - [X] Add selected, unselected, selected-modified and unselected-modified faces
   - [X] Make function to inherit tabbar faces 
-  - [ ] Group tabs by projectile's project (was already implemented but not for projectile)
+  - [X] Group tabs by projectile's project (was already implemented but not for projectile)
   - [X] Create PR to different theme packages for this package 
   - [X] Add modified marker icon option
   - [X] Add sideline for selected tab (atom style)
   - [ ] Add tab styles (Atom, Sublime, VS Code...)
   - [X] Make icon insert after the separator
   - [X] Add a customizable close button
-  - [ ] Improve ~after-modifying-buffer~ function so it's called just when needed
+  - [ ] Explore if ~after-modifying-buffer~ function can be improved
   - [X] Fix messages buffer icon an FontAwesome errors
   - [ ] Check for Elscreen compatibility
   - [X] Add this package to MELPA
