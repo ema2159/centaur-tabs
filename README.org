@@ -9,7 +9,7 @@
 - [[#what-is-this][What is this?]]
 - [[#installation][Installation]]
 - [[#customization][Customization]]
-  - [[#header-line-face][Header line face]]
+  - [[#headline-face][Headline face]]
   - [[#tab-styles][Tab Styles]]
   - [[#tab-height][Tab height]]
   - [[#tab-icons][Tab icons]]
@@ -62,7 +62,7 @@
 
 * Customization
   This package is heavily customizable, with many options available to the user. Here are some of them:
-** Header line face
+** Headline face
    You can make the headline face match the centaur-tabs-default face. This makes the tabbar have an uniform appearance. In your configuration use the following function: 
    #+BEGIN_SRC emacs-lisp :tangle yes
      (centaur-tabs-headline-match)
