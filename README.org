@@ -9,6 +9,7 @@
 - [[#what-is-this][What is this?]]
 - [[#installation][Installation]]
 - [[#customization][Customization]]
+  - [[#header-line-face][Header line face]]
   - [[#tab-styles][Tab Styles]]
   - [[#tab-height][Tab height]]
   - [[#tab-icons][Tab icons]]
@@ -61,6 +62,11 @@
 
 * Customization
   This package is heavily customizable, with many options available to the user. Here are some of them:
+** Header line face
+   You can make the headline face match the centaur-tabs-default face. This makes the tabbar have an uniform appearance. In your configuration use the following function: 
+   #+BEGIN_SRC emacs-lisp :tangle yes
+     (centaur-tabs-headline-match)
+   #+END_SRC
 ** Tab Styles
    To change the tab style, modify the centaur-tabs-style variable like this:
    #+BEGIN_SRC emacs-lisp :tangle yes
@@ -295,6 +301,7 @@
     (setq centaur-tabs-set-icons t)
     (setq centaur-tabs-set-bar t)
     (setq centaur-tabs-set-modified-marker t)
+    (centaur-tabs-headline-match)
     (centaur-tabs-mode t)
     (defun centaur-tabs-buffer-groups ()
       "`centaur-tabs-buffer-groups' control buffers' group rules.
@@ -343,6 +350,7 @@
     :bind
     ("C-<prior>" . centaur-tabs-backward)
     ("C-<next>" . centaur-tabs-forward)
+    ("C-c t" . centaur-tabs-build-ivy-source)
     (:map evil-normal-state-map
 	  ("g t" . centaur-tabs-forward)
 	  ("g T" . centaur-tabs-backward)))

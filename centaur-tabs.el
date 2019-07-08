@@ -623,6 +623,10 @@ current cached copy."
       (kill-buffer buffer))
     (centaur-tabs-display-update)))
 
+(defun centaur-tabs-headline-match ()
+  "Make headline use centaur-tabs-default-face."
+  (set-face-attribute 'header-line nil :background (face-background 'centaur-tabs-default)))
+
 ;; Hooks for modification
 (defun centaur-tabs-on-saving-buffer ()
   "Function to be run after the buffer is saved."
