@@ -2,9 +2,10 @@
 #+CREATOR: Emmanuel Bustos T.
 #+OPTIONS: toc:nil 
 
-  [[./images/centaur.png]]
-
   [[https://melpa.org/#/centaur-tabs][file:https://melpa.org/packages/centaur-tabs-badge.svg]] 
+  [[http://www.gnu.org/licenses/gpl-3.0][file:https://img.shields.io/badge/License-GPL%20v3-blue.svg]] 
+
+  [[./images/centaur.png]]
 * Contents                                                              :TOC:
 - [[#what-is-this][What is this?]]
 - [[#installation][Installation]]
