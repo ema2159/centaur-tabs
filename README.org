@@ -5,15 +5,34 @@
   [[./images/centaur.png]]
 
   [[https://melpa.org/#/centaur-tabs][file:https://melpa.org/packages/centaur-tabs-badge.svg]] 
-#+TOC: headlines 2 
+* Contents                                                              :TOC:
+- [[#what-is-this][What is this?]]
+- [[#installation][Installation]]
+- [[#customization][Customization]]
+  - [[#tab-styles][Tab Styles]]
+  - [[#tab-height][Tab height]]
+  - [[#tab-icons][Tab icons]]
+  - [[#selected-tab-bar][Selected tab bar]]
+  - [[#customize-the-close-button][Customize the close button]]
+  - [[#customize-the-modified-marker][Customize the modified marker]]
+  - [[#inherit-tabbar-faces][Inherit tabbar faces:]]
+  - [[#disable-centaur-tabs-in-selected-buffers][Disable centaur-tabs in selected buffers]]
+  - [[#buffer-groups][Buffer groups]]
+  - [[#show-buffer-groups-names-instead-of-buffer-names-in-tabs][Show buffer groups names instead of buffer names in tabs]]
+  - [[#enable-vim-like-tab-motions][Enable Vim like tab motions]]
+  - [[#prevent-the-access-to-specified-buffers][Prevent the access to specified buffers]]
+  - [[#tab-cycling][Tab cycling]]
+  - [[#helm-integration][Helm integration]]
+  - [[#ivy-integration][Ivy integration]]
+  - [[#projectile-integration][Projectile integration]]
+- [[#to-do-1417][TO DO]]
+- [[#my-personal-configuration][My personal configuration]]
+- [[#known-supported-theme-plugins][Known supported theme plugins]]
+  - [[#currently-themed][Currently Themed]]
+  - [[#sent-pull-request][Sent Pull Request]]
+- [[#how-to-contribute][How to contribute]]
+
 * What is this?
-  This projects aims to become an aesthetic, functional and efficient tabs plugin for Emacs with a lot of customization options. 
-  Although this is a fork from [[https://github.com/manateelazycat/awesome-tab][awesome-tab]] (that I forked with the permission from the author) it's been heavily modified so now it may be considered a different package.
-
-  It currently looks like this:
-
-  [[./screenshot.png]]
-
 * Installation
   You can download this package from MELPA. This is a basic ~use-package~ configuration: 
   #+BEGIN_SRC emacs-lisp :tangle yes
