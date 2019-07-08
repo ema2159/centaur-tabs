@@ -1,9 +1,11 @@
 #+TITLE: Centaur tabs
 #+CREATOR: Emmanuel Bustos T.
+#+OPTIONS: toc:nil 
 
   [[./images/centaur.png]]
 
   [[https://melpa.org/#/centaur-tabs][file:https://melpa.org/packages/centaur-tabs-badge.svg]] 
+#+TOC: headlines 2 
 * What is this?
   This projects aims to become an aesthetic, functional and efficient tabs plugin for Emacs with a lot of customization options. 
   Although this is a fork from [[https://github.com/manateelazycat/awesome-tab][awesome-tab]] (that I forked with the permission from the author) it's been heavily modified so now it may be considered a different package.
@@ -100,7 +102,7 @@
      (setq centaur-tabs-close-button "X")
    #+END_SRC
    Also there are two faces to customize the close button string: centaur-tabs-close-unselected and centaur-tabs-close-selected
-** Customizes the modified marker
+** Customize the modified marker
    To display a marker indicating that a buffer has been modified (atom-style)
    #+BEGIN_SRC emacs-lisp :tangle yes
      (setq centaur-tabs-set-modified-marker t)
@@ -176,6 +178,12 @@
 	  (centaur-tabs-get-group-name (current-buffer))))))
    #+END_SRC
    
+** Show buffer groups names instead of buffer names in tabs 
+   If you want your tabs to display buffer groups names instead of buffer names you can put the following in your configuration:
+   #+BEGIN_SRC emacs-lisp :tangle yes
+     (setq centaur-tabs--buffer-show-groups t)
+   #+END_SRC
+   You can toggle between the two options interactively with the ~(centaur-tabs-toggle-groups)~ command. 
 ** Enable Vim like tab motions
    To enable Vim like tab changing binds
    #+BEGIN_SRC emacs-lisp :tangle yes
@@ -231,7 +239,7 @@
    #+BEGIN_SRC emacs-lisp :tangle yes
      (centaur-tabs-group-buffer-groups)
    #+END_SRC
-* TO DO [13/16]
+* TO DO [14/17]
   - [X] Integrate all-the-icons
   - [X] Improve all the icons placing
   - [X] Fix all the icons background
@@ -248,6 +256,7 @@
   - [X] Fix messages buffer icon an FontAwesome errors
   - [ ] Check for Elscreen compatibility
   - [X] Add this package to MELPA
+  - [X] Make a configuration to display buffer groups names instead of buffer names in tabs 
     
 * My personal configuration 
   My personal configuration for reference:
