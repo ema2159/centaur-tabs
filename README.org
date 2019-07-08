@@ -33,6 +33,12 @@
 - [[#how-to-contribute][How to contribute]]
 
 * What is this?
+  This projects aims to become an aesthetic, functional and efficient tabs plugin for Emacs with a lot of customization options. 
+  Although this is a fork from [[https://github.com/manateelazycat/awesome-tab][awesome-tab]] (that I forked with the permission from the author) it's been heavily modified so now it may be considered a different package.
+
+  It currently looks like this:
+
+  [[./screenshot.png]]
 * Installation
   You can download this package from MELPA. This is a basic ~use-package~ configuration: 
   #+BEGIN_SRC emacs-lisp :tangle yes
