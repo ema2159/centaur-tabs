@@ -54,7 +54,6 @@
 (declare-function all-the-icons-icon-for-mode "ext:all-the-icons.el" t t)
 (declare-function projectile-project-root "ext:projectile.el" t t)
 (declare-function projectile-project-name "ext:projectile.el" t t)
-(defvar ivy-source-centaur-tabs-group)
 (defvar helm-source-centaur-tabs-group)
 
 ;;;;;;;;;;;;;;;;;;;;;;; Centaur-Tabs source code ;;;;;;;;;;;;;;;;;;;;;;;
@@ -2042,16 +2041,17 @@ Return only one group for each buffer."
 
 ;; Ivy source for switching group in ivy.
 
-(defun centaur-tabs-build-ivy-source ()
-  "Display a list of current buffer groups in Ivy."
+;;;###autoload
+(defun centaur-tabs-counsel-switch-group ()
+  "Display a list of current buffer groups using Counsel."
   (interactive)
-  (setq ivy-source-centaur-tabs-group
-	(when (featurep 'ivy)
-	  (require 'ivy)
-	  (ivy-read
-	   "Centaur-Tabs Groups:"
-	   (centaur-tabs-get-groups)
-	   :action #'centaur-tabs-switch-group))))
+  (when (featurep 'ivy)
+    (require 'ivy)
+    (ivy-read
+     "Centaur Tabs Groups:"
+     (centaur-tabs-get-groups)
+     :action #'centaur-tabs-switch-group
+     :caller 'centaur-tabs-counsel-switch-group)))
 
 (defun centaur-tabs-hide-tab (x)
   "Do no to show buffer X in tabs."

@@ -260,7 +260,7 @@
 ** Helm integration
    You can integrate Helm with centaur-tabs for changing tab-groups. Just add helm-source-centaur-tabs-group in helm-source-list. Then you'll be able to use ~(centaur-tabs-build-helm-source)~ function and bind it to any key you want. (I'm not a Helm user so I'll not be able to solve problems related to this).
 ** Ivy integration
-   You can integrate Ivy with centaur-tabs for changing tab-groups. Just use the ~(centaur-tabs-build-ivy-source)~ and bind it to any key you want.
+   You can integrate Ivy with centaur-tabs for changing tab-groups. Just use the ~(centaur-tabs-counsel-switch-group)~ and bind it to any key you want.
 ** Projectile integration
    You can group your tabs by Projectile's project. Just use the following function in your configuration:
    #+BEGIN_SRC emacs-lisp :tangle yes
@@ -353,7 +353,7 @@
     :bind
     ("C-<prior>" . centaur-tabs-backward)
     ("C-<next>" . centaur-tabs-forward)
-    ("C-c t" . centaur-tabs-build-ivy-source)
+    ("C-c t" . centaur-tabs-counsel-switch-group)
     (:map evil-normal-state-map
 	  ("g t" . centaur-tabs-forward)
 	  ("g T" . centaur-tabs-backward)))
@@ -362,6 +362,7 @@
 * Known supported theme plugins
 ** Currently Themed
    - [[https://github.com/jonathanchu/atom-one-dark-theme][Atom One Dark Theme]]
+   - [[https://github.com/belak/base16-emacs][Base16]]
    - [[https://github.com/hlissner/emacs-doom-themes][Doom Themes]]
    - [[https://github.com/ogdenwebb/emacs-kaolin-themes][Kaolin Themes]]
 ** Sent Pull Request
