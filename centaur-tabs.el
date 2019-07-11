@@ -215,9 +215,14 @@ background color of the `default' face otherwise."
   :type 'boolean)
 
 (defcustom centaur-tabs-set-bar nil
-  "When non nil, display a bar at the left of the currently selected tab."
+  "When non nil, display a bar to show the currently selected tab.
+There are two options:
+- 'left: displays the bar at the left of the currently selected tab.
+- 'over: displays the bar over the currently selected tab."
   :group 'centaur-tabs
-  :type 'boolean)
+  :type '(choice :tag "Display bar at..."
+		 (const :tag "Put bar on the left" left)
+		 (const :tag "Put bar as an overline" over)))
 
 (defcustom centaur-tabs-set-close-button t
   "When non nil, display a clickable x button for closing the tabs."
@@ -608,9 +613,13 @@ current cached copy."
 	    ;; Pop :background from face so it doesn't accumulate
 	    ;; The unless part is to omit the initial case when :background hasn't been added
 	    (unless (<= (length original-props) 6)
-	      (pop original-props))
+	      (pop original-props)
+	      (when (eq centaur-tabs-set-bar 'over)
+		(pop original-props)))
 	    (add-face-text-property 0 1 original-props nil icon)
 	    (add-face-text-property 0 1 `(:background ,background) nil icon)
+	    (when (eq centaur-tabs-set-bar 'over)
+	      (add-face-text-property 0 1 `(:overline ,(face-attribute face :overline)) nil icon))
 	    icon)))
     ""))
 
@@ -668,7 +677,7 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
 		     'centaur-tabs-unselected-modified
 		   'centaur-tabs-unselected)))
 	 (bar (if (and selected-p
-		       centaur-tabs-set-bar)
+		       (eq centaur-tabs-set-bar 'left))
 		  (propertize
 		   centaur-tabs-active-bar
 		   'centaur-tabs-tab tab
@@ -1041,6 +1050,13 @@ Returns non-nil if the new state is enabled.
   :require 'centaur-tabs
   :global t
   :keymap centaur-tabs-mode-map
+  ;;Initialize things
+  ;; If set, initialize selected over
+  (when (eq centaur-tabs-set-bar 'over)
+    (set-face-attribute 'centaur-tabs-selected nil :overline (face-background 'centaur-tabs-active-bar-face))
+    (set-face-attribute 'centaur-tabs-selected-modified nil :overline (face-background 'centaur-tabs-active-bar-face))
+    (set-face-attribute 'centaur-tabs-unselected nil :overline nil)
+    (set-face-attribute 'centaur-tabs-unselected-modified nil :overline nil))
   (if centaur-tabs-mode
 ;;; ON
       (unless (centaur-tabs-mode-on-p)
