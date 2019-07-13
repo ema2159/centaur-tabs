@@ -283,10 +283,6 @@ buffers.")
 It must return a list of group names, or nil if the buffer has no
 group.  Notice that it is better that a buffer belongs to one group.")
 
-(defvar centaur-tabs-adjust-buffer-order-function 'centaur-tabs-adjust-buffer-order
-  "Function to adjust buffer order after switch tab.
-Default is `centaur-tabs-adjust-buffer-order', you can write your own rule.")
-
 (defvar centaur-tabs--buffer-show-groups nil)
 
 ;; Separators
@@ -1050,13 +1046,6 @@ Returns non-nil if the new state is enabled.
   :require 'centaur-tabs
   :global t
   :keymap centaur-tabs-mode-map
-  ;;Initialize things
-  ;; If set, initialize selected over
-  (when (eq centaur-tabs-set-bar 'over)
-    (set-face-attribute 'centaur-tabs-selected nil :overline (face-background 'centaur-tabs-active-bar-face))
-    (set-face-attribute 'centaur-tabs-selected-modified nil :overline (face-background 'centaur-tabs-active-bar-face))
-    (set-face-attribute 'centaur-tabs-unselected nil :overline nil)
-    (set-face-attribute 'centaur-tabs-unselected-modified nil :overline nil))
   (if centaur-tabs-mode
 ;;; ON
       (unless (centaur-tabs-mode-on-p)
@@ -1677,18 +1666,22 @@ first."
   "Initialize tab bar buffer data.
 Run as `centaur-tabs-init-hook'."
   (setq centaur-tabs--buffers nil
-	;; centaur-tabs--buffer-show-groups nil
 	centaur-tabs-current-tabset-function 'centaur-tabs-buffer-tabs
 	centaur-tabs-tab-label-function 'centaur-tabs-buffer-tab-label
 	centaur-tabs-select-tab-function 'centaur-tabs-buffer-select-tab
 	)
+  ;; If set, initialize selected overline
+  (when (eq centaur-tabs-set-bar 'over)
+    (set-face-attribute 'centaur-tabs-selected nil :overline (face-background 'centaur-tabs-active-bar-face))
+    (set-face-attribute 'centaur-tabs-selected-modified nil :overline (face-background 'centaur-tabs-active-bar-face))
+    (set-face-attribute 'centaur-tabs-unselected nil :overline nil)
+    (set-face-attribute 'centaur-tabs-unselected-modified nil :overline nil))
   (add-hook 'kill-buffer-hook #'centaur-tabs-buffer-track-killed))
 
 (defun centaur-tabs-buffer-quit ()
   "Quit tab bar buffer.
 Run as `centaur-tabs-quit-hook'."
   (setq centaur-tabs--buffers nil
-	;; centaur-tabs--buffer-show-groups nil
 	centaur-tabs-current-tabset-function nil
 	centaur-tabs-tab-label-function nil
 	centaur-tabs-select-tab-function nil
@@ -1736,7 +1729,6 @@ TYPE is default option."
 		  centaur-tabs-cycle-scope))
 	 _selected tab)
     (when tabset
-      ;; (setq _selected (centaur-tabs-selected-tab tabset))
       (setq tabset (centaur-tabs-tabs tabset)
 	    tab (car (if backward (last tabset) tabset)))
       (centaur-tabs-buffer-select-tab tab))))
@@ -2117,51 +2109,6 @@ Operates over buffer BUF"
 (defun centaur-tabs-insert-before (list bef-el el)
   "Insert EL before BEF-EL in LIST."
   (nreverse (centaur-tabs-insert-after (nreverse list) bef-el el)))
-
-(defun centaur-tabs-adjust-buffer-order ()
-  "Put the two buffers switched to the adjacent position after current buffer changed."
-  ;; Don't trigger by centaur-tabs command, it's annoying.
-  ;; This feature should trigger by search plugins, such as ibuffer, helm or ivy.
-  (unless (string-prefix-p "centaur-tabs" (format "%s" this-command))
-    ;; Just continue when buffer changed.
-    (when (and (not (eq (current-buffer) centaur-tabs-last-focus-buffer))
-	       (not (minibufferp)))
-      (let* ((current (current-buffer))
-	     (previous centaur-tabs-last-focus-buffer)
-	     (current-group (cl-first (funcall centaur-tabs-buffer-groups-function))))
-	;; Record last focus buffer.
-	(setq centaur-tabs-last-focus-buffer current)
-
-	;; Just continue if two buffers are in same group.
-	(when (string= current-group centaur-tabs-last-focus-buffer-group)
-	  (let* ((bufset (centaur-tabs-get-tabset current-group))
-		 (current-group-tabs (centaur-tabs-tabs bufset))
-		 (current-group-buffers (cl-mapcar 'car current-group-tabs))
-		 (current-buffer-index (cl-position current current-group-buffers))
-		 (previous-buffer-index (cl-position previous current-group-buffers)))
-
-	    ;; If the two tabs are not adjacent, swap the positions of the two tabs.
-	    (when (and current-buffer-index
-		       previous-buffer-index
-		       (> (abs (- current-buffer-index previous-buffer-index)) 1))
-	      (let* ((copy-group-tabs (cl-copy-list current-group-tabs))
-		     (previous-tab (nth previous-buffer-index copy-group-tabs))
-		     (current-tab (nth current-buffer-index copy-group-tabs))
-		     (base-group-tabs (centaur-tabs-remove-nth-element previous-buffer-index copy-group-tabs))
-		     (new-group-tabs
-		      (if (> current-buffer-index previous-buffer-index)
-			  (centaur-tabs-insert-before base-group-tabs current-tab previous-tab)
-			(centaur-tabs-insert-after base-group-tabs current-tab previous-tab))))
-		(set bufset new-group-tabs)
-		(centaur-tabs-set-template bufset nil)
-		(centaur-tabs-display-update)
-		))))
-
-	;; Update the group name of the last access tab.
-	(setq centaur-tabs-last-focus-buffer-group current-group)
-	))))
-
-(add-hook 'post-command-hook centaur-tabs-adjust-buffer-order-function)
 
 (provide 'centaur-tabs)
 
