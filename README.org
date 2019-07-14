@@ -265,6 +265,24 @@
    - 'default: (Already described)
    - 'tabs: Cycle through visible tabs (that is, the tabs in the current group)
    - 'groups: Navigate through tab groups only
+** Buffer reordering
+   To enable an automatic buffer reordering function use the following function in your configuration:
+   #+BEGIN_SRC emacs-lisp :tangle yes
+     (centaur-tabs-enable-buffer-reordering)
+   #+END_SRC
+   This works the following way. There's a certain group of tabs:
+   
+   |tab1.el | tab2.js | tab3.c | tab4.py |
+   
+   If you're in a tab and change to another tab in the group (via tab clicking, Ido, Ivy or Helm) the tab you were in will move right beside your new tab, so if you're on ~tab1.el~ and you clicked ~tab4.py~ the tabs order will be the following:
+   
+   | tab2.js | tab3.c | tab1.el | tab4.py |
+ 
+   And then if you were on tab4.py and changed to ~tab2.js~:
+   
+   | tab2.js | tab4.py | tab3.c | tab1.el |
+
+   This functionality doesn't take effect when using centaur-tabs motion functions.
 ** Helm integration
    You can integrate Helm with centaur-tabs for changing tab-groups. Just add helm-source-centaur-tabs-group in helm-source-list. Then you'll be able to use ~(centaur-tabs-build-helm-source)~ function and bind it to any key you want. (I'm not a Helm user so I'll not be able to solve problems related to this).
 ** Ivy integration
