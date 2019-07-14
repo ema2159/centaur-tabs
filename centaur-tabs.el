@@ -1,4 +1,4 @@
-;;; centaur-tabs.el --- Provide an out of box configuration to use tabs -*- lexical-binding: t; -*-
+;;; centaur-tabs.el --- Aesthetic, modern looking customizable tabs plugin  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2019  Emmanuel Bustos
 
