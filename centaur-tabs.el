@@ -283,6 +283,10 @@ buffers.")
 It must return a list of group names, or nil if the buffer has no
 group.  Notice that it is better that a buffer belongs to one group.")
 
+(defvar centaur-tabs-adjust-buffer-order-function 'centaur-tabs-adjust-buffer-order
+  "Function to adjust buffer order after switch tab.
+Default is `centaur-tabs-adjust-buffer-order', you can write your own rule.")
+
 (defvar centaur-tabs--buffer-show-groups nil)
 
 ;; Separators
@@ -360,12 +364,16 @@ You should use this hook to reset dependent data.")
 
 (defun centaur-tabs-inherit-tabbar-faces ()
   "Function for using already existing faces for other tab plugins."
-  (custom-set-faces
-   '(centaur-tabs-default ((t (:inherit tabbar-default))))
-   '(centaur-tabs-selected ((t (:inherit tabbar-selected))))
-   '(centaur-tabs-unselected ((t (:inherit tabbar-unselected))))
-   '(centaur-tabs-selected-modified ((t (:inherit tabbar-selected-modified))))
-   '(centaur-tabs-unselected-modified ((t (:inherit tabbar-unselected-modified)))))
+  (set-face-attribute 'centaur-tabs-default nil
+		      :inherit 'tabbar-default)
+   (set-face-attribute 'centaur-tabs-selected nil
+		      :inherit 'tabbar-selected)
+   (set-face-attribute 'centaur-tabs-unselected nil
+		      :inherit 'tabbar-unselected)
+   (set-face-attribute 'centaur-tabs-selected-modified nil
+		      :inherit 'tabbar-selected-modified)
+   (set-face-attribute 'centaur-tabs-unselected-modified nil
+		      :inherit 'tabbar-unselected-modified)
    (set-face-attribute 'centaur-tabs-default nil
 		       :background (face-background 'tabbar-default nil t))
    (set-face-attribute 'centaur-tabs-selected nil
@@ -629,7 +637,10 @@ current cached copy."
 
 (defun centaur-tabs-headline-match ()
   "Make headline use centaur-tabs-default-face."
-  (set-face-attribute 'header-line nil :background (face-background 'centaur-tabs-default)))
+  (set-face-attribute 'header-line nil :background (face-background 'centaur-tabs-unselected)
+		      :box nil
+		      :overline nil
+		      :underline nil))
 
 ;; Hooks for modification
 (defun centaur-tabs-on-saving-buffer ()
@@ -2109,6 +2120,53 @@ Operates over buffer BUF"
 (defun centaur-tabs-insert-before (list bef-el el)
   "Insert EL before BEF-EL in LIST."
   (nreverse (centaur-tabs-insert-after (nreverse list) bef-el el)))
+
+(defun centaur-tabs-adjust-buffer-order ()
+  "Put the two buffers switched to the adjacent position after current buffer changed."
+  ;; Don't trigger by centaur-tabs command, it's annoying.
+  ;; This feature should be trigger by search plugins, such as ibuffer, helm or ivy.
+  (unless (string-prefix-p "centaur-tabs" (format "%s" this-command))
+    ;; Just continue when the buffer has changed.
+    (when (and (not (eq (current-buffer) centaur-tabs-last-focus-buffer))
+	       (not (minibufferp)))
+      (let* ((current (current-buffer))
+	     (previous centaur-tabs-last-focus-buffer)
+	     (current-group (cl-first (funcall centaur-tabs-buffer-groups-function))))
+	;; Record the last focused buffer.
+	(setq centaur-tabs-last-focus-buffer current)
+
+	;; Just continue if two buffers are in the same group.
+	(when (string= current-group centaur-tabs-last-focus-buffer-group)
+	  (let* ((bufset (centaur-tabs-get-tabset current-group))
+		 (current-group-tabs (centaur-tabs-tabs bufset))
+		 (current-group-buffers (cl-mapcar 'car current-group-tabs))
+		 (current-buffer-index (cl-position current current-group-buffers))
+		 (previous-buffer-index (cl-position previous current-group-buffers)))
+
+	    ;; If the tabs are not adjacent, swap their positions.
+	    (when (and current-buffer-index
+		       previous-buffer-index
+		       (> (abs (- current-buffer-index previous-buffer-index)) 1))
+	      (let* ((copy-group-tabs (cl-copy-list current-group-tabs))
+		     (previous-tab (nth previous-buffer-index copy-group-tabs))
+		     (current-tab (nth current-buffer-index copy-group-tabs))
+		     (base-group-tabs (centaur-tabs-remove-nth-element previous-buffer-index copy-group-tabs))
+		     (new-group-tabs
+		      (if (> current-buffer-index previous-buffer-index)
+			  (centaur-tabs-insert-before base-group-tabs current-tab previous-tab)
+			(centaur-tabs-insert-after base-group-tabs current-tab previous-tab))))
+		(set bufset new-group-tabs)
+		(centaur-tabs-set-template bufset nil)
+		(centaur-tabs-display-update)
+		))))
+
+	;; Update the group name of the last accessed tab.
+	(setq centaur-tabs-last-focus-buffer-group current-group)
+	))))
+
+(defun centaur-tabs-enable-buffer-reordering ()
+  "Enable the buffer adjusting functionality."
+  (add-hook 'post-command-hook centaur-tabs-adjust-buffer-order-function))
 
 (provide 'centaur-tabs)
 
