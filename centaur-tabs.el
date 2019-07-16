@@ -607,27 +607,32 @@ current cached copy."
   "Generate all-the-icons icon for TAB using FACE's background."
   (if (featurep 'all-the-icons)
       (with-current-buffer (car tab)
-	(ignore-errors
-	  (let* ((icon (if (and (buffer-file-name)
-				(all-the-icons-auto-mode-match?))
-			   (all-the-icons-icon-for-file (file-name-nondirectory (buffer-file-name))
-							:v-adjust 0.01)
-			 (all-the-icons-icon-for-mode major-mode
-						      :v-adjust 0.01)))
-		 (background (face-background face))
-		 (original-props (get-text-property 0 'face icon)))
-	    (remove-text-properties 0 1 '(face nil) icon)
-	    ;; Pop :background from face so it doesn't accumulate
-	    ;; The unless part is to omit the initial case when :background hasn't been added
-	    (unless (<= (length original-props) 6)
-	      (pop original-props)
-	      (when (eq centaur-tabs-set-bar 'over)
-		(pop original-props)))
-	    (add-face-text-property 0 1 original-props nil icon)
-	    (add-face-text-property 0 1 `(:background ,background) nil icon)
-	    (when (eq centaur-tabs-set-bar 'over)
-	      (add-face-text-property 0 1 `(:overline ,(face-attribute face :overline)) nil icon))
-	    icon)))
+	(let* ((icon
+		(if (and (buffer-file-name)
+			 (all-the-icons-auto-mode-match?))
+		    (all-the-icons-icon-for-file
+		     (file-name-nondirectory (buffer-file-name))
+		     :v-adjust 0.01)
+		  (all-the-icons-icon-for-mode major-mode :v-adjust 0.01)))
+	       background
+	       original-props)
+	  (if (stringp icon)
+	      (progn
+		(setq background (face-background face)
+		      original-props (get-text-property 0 'face icon))
+		(remove-text-properties 0 1 '(face nil) icon)
+		;; Pop :background from face so it doesn't accumulate
+		;; The unless part is to omit the initial case when :background hasn't been added
+		(unless (<= (length original-props) 6)
+		  (pop original-props)
+		  (when (eq centaur-tabs-set-bar 'over)
+		    (pop original-props)))
+		(add-face-text-property 0 1 original-props nil icon)
+		(add-face-text-property 0 1 `(:background ,background) nil icon)
+		(when (eq centaur-tabs-set-bar 'over)
+		  (add-face-text-property 0 1 `(:overline ,(face-attribute face :overline)) nil icon))
+		icon)
+	    "")))
     ""))
 
 ;; Utility functions
