@@ -2125,7 +2125,9 @@ Operates over buffer BUF"
   "Put the two buffers switched to the adjacent position after current buffer changed."
   ;; Don't trigger by centaur-tabs command, it's annoying.
   ;; This feature should be trigger by search plugins, such as ibuffer, helm or ivy.
-  (unless (string-prefix-p "centaur-tabs" (format "%s" this-command))
+  (unless (or (string-prefix-p "centaur-tabs" (format "%s" this-command))
+	      (string-prefix-p "mouse-drag-header-line" (format "%s" this-command))
+	      (string-prefix-p "(lambda (event) (interactive e)" (format "%s" this-command)))
     ;; Just continue when the buffer has changed.
     (when (and (not (eq (current-buffer) centaur-tabs-last-focus-buffer))
 	       (not (minibufferp)))
