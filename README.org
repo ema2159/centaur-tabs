@@ -271,17 +271,35 @@
    #+BEGIN_SRC emacs-lisp :tangle yes
      (centaur-tabs-enable-buffer-reordering)
    #+END_SRC
+   #+BEGIN_SRC emacs-lisp :tangle yes
+    ;; when current tab(A) are behind the tab your were visited(B) ,then move A to the right side of B.
+    ;; when current tab(A) are before the tab your were visited(B) ,then move A to the left side of B.
+     (setq centaur-tabs-adjust-buffer-order t)
+
+     ;; Move current tab to the left side of the the tab you were visited.
+     (setq centaur-tabs-adjust-buffer-order 'left)
+     
+     ;; Move current tab to the right side of the the tab you were visited.
+     (setq centaur-tabs-adjust-buffer-order 'right)
+   #+END_SRC
+   
    This works the following way. There's a certain group of tabs:
    
    |tab1.el | tab2.js | tab3.c | tab4.py |
    
-   If you're in a tab and change to another tab in the group (via Ido, Ivy or Helm) the tab you were in will move right beside your new tab, so if you're on ~tab1.el~ and you changed to ~tab4.py~ the tabs order will be the following:
+   If you're in a tab and change to another tab in the group (via Ido, Ivy or Helm) the new tab will move to the right side of the tab you were, so if you're on ~tab1.el~ and you clicked ~tab4.py~ the tabs order will be the following:
    
-   | tab2.js | tab3.c | tab1.el | tab4.py |
+   | tab1.js | tab4.c | tab2.el | tab3.py |
  
-   And then if you were on tab4.py and changed to ~tab2.js~:
+   And then if you were on tab4.py and changed to ~tab2.js~,the tabs order will be the following:
+   | tab1.js | tab4.c | tab2.el | tab3.py |
+
+   the order doesn't changed ,because they already located next to each other.
    
-   | tab2.js | tab4.py | tab3.c | tab1.el |
+   And now if you were on tab2.py and changed to ~tab1.js~,the tabs order will be the following:
+   | tab4.js | tab1.c | tab2.el | tab3.py |
+
+   
 
    This functionality doesn't take effect when using centaur-tabs motion functions.
 ** Helm integration
