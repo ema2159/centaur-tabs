@@ -296,6 +296,18 @@ group.  Notice that it is better that a buffer belongs to one group.")
   "Function to adjust buffer order after switch tab.
 Default is `centaur-tabs-adjust-buffer-order', you can write your own rule.")
 
+(defcustom centaur-tabs-adjust-buffer-order nil
+  "Automatic buffer reordering when you’re in a tab and
+change to another tab in the group (via Ido, Ivy or Helm,Ibuffer...)."
+  :group 'centaur-tabs
+  :type '(choice :tag "Automatic buffer reordering..."
+		 (const :tag "Do not adjust buffer order." nil)
+		 (const :tag "when current tab(A) are behind the tab your were visited(B) ,then move A to the right side of B.
+when current tab(A) are before the tab your were visited(B) ,then move A to the left side of B. " t)
+		 (const :tag "Move current tab to the left side of the the tab you were." left)
+		 (const :tag "Move current tab to the right side of the the tab you were." right)))
+
+
 (defvar centaur-tabs--buffer-show-groups nil)
 
 ;; Separators
@@ -1652,8 +1664,11 @@ That is, a string used to represent it on the tab bar."
 
 (defun centaur-tabs-buffer-select-tab (tab)
   "Select TAB."
-  (let ((buffer (centaur-tabs-tab-value tab)))
+  (let ((buffer (centaur-tabs-tab-value tab))
+        (group (centaur-tabs-tab-tabset tab)))
     (switch-to-buffer buffer)
+	(setq centaur-tabs-last-focus-buffer buffer)
+    (setq centaur-tabs-last-focus-buffer-group group)
     ;; (centaur-tabs-buffer-show-groups nil)
     (centaur-tabs-display-update)
     ))
@@ -2140,7 +2155,8 @@ Operates over buffer BUF"
 	      (string-prefix-p "mouse-drag-header-line" (format "%s" this-command))
 	      (string-prefix-p "(lambda (event) (interactive e)" (format "%s" this-command)))
     ;; Just continue when the buffer has changed.
-    (when (and (not (eq (current-buffer) centaur-tabs-last-focus-buffer))
+    (when (and centaur-tabs-adjust-buffer-order
+           (not (eq (current-buffer) centaur-tabs-last-focus-buffer))
 	       (not (minibufferp)))
       (let* ((current (current-buffer))
 	     (previous centaur-tabs-last-focus-buffer)
@@ -2163,11 +2179,21 @@ Operates over buffer BUF"
 	      (let* ((copy-group-tabs (cl-copy-list current-group-tabs))
 		     (previous-tab (nth previous-buffer-index copy-group-tabs))
 		     (current-tab (nth current-buffer-index copy-group-tabs))
-		     (base-group-tabs (centaur-tabs-remove-nth-element previous-buffer-index copy-group-tabs))
-		     (new-group-tabs
-		      (if (> current-buffer-index previous-buffer-index)
-			  (centaur-tabs-insert-before base-group-tabs current-tab previous-tab)
-			(centaur-tabs-insert-after base-group-tabs current-tab previous-tab))))
+		     (base-group-tabs (centaur-tabs-remove-nth-element current-buffer-index copy-group-tabs))
+             new-group-tabs)
+            (cond
+             ((eq centaur-tabs-adjust-buffer-order 'left)
+              ;; Move current tab to the left side of the the tab you were visited.
+             (setq new-group-tabs (centaur-tabs-insert-before base-group-tabs previous-tab current-tab)))
+             ((eq centaur-tabs-adjust-buffer-order 'right)
+              ;; Move current tab to the right side of the the tab you were visited..
+              (setq new-group-tabs (centaur-tabs-insert-after  base-group-tabs previous-tab current-tab)))
+             (t
+              ;; when current tab(A) are behind the tab your were visited(B) ,then move A to the right side of B.
+              ;; when current tab(A) are before the tab your were visited(B) ,then move A to the left side of B.
+              (if (> current-buffer-index previous-buffer-index)
+                  (setq new-group-tabs (centaur-tabs-insert-after  base-group-tabs previous-tab current-tab))
+                (setq new-group-tabs (centaur-tabs-insert-before  base-group-tabs previous-tab current-tab)))))
 		(set bufset new-group-tabs)
 		(centaur-tabs-set-template bufset nil)
 		(centaur-tabs-display-update)
