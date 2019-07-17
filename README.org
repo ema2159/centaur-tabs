@@ -119,6 +119,12 @@
    #+BEGIN_SRC emacs-lisp :tangle yes
     (setq centaur-tabs-set-icons t)
    #+END_SRC
+** Graying out icons
+   To gray out icons for the unselected tabs:
+   #+BEGIN_SRC emacs-lisp :tangle yes
+    (setq centaur-tabs-gray-out-icons 'buffer)
+   #+END_SRC
+*** TODO Implement functionality for unselected windows instead of unselected buffer.
 ** Selected tab bar
    To display a colored bar at the left of the selected tab
    #+BEGIN_SRC emacs-lisp :tangle yes

@@ -217,6 +217,12 @@ background color of the `default' face otherwise."
   :group 'centaur-tabs
   :type 'boolean)
 
+(defcustom centaur-tabs-gray-out-icons nil
+  "When non nil, enable gray icons for unselected buffer."
+  :group 'centaur-tabs
+  :type '(choice :tag "Gray out icons for unselected..."
+		 (const :tag "Buffer" buffer)))
+
 (defcustom centaur-tabs-set-bar nil
   "When non nil, display a bar to show the currently selected tab.
 There are two options:
@@ -603,8 +609,9 @@ current cached copy."
   (centaur-tabs-set-template centaur-tabs-tabsets-tabset nil)
   centaur-tabs-tabsets-tabset)
 
-(defun centaur-tabs-icon (tab face)
-  "Generate all-the-icons icon for TAB using FACE's background."
+(defun centaur-tabs-icon (tab face selected)
+  "Generate all-the-icons icon for TAB using FACE's background.
+If icon gray out option enabled, gray out icon if not SELECTED."
   (if (featurep 'all-the-icons)
       (with-current-buffer (car tab)
 	(let* ((icon
@@ -615,15 +622,19 @@ current cached copy."
 		     :v-adjust 0.01)
 		  (all-the-icons-icon-for-mode major-mode :v-adjust 0.01)))
 	       (background (face-background face))
+	       (inactive (if (and (not selected)
+				  (eq centaur-tabs-gray-out-icons 'buffer))
+			     'mode-line-inactive
+			   nil))
 	       (overline (if (eq centaur-tabs-set-bar 'over)
 			     (face-attribute face :overline)
 			   nil)))
 	  (if (stringp icon)
 	      (progn
 		(propertize icon 'face `(:inherit ,(get-text-property 0 'face icon)
-									    :background ,background
-									    :overline ,overline
-											nil)))
+						  :inherit ,inactive
+						  :background ,background
+						  :overline ,overline)))
 	    "")))
     ""))
 
@@ -699,7 +710,7 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
 	 (icon (if (and centaur-tabs-set-icons
 			(not centaur-tabs--buffer-show-groups))
 		   (propertize
-		    (centaur-tabs-icon tab face)
+		    (centaur-tabs-icon tab face selected-p)
 		    'centaur-tabs-tab tab
 		    'pointer centaur-tabs-mouse-pointer
 		    'help-echo (with-current-buffer (centaur-tabs-tab-value tab)
