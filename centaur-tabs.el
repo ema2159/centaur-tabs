@@ -181,7 +181,10 @@ visible."
   :type 'int)
 
 (defcustom centaur-tabs-hide-tabs-hooks
-  '(magit-status-mode-hook magit-popup-mode-hook reb-mode-hook)
+  '(magit-status-mode-hook
+    magit-popup-mode-hook
+    reb-mode-hook
+    completion-list-mode-hook)
   "Set hooks to buffer in which it isn't desired to have tabs."
   :type '(repeat symbol)
   :group 'centaur-tabs)
