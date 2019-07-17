@@ -614,24 +614,16 @@ current cached copy."
 		     (file-name-nondirectory (buffer-file-name))
 		     :v-adjust 0.01)
 		  (all-the-icons-icon-for-mode major-mode :v-adjust 0.01)))
-	       background
-	       original-props)
+	       (background (face-background face))
+	       (overline (if (eq centaur-tabs-set-bar 'over)
+			     (face-attribute face :overline)
+			   nil)))
 	  (if (stringp icon)
 	      (progn
-		(setq background (face-background face)
-		      original-props (get-text-property 0 'face icon))
-		(remove-text-properties 0 1 '(face nil) icon)
-		;; Pop :background from face so it doesn't accumulate
-		;; The unless part is to omit the initial case when :background hasn't been added
-		(unless (<= (length original-props) 6)
-		  (pop original-props)
-		  (when (eq centaur-tabs-set-bar 'over)
-		    (pop original-props)))
-		(add-face-text-property 0 1 original-props nil icon)
-		(add-face-text-property 0 1 `(:background ,background) nil icon)
-		(when (eq centaur-tabs-set-bar 'over)
-		  (add-face-text-property 0 1 `(:overline ,(face-attribute face :overline)) nil icon))
-		icon)
+		(propertize icon 'face `(:inherit ,(get-text-property 0 'face icon)
+									    :background ,background
+									    :overline ,overline
+											nil)))
 	    "")))
     ""))
 
