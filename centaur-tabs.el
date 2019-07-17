@@ -625,7 +625,7 @@ If icon gray out option enabled, gray out icon if not SELECTED."
 	       (inactive (if (and (not selected)
 				  (eq centaur-tabs-gray-out-icons 'buffer))
 			     'mode-line-inactive
-			   nil))
+			   'unspecified))
 	       (overline (if (eq centaur-tabs-set-bar 'over)
 			     (face-attribute face :overline)
 			   nil)))
