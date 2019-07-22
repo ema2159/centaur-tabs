@@ -2127,6 +2127,7 @@ Return only one group for each buffer."
      (string-prefix-p "*lsp" name)
      (string-prefix-p "*company" name)
      (string-prefix-p "*Flycheck" name)
+     (string-prefix-p "*tramp" name)
 
      ;; Is not magit buffer.
      (and (string-prefix-p "magit" name)
