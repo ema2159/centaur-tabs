@@ -2041,7 +2041,8 @@ Other buffer group by `centaur-tabs-get-group-name' with project name."
 (defun centaur-tabs-group-buffer-groups ()
   "Use centaur-tabs's own buffer grouping function."
   (interactive)
-  (setq centaur-tabs-buffer-groups-function 'centaur-tabs-buffer-groups))
+  (setq centaur-tabs-buffer-groups-function 'centaur-tabs-buffer-groups)
+  (centaur-tabs-display-update))
 
 ;; Projectile integration. Taken from tabbar-ruler
 (defvar centaur-tabs-projectile-buffer-group-calc nil
@@ -2076,7 +2077,8 @@ Return only one group for each buffer."
 (defun centaur-tabs-group-by-projectile-project()
   "Group by projectile project."
   (interactive)
-  (setq centaur-tabs-buffer-groups-function 'centaur-tabs-projectile-buffer-groups))
+  (setq centaur-tabs-buffer-groups-function 'centaur-tabs-projectile-buffer-groups)
+  (centaur-tabs-display-update))
 
 ;; Show groups instead of tabs
 (defun centaur-tabs-toggle-groups ()
