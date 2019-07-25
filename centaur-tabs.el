@@ -1984,6 +1984,11 @@ not the actual logical index position of the current group."
 (dolist (hook centaur-tabs-hide-tabs-hooks)
   (add-hook hook (lambda () (setq-local header-line-format nil))))
 
+(mapc (lambda (hook)
+	(add-hook hook (lambda ()
+			 (setq-local header-line-format nil))))
+      centaur-tabs-hide-tabs-hooks)
+
 ;; Rules to control buffer's group rules.
 (defvar centaur-tabs-groups-hash (make-hash-table :test 'equal))
 (defvar centaur-tabs-hide-hash (make-hash-table :test 'equal))
