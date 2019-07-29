@@ -1981,9 +1981,6 @@ not the actual logical index position of the current group."
 (setq uniquify-buffer-name-style 'post-forward-angle-brackets)
 (setq uniquify-after-kill-buffer-p t)
 
-(dolist (hook centaur-tabs-hide-tabs-hooks)
-  (add-hook hook (lambda () (setq-local header-line-format nil))))
-
 (mapc (lambda (hook)
 	(add-hook hook (lambda ()
 			 (setq-local header-line-format nil))))
