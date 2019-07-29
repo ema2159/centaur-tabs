@@ -417,6 +417,7 @@
    - [[https://github.com/belak/base16-emacs][Base16]]
    - [[https://github.com/hlissner/emacs-doom-themes][Doom Themes]]
    - [[https://github.com/ogdenwebb/emacs-kaolin-themes][Kaolin Themes]]
+   - [[https://github.com/ianpan870102/tron-legacy-emacs-theme][Tron Legacy]]
    - [[https://github.com/ianpan870102/wilmersdorf-emacs-theme][Wilmsersdorf Theme]]
    - [[https://github.com/bbatsov/zenburn-emacs][Zenburn]]
 ** Sent Pull Request
