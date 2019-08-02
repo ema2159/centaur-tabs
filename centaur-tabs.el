@@ -574,11 +574,12 @@ move the view on left."
   "Search in TABSET for the tab after TAB.
 If optional argument BEFORE is non-nil, search for the tab before
 TAB.  Return the tab found, or nil otherwise."
-  (let* (last (tabs (centaur-tabs-tabs tabset)))
-    (while (and tabs (not (eq tab (car tabs))))
-      (setq last (car tabs)
-	    tabs (cdr tabs)))
-    (and tabs (if before last (nth 1 tabs)))))
+  (let* ((tabs (centaur-tabs-tabs tabset))
+	 (tabs-len (1- (length tabs)))
+	 (tab-pos (cl-position tab tabs)))
+    (if before
+	(if (= tab-pos 0)      nil (nth (1- tab-pos) tabs))
+      (if (= tab-pos tabs-len) nil (nth (1+ tab-pos) tabs)))))
 
 (defun centaur-tabs-current-tabset (&optional update)
   "Return the tab set currently displayed on the tab bar.
@@ -642,25 +643,24 @@ If icon gray out option enabled, gray out icon if not SELECTED."
 		      :underline nil))
 
 ;; Hooks for modification
-(defun centaur-tabs-on-saving-buffer ()
+(defun centaur-tabs-saved-marker-update ()
   "Function to be run after the buffer is saved."
-  (centaur-tabs-set-template centaur-tabs-current-tabset nil)
-  (centaur-tabs-display-update))
-(defun centaur-tabs-on-modifying-buffer ()
-  "Function to be run after the buffer is first changed."
-  (set-buffer-modified-p (buffer-modified-p))
   (centaur-tabs-set-template centaur-tabs-current-tabset nil)
   (centaur-tabs-display-update))
 (defun centaur-tabs-after-modifying-buffer (_begin _end _length)
   "Function to be run after the buffer is changed.
 BEGIN, END and LENGTH are just standard arguments for after-changes-function
 hooked functions"
-  (set-buffer-modified-p (buffer-modified-p))
   (centaur-tabs-set-template centaur-tabs-current-tabset nil)
   (centaur-tabs-display-update))
-(add-hook 'after-save-hook #'centaur-tabs-on-saving-buffer)
-(add-hook 'first-change-hook #'centaur-tabs-on-modifying-buffer)
+(add-hook 'after-save-hook #'centaur-tabs-saved-marker-update)
+(add-hook 'first-change-hook #'centaur-tabs-saved-marker-update)
 (add-hook 'after-change-functions #'centaur-tabs-after-modifying-buffer)
+
+(defun centaur-tabs-force-update ()
+  "Force update all tabs."
+  (centaur-tabs-buffer-update-groups)
+  (centaur-tabs-saved-marker-update))
 
 (defun centaur-tabs-get-tab-from-event (event)
   "Given a mouse EVENT, extract the tab at the mouse point."
@@ -858,6 +858,57 @@ Inhibit display of the tab bar in current window `centaur-tabs-hide-tab-function
 (defconst centaur-tabs-header-line-format '(:eval (centaur-tabs-line))
   "The tab bar header line format.")
 
+(defun centaur-tabs-next-group (&optional backward)
+  "Switch to next group/tabset.
+If BACKWARD is non-nil switch to
+previous group."
+  (let*
+      ((groups (seq-map 'centaur-tabs-get-tabset (centaur-tabs-get-groups)))
+       (groups-len (1- (length groups)))
+       (current-group-pos (cl-position (window-parameter nil 'tabset) groups)))
+    (centaur-tabs-saved-marker-update)
+    (set-window-parameter
+     nil 'tabset
+     (nth
+      (if backward
+	  (if (= current-group-pos 0) groups-len (1- current-group-pos))
+	(if (= current-group-pos groups-len) 0 (1+ current-group-pos)))
+      groups))))
+
+(defun centaur-tabs-cycle-groups (&optional backward)
+  "Cycle to the next tabset/tab-group.
+If BACKWARD is non-nil cycle to the previous tabset."
+  (rassq
+   (centaur-tabs-next-group backward)
+   (centaur-tabs-tabs (centaur-tabs-get-tabsets-tabset))))
+
+(defun centaur-tabs-cycle-tabs (&optional backward)
+  "Cycle to the next tab.
+If BACKWARD is non-nil cycle to the
+previous tab."
+  (let* ((tabset centaur-tabs-current-tabset)
+	 (tab (centaur-tabs-selected-tab tabset))
+	 (tabs (centaur-tabs-tabs tabset))
+	 (tabs-len (1- (length tabs)))
+	 (tab-pos (cl-position tab tabs)))
+    (nth
+     (if backward
+	(if (= tab-pos 0) tabs-len (1- tab-pos))
+       (if (= tab-pos tabs-len) 0 (1+ tab-pos)))
+     tabs)))
+
+(defun centaur-tabs-cycle-default (&optional backward)
+  "Switch to next tab.
+If there is no next tab, cycle to next
+group. If BACKWARD is non-nil switch to previous tab. If there is
+no previous tab cycle to previous group."
+  (let* ((tabset centaur-tabs-current-tabset)
+	 (tab (centaur-tabs-selected-tab tabset))
+	 (next-tab (centaur-tabs-tab-next tabset tab backward)))
+    (if next-tab next-tab
+      (let ((tabs (centaur-tabs-tabs (centaur-tabs-next-group backward))))
+	(car (if backward (last tabs) tabs))))))
+
 ;;; Cyclic navigation through tabs
 ;;
 (defun centaur-tabs-cycle (&optional backward)
@@ -866,53 +917,18 @@ The scope of the cyclic navigation through tabs is specified by the
 option `centaur-tabs-cycle-scope'.
 If optional argument BACKWARD is non-nil, cycle to the previous tab
 instead."
-  (let* ((tabset (centaur-tabs-current-tabset t))
-	 (ttabset (centaur-tabs-get-tabsets-tabset))
-	 ;; If navigation through groups is requested, and there is
-	 ;; only one group, navigate through visible tabs.
-	 (cycle (if (and (eq centaur-tabs-cycle-scope 'groups)
-			 (not (cdr (centaur-tabs-tabs ttabset))))
-		    'tabs
-		  centaur-tabs-cycle-scope))
-	 selected tab)
-    (when tabset
-      (setq selected (centaur-tabs-selected-tab tabset))
-      (cond
-       ;; Cycle through visible tabs only.
-       ((eq cycle 'tabs)
-	(setq tab (centaur-tabs-tab-next tabset selected backward))
-	;; When there is no tab after/before the selected one, cycle
-	;; to the first/last visible tab.
-	(unless tab
-	  (setq tabset (centaur-tabs-tabs tabset)
-		tab (car (if backward (last tabset) tabset))))
-	)
-       ;; Cycle through tab groups only.
-       ((eq cycle 'groups)
-	(setq tab (centaur-tabs-tab-next ttabset selected backward))
-	;; When there is no group after/before the selected one, cycle
-	;; to the first/last available group.
-	(unless tab
-	  (setq tabset (centaur-tabs-tabs ttabset)
-		tab (car (if backward (last tabset) tabset))))
-	)
-       (t
-	;; Cycle through visible tabs then tab groups.
-	(setq tab (centaur-tabs-tab-next tabset selected backward))
-	;; When there is no visible tab after/before the selected one,
-	;; cycle to the next/previous available group.
-	(unless tab
-	  (setq tab (centaur-tabs-tab-next ttabset selected backward))
-	  ;; When there is no next/previous group, cycle to the
-	  ;; first/last available group.
-	  (unless tab
-	    (setq tabset (centaur-tabs-tabs ttabset)
-		  tab (car (if backward (last tabset) tabset))))
-	  ;; Select the first/last visible tab of the new group.
-	  (setq tabset (centaur-tabs-tabs (centaur-tabs-tab-tabset tab))
-		tab (car (if backward (last tabset) tabset))))
-	))
-      (centaur-tabs-buffer-select-tab tab))))
+  (let (;; If navigation through groups is requested, and there is
+	;; only one group, navigate through visible tabs.
+	(cycle
+	 (if (and (eq centaur-tabs-cycle-scope 'groups)
+		  (not (cdr (centaur-tabs-tabs (centaur-tabs-get-tabsets-tabset)))))
+	     'tabs
+	   centaur-tabs-cycle-scope)))
+    (centaur-tabs-buffer-select-tab
+     (cond
+      ((eq cycle 'tabs) (centaur-tabs-cycle-tabs backward))
+      ((eq cycle 'groups) (centaur-tabs-cycle-groups backward))
+      (t (centaur-tabs-cycle-default backward))))))
 
 ;;;###autoload
 (defun centaur-tabs-backward ()
@@ -1149,9 +1165,17 @@ Return the the first group where the current buffer is."
 		 (unless (centaur-tabs-tabs tabset)
 		   tabset))))
       ;; The new cache becomes the current one.
-      (setq centaur-tabs--buffers bl)))
-  ;; Return the first group the current buffer belongs to.
-  (car (nth 2 (assq (current-buffer) centaur-tabs--buffers))))
+      (setq centaur-tabs--buffers bl))))
+
+(defun centaur-tabs-get-group (&optional window)
+  "Return the first group the current buffer belongs to.
+Given optional WINDOW, get the tab group of that WINDOW."
+  (let ((groups (nth 2 (assq (current-buffer) centaur-tabs--buffers)))
+	(current-tabset (window-parameter window 'tabset)))
+    (setq groups (seq-map 'centaur-tabs-get-tabset groups))
+    (when (or (null current-tabset) (not (member current-tabset groups)))
+      (setq current-tabset (set-window-parameter window 'tabset (car groups))))
+    current-tabset))
 
 ;;; Tab bar callbacks
 ;;
@@ -1162,7 +1186,7 @@ Return the the first group where the current buffer is."
 
 (defun centaur-tabs-buffer-tabs ()
   "Return the buffers to display on the tab bar, in a tab set."
-  (let ((tabset (centaur-tabs-get-tabset (centaur-tabs-buffer-update-groups))))
+  (let ((tabset (centaur-tabs-get-group)))
     (centaur-tabs-select-tab-value (current-buffer) tabset)
     (when centaur-tabs--buffer-show-groups
       (setq tabset (centaur-tabs-get-tabsets-tabset))
@@ -1677,7 +1701,8 @@ Run as `centaur-tabs-init-hook'."
     (set-face-attribute 'centaur-tabs-selected-modified nil :overline (face-background 'centaur-tabs-active-bar-face))
     (set-face-attribute 'centaur-tabs-unselected nil :overline nil)
     (set-face-attribute 'centaur-tabs-unselected-modified nil :overline nil))
-  (add-hook 'kill-buffer-hook #'centaur-tabs-buffer-track-killed))
+  (add-hook 'kill-buffer-hook #'centaur-tabs-buffer-track-killed)
+  (add-hook 'buffer-list-update-hook #'centaur-tabs-buffer-update-groups))
 
 (defun centaur-tabs-buffer-quit ()
   "Quit tab bar buffer.
@@ -1708,7 +1733,9 @@ Run as `centaur-tabs-quit-hook'."
     (catch 'done
       (mapc
        #'(lambda (group)
-	   (when (equal group-name (car (car (cdr (cdr group)))))
+	   (when (member group-name (car (cdr (cdr group))))
+	     (set-window-parameter nil 'tabset (centaur-tabs-get-tabset group-name))
+	     (centaur-tabs-saved-marker-update)
 	     (throw 'done (switch-to-buffer (car (cdr group))))))
        tab-buffer-list) )))
 
@@ -1717,7 +1744,7 @@ Run as `centaur-tabs-quit-hook'."
   (interactive)
   (centaur-tabs-select-beg-tab t))
 
-(defun centaur-tabs-select-beg-tab (&optional backward _type)
+(defun centaur-tabs-select-beg-tab (&optional backward)
   "Select beginning tab of current tabs.
 If BACKWARD is non-nil, move backward, otherwise move forward.
 TYPE is default option."
@@ -1990,7 +2017,13 @@ Other buffer group by `centaur-tabs-get-group-name' with project name."
   "Use centaur-tabs's own buffer grouping function."
   (interactive)
   (setq centaur-tabs-buffer-groups-function 'centaur-tabs-buffer-groups)
-  (centaur-tabs-display-update))
+  (centaur-tabs-force-update))
+
+(defun centaur-tabs-group-by-projectile-project ()
+  "Group by projectile project."
+  (interactive)
+  (setq centaur-tabs-buffer-groups-function 'centaur-tabs-projectile-buffer-groups)
+  (centaur-tabs-force-update))
 
 ;; Projectile integration. Taken from tabbar-ruler
 (defvar centaur-tabs-projectile-buffer-group-calc nil
@@ -2021,12 +2054,6 @@ Return only one group for each buffer."
 	  ((memq major-mode '(dired-mode)) '("Dir"))
 	  (t '("Other"))))
     (symbol-value 'centaur-tabs-projectile-buffer-group-calc)))
-
-(defun centaur-tabs-group-by-projectile-project()
-  "Group by projectile project."
-  (interactive)
-  (setq centaur-tabs-buffer-groups-function 'centaur-tabs-projectile-buffer-groups)
-  (centaur-tabs-display-update))
 
 ;; Show groups instead of tabs
 (defun centaur-tabs-toggle-groups ()
