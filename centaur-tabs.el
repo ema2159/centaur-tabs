@@ -202,7 +202,7 @@ background color of the `default' face otherwise."
   :group 'centaur-tabs
   :type 'int)
 
-(defcustom centaur-tabs-bar-height (+ 6 centaur-tabs-height)
+(defcustom centaur-tabs-bar-height (+ 8 centaur-tabs-height)
   "The height of bar."
   :group 'centaur-tabs
   :type 'int)
@@ -993,14 +993,18 @@ instead."
   "Select the previous available tab.
 Depend on the setting of the option `centaur-tabs-cycle-scope'."
   (interactive)
-  (centaur-tabs-cycle t))
+  (if (centaur-tabs-current-tabset t)
+      (centaur-tabs-cycle t)
+    (previous-buffer)))
 
 ;;;###autoload
 (defun centaur-tabs-forward ()
   "Select the next available tab.
 Depend on the setting of the option `centaur-tabs-cycle-scope'."
   (interactive)
-  (centaur-tabs-cycle))
+  (if (centaur-tabs-current-tabset t)
+      (centaur-tabs-cycle)
+    (next-buffer)))
 
 ;;;###autoload
 (defun centaur-tabs-backward-group ()
