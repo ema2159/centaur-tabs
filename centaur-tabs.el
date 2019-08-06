@@ -2005,11 +2005,6 @@ not the actual logical index position of the current group."
 
 ;;;;;;;;;;;;;;;;;;;;;;; Default configurations ;;;;;;;;;;;;;;;;;;;;;;;
 
-;; Uniquify tab name when open multiple buffers with same filename.
-(setq uniquify-separator "/")
-(setq uniquify-buffer-name-style 'post-forward-angle-brackets)
-(setq uniquify-after-kill-buffer-p t)
-
 (mapc (lambda (hook)
 	(add-hook hook (lambda ()
 			 (setq-local header-line-format nil))))

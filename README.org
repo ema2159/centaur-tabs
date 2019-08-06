@@ -350,13 +350,18 @@
   (use-package centaur-tabs
     :load-path "~/.emacs.d/other/centaur-tabs"
     :config
-    (setq centaur-tabs-style "bar")
-    (setq centaur-tabs-height 32)
-    (setq centaur-tabs-set-icons t)
-    (setq centaur-tabs-set-bar 'over)
-    (setq centaur-tabs-set-modified-marker t)
+    (setq centaur-tabs-style "bar"
+	  centaur-tabs-height 32
+	  centaur-tabs-set-icons t
+	  centaur-tabs-set-modified-marker t
+	  centaur-tabs-set-bar 'left)
     (centaur-tabs-headline-match)
+    ;; (setq centaur-tabs-gray-out-icons 'buffer)
+    ;; (centaur-tabs-enable-buffer-reordering)
+    ;; (setq centaur-tabs-adjust-buffer-order t)
     (centaur-tabs-mode t)
+    (setq uniquify-separator "/")
+    (setq uniquify-buffer-name-style 'forward)
     (defun centaur-tabs-buffer-groups ()
       "`centaur-tabs-buffer-groups' control buffers' group rules.
 
@@ -404,7 +409,9 @@
     :bind
     ("C-<prior>" . centaur-tabs-backward)
     ("C-<next>" . centaur-tabs-forward)
-    ("C-c t" . centaur-tabs-counsel-switch-group)
+    ("C-c t s" . centaur-tabs-counsel-switch-group)
+    ("C-c t p" . centaur-tabs-group-by-projectile-project)
+    ("C-c t g" . centaur-tabs-group-buffer-groups)
     (:map evil-normal-state-map
 	  ("g t" . centaur-tabs-forward)
 	  ("g T" . centaur-tabs-backward)))
