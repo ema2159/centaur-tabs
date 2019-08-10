@@ -839,6 +839,12 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
       'local-map centaur-tabs-default-map)
      modified-marker
      close-button
+     (propertize
+      " "
+      'face face
+      'centaur-tabs-tab tab
+      'pointer centaur-tabs-mouse-pointer
+      'local-map centaur-tabs-default-map)
      (centaur-tabs-separator-render centaur-tabs-style-right face))))
 
 (defun centaur-tabs-line-format (tabset)
