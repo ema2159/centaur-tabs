@@ -32,7 +32,6 @@
 - [[#to-do-1519][TO DO]]
 - [[#my-personal-configuration][My personal configuration]]
 - [[#known-supported-theme-plugins][Known supported theme plugins]]
-  - [[#currently-themed][Currently Themed]]
 - [[#how-to-contribute][How to contribute]]
 
 * What is this?
@@ -418,15 +417,15 @@
 #+END_SRC
 
 * Known supported theme plugins
-** Currently Themed
-   - [[https://github.com/jonathanchu/atom-one-dark-theme][Atom One Dark Theme]]
-   - [[https://github.com/belak/base16-emacs][Base16]]
-   - [[https://github.com/hlissner/emacs-doom-themes][Doom Themes]]
-   - [[https://github.com/ogdenwebb/emacs-kaolin-themes][Kaolin Themes]]
-   - [[https://github.com/nashamri/spacemacs-theme][Spacemacs Theme]]
-   - [[https://github.com/ianpan870102/tron-legacy-emacs-theme][Tron Legacy]]
-   - [[https://github.com/ianpan870102/wilmersdorf-emacs-theme][Wilmsersdorf Theme]]
-   - [[https://github.com/bbatsov/zenburn-emacs][Zenburn]]
+  - [[https://github.com/jonathanchu/atom-one-dark-theme][Atom One Dark Theme]]
+  - [[https://github.com/belak/base16-emacs][Base16]]
+  - [[https://github.com/SavchenkoValeriy/emacs-chocolate-theme][Chocolate Theme]]
+  - [[https://github.com/hlissner/emacs-doom-themes][Doom Themes]]
+  - [[https://github.com/ogdenwebb/emacs-kaolin-themes][Kaolin Themes]]
+  - [[https://github.com/nashamri/spacemacs-theme][Spacemacs Theme]]
+  - [[https://github.com/ianpan870102/tron-legacy-emacs-theme][Tron Legacy]]
+  - [[https://github.com/ianpan870102/wilmersdorf-emacs-theme][Wilmsersdorf Theme]]
+  - [[https://github.com/bbatsov/zenburn-emacs][Zenburn]]
 * How to contribute
   You can contribute by forking the repo and then creating a pull request with the changes you consider will improve the package. There's a TO DO list with wanted features so you can start from there. I'll be glad to receive help.
   Please try to keep the code as clear and documented as possible.
