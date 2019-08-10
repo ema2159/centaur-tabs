@@ -740,24 +740,27 @@ FAMILY is the font family and HEIGHT is the font height."
 That is, a propertized string used as an `header-line-format' template
 element.
 Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
-  (let* ((selected-p (centaur-tabs-selected-p tab (centaur-tabs-current-tabset)))
-	 (modified-p (buffer-modified-p (centaur-tabs-tab-value tab)))
-	 (not-read-only-p (with-current-buffer (centaur-tabs-tab-value tab)
-			    (not buffer-read-only)))
+  (let* ((buf (centaur-tabs-tab-value tab))
+	 (buf-file-name (buffer-file-name buf))
+	 (selected-p (centaur-tabs-selected-p tab (centaur-tabs-current-tabset)))
+	 (not-read-only-p (with-current-buffer buf (not buffer-read-only)))
+	 (modified-p (and not-read-only-p (buffer-modified-p buf)))
+	 (use-mod-mark-p (and centaur-tabs-set-modified-marker modified-p))
+	 (mod-mark-face (if selected-p
+			    'centaur-tabs-modified-marker-selected
+			  'centaur-tabs-modified-marker-unselected))
 	 (face (if selected-p
-		   (if (and modified-p
-			    not-read-only-p)
+		   (if modified-p
 		       'centaur-tabs-selected-modified
 		     'centaur-tabs-selected)
-		 (if (and modified-p
-			  not-read-only-p)
+		 (if modified-p
 		     'centaur-tabs-unselected-modified
 		   'centaur-tabs-unselected)))
-	 (bar (if (and selected-p
-		       (eq centaur-tabs-set-bar 'left))
+	 (bar (if (and selected-p (eq centaur-tabs-set-bar 'left))
 		  (propertize
 		   centaur-tabs-active-bar
 		   'centaur-tabs-tab tab
+		   'help-echo buf-file-name
 		   'pointer centaur-tabs-mouse-pointer
 		   'local-map centaur-tabs-default-map)
 		""))
@@ -767,82 +770,72 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
 		    (centaur-tabs-icon tab face selected-p)
 		    'centaur-tabs-tab tab
 		    'pointer centaur-tabs-mouse-pointer
-		    'help-echo (with-current-buffer (centaur-tabs-tab-value tab)
-				 (format "%s" (format-mode-line mode-name)))
+		    'help-echo (with-current-buffer buf (format-mode-line mode-name))
 		    'local-map centaur-tabs-default-map)
-		 ""))
-	 (modified-marker (propertize
-			   (if (and centaur-tabs-set-modified-marker
-				    modified-p
-				    not-read-only-p
-				    (not centaur-tabs-set-close-button))
-			       centaur-tabs-modified-marker
-			     "") ;; Returns last one if all are not nil
-			   'face (if selected-p
-				     'centaur-tabs-modified-marker-selected
-				   'centaur-tabs-modified-marker-unselected)
-			   'pointer centaur-tabs-mouse-pointer
-			   'centaur-tabs-tab tab
-			   'local-map centaur-tabs-default-map))
-	 (close-button (if centaur-tabs-set-close-button
-			   (if (and centaur-tabs-set-modified-marker
-				    not-read-only-p
-				    modified-p)
-			       (propertize
-				centaur-tabs-modified-marker
-				'face (if selected-p
-					  'centaur-tabs-modified-marker-selected
-					'centaur-tabs-modified-marker-unselected)
-				'pointer centaur-tabs-mouse-pointer
-				'help-echo "Close buffer"
-				'centaur-tabs-tab tab
-				'local-map centaur-tabs-close-map)
-			     (propertize
-			      centaur-tabs-close-button
-			      'face (if selected-p
-					'centaur-tabs-close-selected
-				      'centaur-tabs-close-unselected)
-			      'pointer centaur-tabs-mouse-pointer
-			      'help-echo "Close buffer"
-			      'centaur-tabs-tab tab
-			      'mouse-face 'centaur-tabs-close-mouse-face
-			      'local-map centaur-tabs-close-map))
-			 "")))
+		 "")))
     (when (or (not centaur-tabs-style-left)
 	      (not centaur-tabs-style-right))
       (centaur-tabs-select-separator-style centaur-tabs-style))
     (concat
      (centaur-tabs-separator-render centaur-tabs-style-left face)
      bar
+
+     ;; icon
+     (if (= (length icon) 0) ""
+       (concat
+	(propertize
+	 " "
+	 'face face
+	 'centaur-tabs-tab tab
+	 'help-echo buf-file-name
+	 'pointer centaur-tabs-mouse-pointer
+	 'local-map centaur-tabs-default-map)
+	icon))
+
+     ;; tab name
+     (propertize
+      (concat
+       (if centaur-tabs-tab-label-function
+	   (funcall centaur-tabs-tab-label-function tab)
+	 (buffer-name buf))
+       " ")
+      'centaur-tabs-tab tab
+      'face face
+      'pointer centaur-tabs-mouse-pointer
+      'help-echo buf-file-name
+      'local-map centaur-tabs-default-map)
+
+     ;; close button and/or modified marker
+     (if centaur-tabs-set-close-button
+	 (propertize
+	  (if use-mod-mark-p
+	      centaur-tabs-modified-marker
+	    centaur-tabs-close-button)
+	  'face (if use-mod-mark-p
+		    mod-mark-face
+		  (if selected-p
+		      'centaur-tabs-close-selected
+		    'centaur-tabs-close-unselected))
+	  'pointer centaur-tabs-mouse-pointer
+	  'help-echo "Close buffer"
+	  'centaur-tabs-tab tab
+	  'mouse-face 'centaur-tabs-close-mouse-face
+	  'local-map centaur-tabs-close-map)
+       (if (and centaur-tabs-set-modified-marker modified-p)
+	   (propertize
+	    centaur-tabs-modified-marker
+	    'face mod-mark-face
+	    'pointer centaur-tabs-mouse-pointer
+	    'centaur-tabs-tab tab
+	    'help-echo buf-file-name
+	    'local-map centaur-tabs-default-map)
+	 ""))
+
      (propertize
       " "
       'face face
       'centaur-tabs-tab tab
-      'pointer centaur-tabs-mouse-pointer
-      'local-map centaur-tabs-default-map)
-     icon
-     (propertize
-      (if centaur-tabs-tab-label-function
-	  (funcall centaur-tabs-tab-label-function tab)
-	tab)
-      'centaur-tabs-tab tab
-      'face face
-      'pointer centaur-tabs-mouse-pointer
-      'help-echo (with-current-buffer (centaur-tabs-tab-value tab)
-		   (buffer-file-name))
-      'local-map centaur-tabs-default-map)
-     (propertize
-      " "
-      'face face
-      'centaur-tabs-tab tab
-      'pointer centaur-tabs-mouse-pointer
-      'local-map centaur-tabs-default-map)
-     modified-marker
-     close-button
-     (propertize
-      " "
-      'face face
-      'centaur-tabs-tab tab
+      'help-echo buf-file-name
       'pointer centaur-tabs-mouse-pointer
       'local-map centaur-tabs-default-map)
      (centaur-tabs-separator-render centaur-tabs-style-right face))))
@@ -1659,14 +1652,10 @@ That is, a string used to represent it on the tab bar."
   (format " %s"
 	  (let ((bufname (if centaur-tabs--buffer-show-groups
 			     (centaur-tabs-tab-tabset tab)
-			   (centaur-tabs-buffer-name (car tab)))))
+			   (buffer-name (car tab)))))
 	    (if (> centaur-tabs-label-fixed-length 0)
 		(centaur-tabs-truncate-string  centaur-tabs-label-fixed-length bufname)
 	      bufname))))
-
-(defun centaur-tabs-buffer-name (tab-buffer)
-  "Get buffer name of tab using TAB-BUFFER."
-  (buffer-name tab-buffer))
 
 (defvar centaur-tabs-last-scroll-y 0
   "Holds the scroll y of window from the last run of post-command-hooks.")
