@@ -147,6 +147,7 @@
 (defvar centaur-tabs-close-map
   (let ((map (make-sparse-keymap)))
     (define-key map (vector 'header-line 'mouse-1) 'centaur-tabs-do-close)
+    (define-key map (vector 'header-line 'mouse-2) 'centaur-tabs-do-close)
     map)
   "Keymap used for setting mouse events for close button.")
 
