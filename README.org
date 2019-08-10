@@ -18,6 +18,7 @@
   - [[#selected-tab-bar][Selected tab bar]]
   - [[#customize-the-close-button][Customize the close button]]
   - [[#customize-the-modified-marker][Customize the modified marker]]
+  - [[#change-the-font-family-and-height][Change the font family and height]]
   - [[#inherit-tabbar-faces][Inherit tabbar faces:]]
   - [[#disable-centaur-tabs-in-selected-buffers][Disable centaur-tabs in selected buffers]]
   - [[#buffer-groups][Buffer groups]]
@@ -160,6 +161,11 @@
    Also there are two faces to customize the close button string: centaur-tabs-modified-marker-unselected and centaur-tabs-modified-marker-selected
 
   [[./images/marker.png]]
+** Change the font family and height
+   To easily customize the tabs font by changing it's height and font family use the following function:
+   #+BEGIN_SRC emacs-lisp :tangle yes
+     (centaur-tabs-change-fonts "arial" 160)
+   #+END_SRC
 ** Inherit tabbar faces:
    Many theme plugins have already themed other tab plugins (~doom-themes~ for example). This package is able to use those tab plugin faces to theme itself. In a near future, many PRs will be sent so this package gets properly themed.
    To use the already existing tabbar faces use:

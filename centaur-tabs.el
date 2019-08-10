@@ -723,6 +723,16 @@ hooked functions"
   (interactive "e")
   (centaur-tabs-buffer-close-tab `,(centaur-tabs-get-tab-from-event event)))
 
+;; Change the font and height for all tab faces
+(defun centaur-tabs-change-fonts (family height)
+  "Change the fonts of all the tabs.
+FAMILY is the font family and HEIGHT is the font height."
+  (dolist (centaur-face '(centaur-tabs-selected
+			  centaur-tabs-selected-modified
+			  centaur-tabs-unselected
+			  centaur-tabs-unselected-modified))
+    (set-face-attribute centaur-face nil :family family :height height)))
+
 ;;; Tabs
 ;;
 (defsubst centaur-tabs-line-tab (tab)
