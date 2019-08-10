@@ -707,18 +707,18 @@ hooked functions"
 (add-hook 'after-change-functions #'centaur-tabs-after-modifying-buffer)
 
 (defun centaur-tabs-get-tab-from-event (event)
-  "Given a mouse event, extract the tab at the mouse point."
+  "Given a mouse EVENT, extract the tab at the mouse point."
   (let ((pos (posn-string (event-start event))))
     (get-text-property (cdr pos) 'centaur-tabs-tab (car pos))))
 
 (defun centaur-tabs-do-select (event)
-  "Select the tab at the mouse point."
+  "Given a mouse EVENT, select the tab at the mouse point."
   (interactive "e")
   (select-window (posn-window (event-start event)))
   (centaur-tabs-buffer-select-tab `,(centaur-tabs-get-tab-from-event event)))
 
 (defun centaur-tabs-do-close (event)
-  "Close the tab at the mouse point."
+  "Given a mouse EVENT, close the tab at the mouse point."
   (interactive "e")
   (centaur-tabs-buffer-close-tab `,(centaur-tabs-get-tab-from-event event)))
 
