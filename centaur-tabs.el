@@ -760,7 +760,6 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
 		  (propertize
 		   centaur-tabs-active-bar
 		   'centaur-tabs-tab tab
-		   'help-echo buf-file-name
 		   'pointer centaur-tabs-mouse-pointer
 		   'local-map centaur-tabs-default-map)
 		""))
@@ -787,7 +786,6 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
 	 " "
 	 'face face
 	 'centaur-tabs-tab tab
-	 'help-echo buf-file-name
 	 'pointer centaur-tabs-mouse-pointer
 	 'local-map centaur-tabs-default-map)
 	icon))
@@ -835,7 +833,6 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
       " "
       'face face
       'centaur-tabs-tab tab
-      'help-echo buf-file-name
       'pointer centaur-tabs-mouse-pointer
       'local-map centaur-tabs-default-map)
      (centaur-tabs-separator-render centaur-tabs-style-right face))))
