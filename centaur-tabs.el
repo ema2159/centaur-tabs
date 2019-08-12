@@ -122,28 +122,6 @@
   "Face used for unselected modified marker."
   :group 'centaur-tabs)
 
-(defface tabbar-default
-  '((t :inherit default))
-  "Face used to inherit tabbar-default face")
-
-(defface tabbar-selected
-  '((t :inherit default))
-  "Face used to inherit tabbar-selected face")
-
-(defface tabbar-unselected
-  '((t
-     (:inherit default)))
-  "Face used to inherit tabbar-unselected face")
-
-(defface tabbar-selected-modified
-  '((t :inherit default))
-  "Face used to inherit tabbar-selected-modified face")
-
-(defface tabbar-unselected-modified
-  '((t
-     (:inherit default)))
-  "Face used to inherit tabbar-unselected-modified face")
-
 (defvar centaur-tabs-close-map
   (let ((map (make-sparse-keymap)))
     (define-key map (vector 'header-line 'mouse-1) 'centaur-tabs-do-close)
@@ -403,29 +381,6 @@ You should use this hook to reset dependent data.")
   (setq centaur-tabs-tabsets nil
 	centaur-tabs-tabsets-tabset nil)
   (run-hooks 'centaur-tabs-quit-hook))
-
-(defun centaur-tabs-inherit-tabbar-faces ()
-  "Function for using already existing faces for other tab plugins."
-  (set-face-attribute 'centaur-tabs-default nil
-		      :inherit 'tabbar-default)
-  (set-face-attribute 'centaur-tabs-selected nil
-		      :inherit 'tabbar-selected)
-  (set-face-attribute 'centaur-tabs-unselected nil
-		      :inherit 'tabbar-unselected)
-  (set-face-attribute 'centaur-tabs-selected-modified nil
-		      :inherit 'tabbar-selected-modified)
-  (set-face-attribute 'centaur-tabs-unselected-modified nil
-		      :inherit 'tabbar-unselected-modified)
-  (set-face-attribute 'centaur-tabs-default nil
-		      :background (face-background 'tabbar-default nil t))
-  (set-face-attribute 'centaur-tabs-selected nil
-		      :background (face-background 'tabbar-selected nil t))
-  (set-face-attribute 'centaur-tabs-unselected nil
-		      :background (face-background 'tabbar-unselected nil t))
-  (set-face-attribute 'centaur-tabs-selected-modified nil
-		      :background (face-background 'centaur-tabs-selected nil t))
-  (set-face-attribute 'centaur-tabs-unselected-modified nil
-		      :background (face-background 'centaur-tabs-unselected nil t)))
 
 (defun centaur-tabs--make-xpm (face width height)
   "Create an XPM bitmap via FACE WIDTH and HEIGHT.

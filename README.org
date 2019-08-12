@@ -19,7 +19,6 @@
   - [[#customize-the-close-button][Customize the close button]]
   - [[#customize-the-modified-marker][Customize the modified marker]]
   - [[#change-the-font-family-and-height][Change the font family and height]]
-  - [[#inherit-tabbar-faces][Inherit tabbar faces:]]
   - [[#disable-centaur-tabs-in-selected-buffers][Disable centaur-tabs in selected buffers]]
   - [[#buffer-groups][Buffer groups]]
   - [[#show-buffer-groups-names-instead-of-buffer-names-in-tabs][Show buffer groups names instead of buffer names in tabs]]
@@ -165,12 +164,6 @@
    To easily customize the tabs font by changing it's height and font family use the following function:
    #+BEGIN_SRC emacs-lisp :tangle yes
      (centaur-tabs-change-fonts "arial" 160)
-   #+END_SRC
-** Inherit tabbar faces:
-   Many theme plugins have already themed other tab plugins (~doom-themes~ for example). This package is able to use those tab plugin faces to theme itself. In a near future, many PRs will be sent so this package gets properly themed.
-   To use the already existing tabbar faces use:
-   #+BEGIN_SRC emacs-lisp :tangle yes
-     (centaur-tabs-inherit-tabbar-faces)
    #+END_SRC
 ** Disable centaur-tabs in selected buffers
    To disable the tabs in a buffer just add a hook to the ~centaur-tabs-local-mode~ function like this:
@@ -430,7 +423,7 @@
   - [[https://github.com/ogdenwebb/emacs-kaolin-themes][Kaolin Themes]]
   - [[https://github.com/nashamri/spacemacs-theme][Spacemacs Theme]]
   - [[https://github.com/ianpan870102/tron-legacy-emacs-theme][Tron Legacy]]
-  - [[https://github.com/ianpan870102/wilmersdorf-emacs-theme][Wilmsersdorf Theme]]
+  - [[https://github.com/ianpan870102/wilmersdorf-emacs-theme][Wilmersdorf Theme]]
   - [[https://github.com/bbatsov/zenburn-emacs][Zenburn]]
 * How to contribute
   You can contribute by forking the repo and then creating a pull request with the changes you consider will improve the package. There's a TO DO list with wanted features so you can start from there. I'll be glad to receive help.
