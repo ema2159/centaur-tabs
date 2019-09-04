@@ -900,7 +900,7 @@ previous tab."
 (defun centaur-tabs-cycle-default (&optional backward)
   "Switch to next tab.
 If there is no next tab, cycle to next
-group. If BACKWARD is non-nil switch to previous tab. If there is
+group.  If BACKWARD is non-nil switch to previous tab.  If there is
 no previous tab cycle to previous group."
   (let* ((tabset centaur-tabs-current-tabset)
 	 (tab (centaur-tabs-selected-tab tabset))
