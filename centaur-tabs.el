@@ -617,10 +617,11 @@ If icon gray out option enabled, gray out icon if not SELECTED."
 		    (all-the-icons-icon-for-file
 		     (file-name-nondirectory (buffer-file-name))
 		     :v-adjust centaur-tabs-icon-v-adjust
-             :height centaur-tabs-icon-scale-factor)
-		  (all-the-icons-icon-for-mode major-mode
-                                       :v-adjust centaur-tabs-icon-v-adjust
-                                       :height centaur-tabs-icon-scale-factor)))
+	             :height centaur-tabs-icon-scale-factor)
+		  (all-the-icons-icon-for-mode
+		   major-mode
+		   :v-adjust centaur-tabs-icon-v-adjust
+		   :height centaur-tabs-icon-scale-factor)))
 	       (background (face-background face))
 	       (inactive (if (and (not selected)
 				  (eq centaur-tabs-gray-out-icons 'buffer))
