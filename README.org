@@ -137,7 +137,7 @@
    #+END_SRC
    [[./images/overline.png]]
 
-   The color can be customized via the centaur-active-bar-face face.
+   The color can be customized via the centaur-tabs-active-bar-face face.
 ** Customize the close button
    To disable the close button
    #+BEGIN_SRC emacs-lisp :tangle yes
