@@ -296,13 +296,13 @@
    
    | tab1.el | tab4.py | tab2.js | tab3.c |
  
-   And then if you were on ~tab4.py~ and changed to ~tab2.js~,the tabs order will be the following:
+   And then if you were on ~tab4.py~ and changed to ~tab2.js~, the tabs order will be the following:
 
    | tab1.el | tab4.py | tab2.js | tab3.c |
 
-   the order doesn't change ,because the tabs are already next to each other.
+   the order doesn't change, because the tabs are already next to each other.
    
-   And now if you were on ~tab2.js~ and changed to ~tab1.el~,the tabs order will be the following:
+   And now if you were on ~tab2.js~ and changed to ~tab1.el~, the tabs order will be the following:
    | tab4.py | tab1.el | tab2.js | tab3.c |
 
    This functionality doesn't take effect when using centaur-tabs motion functions like ~centaur-tabs-backward/forward~.
@@ -320,6 +320,10 @@
    #+BEGIN_SRC emacs-lisp :tangle yes
      (centaur-tabs-group-buffer-groups)
    #+END_SRC
+** Mouse support
+   - Just click in a tab to change the buffer of the current window.
+   - Right click on any part of the header line (tabs or empty space) to show a tab groups popup.
+   - Use the mouse wheel to invoke ~centaur-tabs-backward/forward~.
 * TO DO [15/19]
   - [X] Integrate all-the-icons
   - [X] Improve all the icons placing
