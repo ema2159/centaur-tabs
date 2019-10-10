@@ -133,6 +133,14 @@
   (let ((map (make-sparse-keymap)))
     (define-key map (vector 'header-line 'mouse-1) 'centaur-tabs-do-select)
     (define-key map (vector 'header-line 'mouse-2) 'centaur-tabs-do-close)
+
+    ;;; Use mouse wheel to switch between buffers of same group
+    (define-key map (kbd "<header-line> <mouse-4>") 'centaur-tabs-forward )
+    (define-key map (kbd "<header-line> <mouse-5>") 'centaur-tabs-backward )
+
+    ;;; Use right click to show the rest of groups
+    (define-key map (kbd "<header-line> <mouse-3>") 'centaur-tabs--groups-menu )
+
     map)
   "Keymap used for setting mouse events for a tab.")
 
@@ -2206,6 +2214,23 @@ Operates over buffer BUF"
 (defun centaur-tabs-enable-buffer-reordering ()
   "Enable the buffer adjusting functionality."
   (add-hook 'post-command-hook centaur-tabs-adjust-buffer-order-function))
+
+
+(defun centaur-tabs--groups-menu-list ()
+  (cons "Centaur tabs groups menu"
+	(mapcar
+	 (lambda (g)
+	   (cons g g))
+	 (centaur-tabs-get-groups))))
+
+(defun centaur-tabs--groups-menu ()
+  "Show a popup menu with the centaur tabs groups"
+  (interactive)
+  (let*
+      ((sorted-groups (sort (centaur-tabs--groups-menu-list) 'string<))
+       (group (x-popup-menu t (list "Centaur tabs groups menu" sorted-groups))))
+    (centaur-tabs-switch-group group)))
+
 
 (provide 'centaur-tabs)
 
