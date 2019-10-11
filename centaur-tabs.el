@@ -1053,8 +1053,8 @@ hidden, it is shown again.  Signal an error if Centaur-Tabs mode is off."
     (define-key km centaur-tabs-prefix-key centaur-tabs-prefix-map)
 
     ;;; Use mouse wheel to switch between buffers of same group
-    (define-key km (kbd "<header-line> <mouse-4>") 'centaur-tabs-forward )
-    (define-key km (kbd "<header-line> <mouse-5>") 'centaur-tabs-backward )
+    (define-key km (kbd "<header-line> <mouse-5>") 'centaur-tabs-forward )
+    (define-key km (kbd "<header-line> <mouse-4>") 'centaur-tabs-backward )
 
     ;;; Use right click to show the rest of groups
     (define-key km (kbd "<header-line> <mouse-3>") 'centaur-tabs--groups-menu )
@@ -2218,6 +2218,7 @@ Operates over buffer BUF"
 
 
 (defun centaur-tabs--groups-menu-list ()
+  "Make the menu of the tabs groups."
   (cons "Centaur tabs groups menu"
 	(mapcar
 	 (lambda (g)
@@ -2225,7 +2226,7 @@ Operates over buffer BUF"
 	 (sort (centaur-tabs-get-groups) 'string<))))
 
 (defun centaur-tabs--groups-menu ()
-  "Show a popup menu with the centaur tabs groups"
+  "Show a popup menu with the centaur tabs groups."
   (interactive)
   (let*
       ((sorted-groups (centaur-tabs--groups-menu-list))
