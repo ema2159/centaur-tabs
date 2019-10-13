@@ -267,7 +267,7 @@ Default is 'hand.  The following scopes are possible:
 
 (defvar centaur-tabs-hide-tab-function 'centaur-tabs-hide-tab
   "Function to hide tab.
-This fucntion accepet tab name, tab will hide if this function return ni.")
+This fucntion filters tabs.  The tab will hide if this function returns nil.")
 
 (defvar centaur-tabs-current-tabset-function nil
   "Function called with no argument to obtain the current tab set.
@@ -2128,6 +2128,8 @@ Should be buffer local and speed up calculation of buffer groups.")
      (string-prefix-p "*Flycheck" name)
      (string-prefix-p "*tramp" name)
      (string-prefix-p " *Mini" name)
+     (string-prefix-p "*help" name)
+     (string-prefix-p "*Help" name)
 
      ;; Is not magit buffer.
      (and (string-prefix-p "magit" name)
