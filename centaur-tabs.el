@@ -2057,9 +2057,7 @@ Other buffer group by `centaur-tabs-get-group-name' with project name."
 Should be buffer local and speed up calculation of buffer groups.")
 
 (defun centaur-tabs-projectile-buffer-groups ()
-  "Return the list of group names BUFFER belongs to.
-Return only one group for each buffer."
-
+  "Return the list of group names BUFFER belongs to."
   (if centaur-tabs-projectile-buffer-group-calc
       (symbol-value 'centaur-tabs-projectile-buffer-group-calc)
     (set (make-local-variable 'centaur-tabs-projectile-buffer-group-calc)
@@ -2068,8 +2066,8 @@ Return only one group for each buffer."
 	  ((or (get-buffer-process (current-buffer)) (memq major-mode '(comint-mode compilation-mode))) '("Term"))
 	  ((string-equal "*" (substring (buffer-name) 0 1)) '("Misc"))
 	  ((condition-case _err
-	       (projectile-project-root)
-	     (error nil)) (list (projectile-project-name)))
+		    (projectile-project-root)
+		  (error nil)) (list (projectile-project-name)))
 	  ((memq major-mode '(emacs-lisp-mode python-mode emacs-lisp-mode c-mode
 					      c++-mode javascript-mode js-mode
 					      js2-mode makefile-mode
@@ -2129,6 +2127,7 @@ Return only one group for each buffer."
      (string-prefix-p "*company" name)
      (string-prefix-p "*Flycheck" name)
      (string-prefix-p "*tramp" name)
+     (string-prefix-p " *Mini" name)
 
      ;; Is not magit buffer.
      (and (string-prefix-p "magit" name)
