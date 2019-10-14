@@ -339,6 +339,11 @@ tab(B), move A to the left of B" t)
 		 (const :tag "Move the currently selected tab to the left of the the last visited tab." left)
 		 (const :tag "Move the currently selected tab to the right of the the last visited tab." right)))
 
+(defcustom centaur-tabs-show-navigation-buttons t
+  "When non-nil, show the buttons for backward/forward tabs."
+  :group 'centaur-tabs
+  :type 'boolean)
+
 (defcustom centaur-tabs-down-tab-text " ▾ "
   "Text icon to show in the down button tab."
   :group 'centaur-tabs
@@ -897,20 +902,27 @@ element."
     (centaur-tabs-set-template
      tabset
      (list
-      (propertize (centaur-tabs-button-tab centaur-tabs-down-tab-text)
-                  'local-map centaur-tabs-down-tab-map
-                  'help-echo "Change tab group")
-      (propertize (centaur-tabs-button-tab centaur-tabs-backward-tab-text)
-                  'local-map centaur-tabs-backward-tab-map
-                  'help-echo "Previous tab")
-      (propertize (centaur-tabs-button-tab centaur-tabs-forward-tab-text)
-                  'local-map centaur-tabs-forward-tab-map
-                  'help-echo "Next tab")
+      (centaur-tabs-line-format--buttons)
       (nreverse elts)
       (propertize "% "
                   'face (list :background padcolor)
                   'pointer 'arrow)))
     ))
+
+(defun centaur-tabs-line-format--buttons ()
+  "Return the buttons fragment of the header line."
+  (if centaur-tabs-show-navigation-buttons
+      (concat
+       (propertize (centaur-tabs-button-tab centaur-tabs-down-tab-text)
+                   'local-map centaur-tabs-down-tab-map
+                   'help-echo "Change tab group")
+       (propertize (centaur-tabs-button-tab centaur-tabs-backward-tab-text)
+                   'local-map centaur-tabs-backward-tab-map
+                   'help-echo "Previous tab")
+       (propertize (centaur-tabs-button-tab centaur-tabs-forward-tab-text)
+                   'local-map centaur-tabs-forward-tab-map
+                   'help-echo "Next tab"))
+    ""))
 
 (defun centaur-tabs-line ()
   "Return the header line templates that represent the tab bar.
