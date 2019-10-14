@@ -129,6 +129,31 @@
     map)
   "Keymap used for setting mouse events for close button.")
 
+
+(defvar centaur-tabs-backward-tab-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (vector 'header-line 'mouse-1) 'centaur-tabs-backward-tab)
+    (define-key map (vector 'header-line 'mouse-3) 'centaur-tabs--groups-menu)
+    map)
+  "Keymap used for setting mouse events for backward tab button.")
+
+(defvar centaur-tabs-forward-tab-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (vector 'header-line 'mouse-1) 'centaur-tabs-forward-tab)
+    (define-key map (vector 'header-line 'mouse-3) 'centaur-tabs--groups-menu)
+    map)
+  "Keymap used for setting mouse events for forward tab button.")
+
+(defvar centaur-tabs-down-tab-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (vector 'header-line 'mouse-1) 'centaur-tabs--groups-menu)
+    (define-key map (vector 'header-line 'mouse-3) 'centaur-tabs--groups-menu)
+    map)
+  "Keymap used for setting mouse events for down tab button.")
+
+
+
+
 (defvar centaur-tabs-default-map
   (let ((map (make-sparse-keymap)))
     (define-key map (vector 'header-line 'mouse-1) 'centaur-tabs-do-select)
@@ -313,6 +338,21 @@ tab(B), move A to the right of B. When the currently selected tab(A) is at the l
 tab(B), move A to the left of B" t)
 		 (const :tag "Move the currently selected tab to the left of the the last visited tab." left)
 		 (const :tag "Move the currently selected tab to the right of the the last visited tab." right)))
+
+(defcustom centaur-tabs-down-tab-text " ▾ "
+  "Text icon to show in the down button tab."
+  :group 'centaur-tabs
+  :type 'string)
+
+(defcustom centaur-tabs-backward-tab-text " ⏴ "
+  "Text icon to show in the backward button tab."
+  :group 'centaur-tabs
+  :type 'string)
+
+(defcustom centaur-tabs-forward-tab-text " ⏵ "
+  "Text icon to show in the forward button tab."
+  :group 'centaur-tabs
+  :type 'string)
 
 
 (defvar centaur-tabs--buffer-show-groups nil)
@@ -801,6 +841,16 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
       'local-map centaur-tabs-default-map)
      (centaur-tabs-separator-render centaur-tabs-style-right face))))
 
+(defsubst centaur-tabs-button-tab (button)
+  "Return the display representation of button BUTTON.
+That is, a propertized string used as an `header-line-format' template
+element."
+  (let* ((face 'centaur-tabs-unselected))
+    (concat
+     (centaur-tabs-separator-render centaur-tabs-style-left face)
+     (propertize button 'face face)
+     (centaur-tabs-separator-render centaur-tabs-style-right face))))
+
 (defun centaur-tabs-line-format (tabset)
   "Return the `header-line-format' value to display TABSET."
   (let* ((sel (centaur-tabs-selected-tab tabset))
@@ -846,10 +896,20 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
     ;; Cache and return the new tab bar.
     (centaur-tabs-set-template
      tabset
-     (list (nreverse elts)
-	   (propertize "% "
-		       'face (list :background padcolor)
-		       'pointer 'arrow)))
+     (list
+      (propertize (centaur-tabs-button-tab centaur-tabs-down-tab-text)
+                  'local-map centaur-tabs-down-tab-map
+                  'help-echo "Change tab group")
+      (propertize (centaur-tabs-button-tab centaur-tabs-backward-tab-text)
+                  'local-map centaur-tabs-backward-tab-map
+                  'help-echo "Previous tab")
+      (propertize (centaur-tabs-button-tab centaur-tabs-forward-tab-text)
+                  'local-map centaur-tabs-forward-tab-map
+                  'help-echo "Next tab")
+      (nreverse elts)
+      (propertize "% "
+                  'face (list :background padcolor)
+                  'pointer 'arrow)))
     ))
 
 (defun centaur-tabs-line ()
