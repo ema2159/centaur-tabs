@@ -267,7 +267,7 @@ Default is 'hand.  The following scopes are possible:
 
 (defvar centaur-tabs-hide-tab-function 'centaur-tabs-hide-tab
   "Function to hide tab.
-This fucntion filters tabs.  The tab will hide if this function returns nil.")
+This function filters tabs.  The tab will hide if this function returns nil.")
 
 (defvar centaur-tabs-current-tabset-function nil
   "Function called with no argument to obtain the current tab set.
