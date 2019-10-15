@@ -132,14 +132,14 @@
 
 (defvar centaur-tabs-backward-tab-map
   (let ((map (make-sparse-keymap)))
-    (define-key map (vector 'header-line 'mouse-1) 'centaur-tabs-backward-tab)
+    (define-key map (vector 'header-line 'mouse-1) 'centaur-tabs-backward--button)
     (define-key map (vector 'header-line 'mouse-3) 'centaur-tabs--groups-menu)
     map)
   "Keymap used for setting mouse events for backward tab button.")
 
 (defvar centaur-tabs-forward-tab-map
   (let ((map (make-sparse-keymap)))
-    (define-key map (vector 'header-line 'mouse-1) 'centaur-tabs-forward-tab)
+    (define-key map (vector 'header-line 'mouse-1) 'centaur-tabs-forward--button)
     (define-key map (vector 'header-line 'mouse-3) 'centaur-tabs--groups-menu)
     map)
   "Keymap used for setting mouse events for forward tab button.")
@@ -1056,6 +1056,22 @@ Depend on the setting of the option `centaur-tabs-cycle-scope'."
   (interactive)
   (let ((centaur-tabs-cycle-scope 'tabs))
     (centaur-tabs-cycle)))
+
+(defun centaur-tabs-backward--button (event)
+  "Same as centaur-tabs-backward, but changing window to EVENT source."
+  (interactive "e")
+  (message "backward button")
+  (select-window (posn-window (event-start event)))
+  (centaur-tabs-backward))
+
+
+(defun centaur-tabs-forward--button (event)
+  "Same as centaur-tabs-forward, but changing window to EVENT source."
+  (interactive "e")
+  (message "forward button")
+  (select-window (posn-window (event-start event)))
+  (centaur-tabs-forward))
+
 
 ;;; Minor modes
 ;;
