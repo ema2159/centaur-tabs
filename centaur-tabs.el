@@ -339,7 +339,7 @@ tab(B), move A to the left of B" t)
 		 (const :tag "Move the currently selected tab to the left of the the last visited tab." left)
 		 (const :tag "Move the currently selected tab to the right of the the last visited tab." right)))
 
-(defcustom centaur-tabs-show-navigation-buttons t
+(defcustom centaur-tabs-show-navigation-buttons nil
   "When non-nil, show the buttons for backward/forward tabs."
   :group 'centaur-tabs
   :type 'boolean)
@@ -853,7 +853,10 @@ element."
   (let* ((face 'centaur-tabs-unselected))
     (concat
      (centaur-tabs-separator-render centaur-tabs-style-left face)
-     (propertize button 'face face)
+     (propertize
+      button
+      'face face
+      'mouse-face 'centaur-tabs-close-mouse-face)
      (centaur-tabs-separator-render centaur-tabs-style-right face))))
 
 (defun centaur-tabs-line-format (tabset)
