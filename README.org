@@ -29,6 +29,7 @@
   - [[#helm-integration][Helm integration]]
   - [[#ivy-integration][Ivy integration]]
   - [[#projectile-integration][Projectile integration]]
+  - [[#mouse-support][Mouse support]]
 - [[#to-do-1519][TO DO]]
 - [[#my-personal-configuration][My personal configuration]]
 - [[#known-supported-theme-plugins][Known supported theme plugins]]
@@ -322,9 +323,10 @@
    #+END_SRC
 ** Mouse support
    - Just click in a tab to change the buffer of the current window.
+   - Click the mouse wheel to close a buffer.
    - Right click on any part of the header line (tabs or empty space) to show a tab groups popup.
    - Use the mouse wheel to invoke ~centaur-tabs-backward/forward~.
-   - On the left of the header bar, there are navigation buttons for backward/forward the current tab, and show the tab groups menu. To get back the legacy look&feel, you can disable the buttons with the =centaur-tabs-show-navigation-buttons= customized variable.
+   - Set the =centaur-tabs-show-navigation-buttons= customizable variable to =t= to display cool navigation buttons.
    [[file:images/navigation-buttons.png]]
 * TO DO [15/19]
   - [X] Integrate all-the-icons
