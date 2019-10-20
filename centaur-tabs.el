@@ -856,7 +856,7 @@ element."
      (propertize
       button
       'face face
-      'mouse-face 'centaur-tabs-close-mouse-face)
+      'mouse-face 'highlight)
      (centaur-tabs-separator-render centaur-tabs-style-right face))))
 
 (defun centaur-tabs-line-format (tabset)
