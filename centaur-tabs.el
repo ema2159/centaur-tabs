@@ -2046,7 +2046,7 @@ not the actual logical index position of the current group."
 	 (key (make-vector 1 event))
 	 (key-desc (key-description key)))
     (centaur-tabs-select-visible-nth-tab
-     (string-to-number (nth 1 (split-string key-desc "-"))))))
+     (string-to-number (car (last (split-string key-desc "-")))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;; Utils functions ;;;;;;;;;;;;;;;;;;;;;;;
 (defun centaur-tabs-get-groups ()
