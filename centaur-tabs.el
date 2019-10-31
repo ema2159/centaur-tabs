@@ -292,7 +292,7 @@ Default is 'hand.  The following scopes are possible:
 
 (defvar centaur-tabs-hide-tab-function 'centaur-tabs-hide-tab
   "Function to hide tab.
-This function filters tabs.  The tab will hide if this function returns nil.")
+This function filters tabs.  The tab will hide if this function returns t.")
 
 (defvar centaur-tabs-current-tabset-function nil
   "Function called with no argument to obtain the current tab set.
@@ -929,7 +929,8 @@ element."
 
 (defun centaur-tabs-line ()
   "Return the header line templates that represent the tab bar.
-Inhibit display of the tab bar in current window `centaur-tabs-hide-tab-function' return nil."
+Inhibit display of the tab bar in current window where
+`centaur-tabs-hide-tab-function' return t."
   (cond
    ((centaur-tabs-hide-tab-cached (current-buffer))
     ;; Don't show the tab bar.
