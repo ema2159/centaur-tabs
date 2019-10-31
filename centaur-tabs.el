@@ -42,7 +42,6 @@
 ;;; Require
 (require 'cl-lib)
 (require 'color)
-(require 'which-func)
 (require 'powerline)
 
 ;; Compiler pacifier
