@@ -252,10 +252,12 @@ background color of the `default' face otherwise."
   "When non nil, display a bar to show the currently selected tab.
 There are two options:
 - 'left: displays the bar at the left of the currently selected tab.
+- 'under: displays the bar under the currently selected tab.
 - 'over: displays the bar over the currently selected tab."
   :group 'centaur-tabs
   :type '(choice :tag "Display bar at..."
 		 (const :tag "Put bar on the left" left)
+		 (const :tag "Put bar as an underline" under)
 		 (const :tag "Put bar as an overline" over)))
 
 (defcustom centaur-tabs-set-close-button t
@@ -672,14 +674,16 @@ If icon gray out option enabled, gray out icon if not SELECTED."
 				  (eq centaur-tabs-gray-out-icons 'buffer))
 			     'mode-line-inactive
 			   'unspecified))
-	       (overline (if (eq centaur-tabs-set-bar 'over)
-			     (face-attribute face :overline)
-			   nil)))
+	       (underline (and (eq centaur-tabs-set-bar 'under)
+			       (face-attribute face :underline)))
+	       (overline (and (eq centaur-tabs-set-bar 'over)
+			      (face-attribute face :overline))))
 	  (if (stringp icon)
 	      (progn
 		(propertize icon 'face `(:inherit ,(get-text-property 0 'face icon)
 						  :inherit ,inactive
 						  :background ,background
+						  :underline ,underline
 						  :overline ,overline)))
 	    "")))
     ""))
@@ -1805,11 +1809,32 @@ Run as `centaur-tabs-init-hook'."
 	centaur-tabs-select-tab-function 'centaur-tabs-buffer-select-tab
 	)
   ;; If set, initialize selected overline
+  (when (eq centaur-tabs-set-bar 'under)
+    (set-face-attribute 'centaur-tabs-selected nil
+			:underline (face-background 'centaur-tabs-active-bar-face)
+			:overline nil)
+    (set-face-attribute 'centaur-tabs-selected-modified nil
+			:underline (face-background 'centaur-tabs-active-bar-face)
+			:overline nil)
+    (set-face-attribute 'centaur-tabs-unselected nil
+			:underline nil
+			:overline nil)
+    (set-face-attribute 'centaur-tabs-unselected-modified nil
+			:underline nil
+			:overline nil))
   (when (eq centaur-tabs-set-bar 'over)
-    (set-face-attribute 'centaur-tabs-selected nil :overline (face-background 'centaur-tabs-active-bar-face))
-    (set-face-attribute 'centaur-tabs-selected-modified nil :overline (face-background 'centaur-tabs-active-bar-face))
-    (set-face-attribute 'centaur-tabs-unselected nil :overline nil)
-    (set-face-attribute 'centaur-tabs-unselected-modified nil :overline nil))
+    (set-face-attribute 'centaur-tabs-selected nil
+			:overline (face-background 'centaur-tabs-active-bar-face)
+			:underline nil)
+    (set-face-attribute 'centaur-tabs-selected-modified nil
+			:overline (face-background 'centaur-tabs-active-bar-face)
+			:underline nil)
+    (set-face-attribute 'centaur-tabs-unselected nil
+			:overline nil
+			:underline nil)
+    (set-face-attribute 'centaur-tabs-unselected-modified nil
+			:overline nil
+			:underline nil))
   (add-hook 'after-save-hook #'centaur-tabs-saved-marker-update)
   (add-hook 'first-change-hook #'centaur-tabs-saved-marker-update)
   (add-hook 'after-change-functions #'centaur-tabs-after-modifying-buffer)
