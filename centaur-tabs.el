@@ -1063,7 +1063,6 @@ Depend on the setting of the option `centaur-tabs-cycle-scope'."
 (defun centaur-tabs-backward--button (event)
   "Same as centaur-tabs-backward, but changing window to EVENT source."
   (interactive "e")
-  (message "backward button")
   (select-window (posn-window (event-start event)))
   (centaur-tabs-backward))
 
@@ -1071,7 +1070,6 @@ Depend on the setting of the option `centaur-tabs-cycle-scope'."
 (defun centaur-tabs-forward--button (event)
   "Same as centaur-tabs-forward, but changing window to EVENT source."
   (interactive "e")
-  (message "forward button")
   (select-window (posn-window (event-start event)))
   (centaur-tabs-forward))
 
