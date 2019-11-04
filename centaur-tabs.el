@@ -42,6 +42,7 @@
 ;;; Require
 (require 'cl-lib)
 (require 'color)
+(require 'seq)
 (require 'powerline)
 
 ;; Compiler pacifier
