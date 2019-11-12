@@ -138,6 +138,14 @@
    #+END_SRC
    [[./images/overline.png]]
 
+   To display an underline over the selected tab:
+   #+BEGIN_SRC emacs-lisp :tangle yes
+    (setq centaur-tabs-set-bar 'under)
+    ;; Note: If you're not using Spacmeacs, in order for the underline to display
+    ;; correctly you must add the following line:
+    (setq x-underline-at-descent-line t)
+   #+END_SRC
+
    The color can be customized via the centaur-tabs-active-bar-face face.
 ** Customize the close button
    To disable the close button
