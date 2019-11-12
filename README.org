@@ -145,7 +145,7 @@
     ;; correctly you must add the following line:
     (setq x-underline-at-descent-line t)
    #+END_SRC
-
+   [[./images/underline.png]]
    The color can be customized via the centaur-tabs-active-bar-face face.
 ** Customize the close button
    To disable the close button
