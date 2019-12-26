@@ -265,6 +265,11 @@ There are two options:
   :group 'centaur-tabs
   :type 'boolean)
 
+(defcustom centaur-tabs-set-left-close-button nil
+  "When non nil, display a clickable x button for closing the tabs."
+  :group 'centaur-tabs
+  :type 'boolean)
+
 (defcustom centaur-tabs-close-button (make-string 1 #x00D7)
   "When non nil, display a clickable x button for closing the tabs."
   :group 'centaur-tabs
@@ -791,6 +796,19 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
     (concat
      (centaur-tabs-separator-render centaur-tabs-style-left face)
      bar
+
+     ;; left close button
+     (if centaur-tabs-set-left-close-button
+	 (propertize
+	  centaur-tabs-close-button
+	  'face (if selected-p
+	      'centaur-tabs-close-selected
+	    'centaur-tabs-close-unselected)
+	  'pointer centaur-tabs-mouse-pointer
+	  'help-echo "Close buffer"
+	  'centaur-tabs-tab tab
+	  'mouse-face 'centaur-tabs-close-mouse-face
+	  'local-map centaur-tabs-close-map))
 
      ;; icon
      (if (= (length icon) 0) ""
