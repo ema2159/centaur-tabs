@@ -369,7 +369,9 @@
 	  centaur-tabs-height 32
 	  centaur-tabs-set-icons t
 	  centaur-tabs-set-modified-marker t
-	  centaur-tabs-set-bar 'left)
+	  centaur-tabs-show-navigation-buttons t
+	  centaur-tabs-set-bar 'under
+	  x-underline-at-descent-line t)
     (centaur-tabs-headline-match)
     ;; (setq centaur-tabs-gray-out-icons 'buffer)
     ;; (centaur-tabs-enable-buffer-reordering)
@@ -385,6 +387,8 @@
   Other buffer group by `centaur-tabs-get-group-name' with project name."
       (list
        (cond
+	;; ((not (eq (file-remote-p (buffer-file-name)) nil))
+	;; "Remote")
 	((or (string-equal "*" (substring (buffer-name) 0 1))
 	     (memq major-mode '(magit-process-mode
 				magit-status-mode
