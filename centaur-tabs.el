@@ -2259,6 +2259,7 @@ Should be buffer local and speed up calculation of buffer groups.")
      (string-prefix-p "*tramp" name)
      (string-prefix-p " *Mini" name)
      (string-prefix-p "*help" name)
+     (string-prefix-p " *temp" name)
      (string-prefix-p "*Help" name)
 
      ;; Is not magit buffer.
