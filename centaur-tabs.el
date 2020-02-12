@@ -724,13 +724,18 @@ If icon gray out option enabled, gray out icon if not SELECTED."
   (set-buffer-modified-p (buffer-modified-p))
   (centaur-tabs-set-template centaur-tabs-current-tabset nil)
   (centaur-tabs-display-update))
+(defvar centaur-tabs--idle nil)
 (defun centaur-tabs-after-modifying-buffer (_begin _end _length)
   "Function to be run after the buffer is changed.
 BEGIN, END and LENGTH are just standard arguments for after-changes-function
 hooked functions"
-  (set-buffer-modified-p (buffer-modified-p))
-  (centaur-tabs-set-template centaur-tabs-current-tabset nil)
-  (centaur-tabs-display-update))
+  (when (not centaur-tabs--idle)
+    (setq centaur-tabs--idle t)
+    (run-with-idle-timer 0.5 nil (lambda()
+                                 (setq centaur-tabs--idle nil)
+                                 (set-buffer-modified-p (buffer-modified-p))
+                                 (centaur-tabs-set-template centaur-tabs-current-tabset nil)
+                                 (centaur-tabs-display-update)))))
 
 (defun centaur-tabs-get-tab-from-event (event)
   "Given a mouse EVENT, extract the tab at the mouse point."
