@@ -159,44 +159,6 @@ FAMILY is the font family and HEIGHT is the font height."
 	#'(lambda () (force-window-update (selected-window)))
       'force-mode-line-update)))
 
-;;; Keymaps
-;;
-(defvar centaur-tabs-close-map
-  (let ((map (make-sparse-keymap)))
-    (define-key map (vector 'tab-line 'mouse-1) 'centaur-tabs-do-close)
-    (define-key map (vector 'tab-line 'mouse-2) 'centaur-tabs-do-close)
-    map)
-  "Keymap used for setting mouse events for close button.")
-
-
-(defvar centaur-tabs-backward-tab-map
-  (let ((map (make-sparse-keymap)))
-    (define-key map (vector 'tab-line 'mouse-1) 'centaur-tabs-backward--button)
-    (define-key map (vector 'tab-line 'mouse-3) 'centaur-tabs--groups-menu)
-    map)
-  "Keymap used for setting mouse events for backward tab button.")
-
-(defvar centaur-tabs-forward-tab-map
-  (let ((map (make-sparse-keymap)))
-    (define-key map (vector 'tab-line 'mouse-1) 'centaur-tabs-forward--button)
-    (define-key map (vector 'tab-line 'mouse-3) 'centaur-tabs--groups-menu)
-    map)
-  "Keymap used for setting mouse events for forward tab button.")
-
-(defvar centaur-tabs-down-tab-map
-  (let ((map (make-sparse-keymap)))
-    (define-key map (vector 'tab-line 'mouse-1) 'centaur-tabs--groups-menu)
-    (define-key map (vector 'tab-line 'mouse-3) 'centaur-tabs--groups-menu)
-    map)
-  "Keymap used for setting mouse events for down tab button.")
-
-(defvar centaur-tabs-default-map
-  (let ((map (make-sparse-keymap)))
-    (define-key map (vector 'tab-line 'mouse-1) 'centaur-tabs-do-select)
-    (define-key map (vector 'tab-line 'mouse-2) 'centaur-tabs-do-close)
-    map)
-  "Keymap used for setting mouse events for a tab.")
-
 ;;; Name truncation
 ;;
 ;; Copied from s.el
@@ -214,9 +176,45 @@ When not specified, ELLIPSIS defaults to ‘...’."
       (format "%s%s" (substring s 0 (- len (length ellipsis))) ellipsis)
     (concat s (make-string (- len (length s)) ? ))))
 
+;;; Keymaps
+;;
+(defvar centaur-tabs-close-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (vector 'header-line 'mouse-1) 'centaur-tabs-do-close)
+    (define-key map (vector 'header-line 'mouse-2) 'centaur-tabs-do-close)
+    map)
+  "Keymap used for setting mouse events for close button.")
+
+(defvar centaur-tabs-backward-tab-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (vector 'header-line 'mouse-1) 'centaur-tabs-backward--button)
+    (define-key map (vector 'header-line 'mouse-3) 'centaur-tabs--groups-menu)
+    map)
+  "Keymap used for setting mouse events for backward tab button.")
+
+(defvar centaur-tabs-forward-tab-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (vector 'header-line 'mouse-1) 'centaur-tabs-forward--button)
+    (define-key map (vector 'header-line 'mouse-3) 'centaur-tabs--groups-menu)
+    map)
+  "Keymap used for setting mouse events for forward tab button.")
+
+(defvar centaur-tabs-down-tab-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (vector 'header-line 'mouse-1) 'centaur-tabs--groups-menu)
+    (define-key map (vector 'header-line 'mouse-3) 'centaur-tabs--groups-menu)
+    map)
+  "Keymap used for setting mouse events for down tab button.")
+
+(defvar centaur-tabs-default-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (vector 'header-line 'mouse-1) 'centaur-tabs-do-select)
+    (define-key map (vector 'header-line 'mouse-2) 'centaur-tabs-do-close)
+    map)
+  "Keymap used for setting mouse events for a tab.")
+
 ;;; Events and event functions
 ;;
-
 (defun centaur-tabs-buffer-close-tab (tab)
   "Function for closing TAB."
   (let ((buffer (centaur-tabs-tab-value tab)))
@@ -495,7 +493,7 @@ current cached copy."
   "Function to be run after the buffer is changed.
 BEGIN, END and LENGTH are just standard arguments for after-changes-function
 hooked functions"
-  (when (not centaur-tabs--idle)
+  (unless centaur-tabs--idle
     (setq centaur-tabs--idle t)
     (run-with-idle-timer 0.5 nil (lambda()
 				 (setq centaur-tabs--idle nil)
