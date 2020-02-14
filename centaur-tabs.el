@@ -204,8 +204,7 @@ Run as `centaur-tabs-init-hook'."
   (add-hook 'after-save-hook #'centaur-tabs-on-saving-buffer)
   (add-hook 'first-change-hook #'centaur-tabs-on-modifying-buffer)
   (add-hook 'after-change-functions #'centaur-tabs-after-modifying-buffer)
-  (add-hook 'kill-buffer-hook #'centaur-tabs-buffer-track-killed)
-  (add-hook 'buffer-list-update-hook #'centaur-tabs-buffer-update-groups))
+  (add-hook 'kill-buffer-hook #'centaur-tabs-buffer-track-killed))
 
 (defun centaur-tabs-buffer-quit ()
   "Quit tab bar buffer.
@@ -218,8 +217,7 @@ Run as `centaur-tabs-quit-hook'."
   (remove-hook 'after-save-hook 'centaur-tabs-after-modifying-buffer)
   (remove-hook 'first-change-hook 'centaur-tabs-on-modifying-buffer)
   (remove-hook 'after-change-functions 'centaur-tabs-after-modifying-buffer)
-  (remove-hook 'kill-buffer-hook 'centaur-tabs-buffer-track-killed)
-  (remove-hook 'buffer-list-update-hook 'centaur-tabs-buffer-update-groups))
+  (remove-hook 'kill-buffer-hook 'centaur-tabs-buffer-track-killed))
 
 (add-hook 'centaur-tabs-init-hook #'centaur-tabs-buffer-init)
 (add-hook 'centaur-tabs-quit-hook #'centaur-tabs-buffer-quit)
