@@ -714,7 +714,7 @@ If icon gray out option enabled, gray out icon if not SELECTED."
 		      :overline nil
 		      :underline nil))
 
-;; Hooks for modification
+;; Functions for modification hooks and advices
 (defun centaur-tabs-on-saving-buffer ()
   "Function to be run after the buffer is saved."
   (centaur-tabs-set-template centaur-tabs-current-tabset nil)
@@ -724,18 +724,14 @@ If icon gray out option enabled, gray out icon if not SELECTED."
   (set-buffer-modified-p (buffer-modified-p))
   (centaur-tabs-set-template centaur-tabs-current-tabset nil)
   (centaur-tabs-display-update))
-(defvar centaur-tabs--idle nil)
 (defun centaur-tabs-after-modifying-buffer (_begin _end _length)
   "Function to be run after the buffer is changed.
 BEGIN, END and LENGTH are just standard arguments for after-changes-function
 hooked functions"
-  (when (not centaur-tabs--idle)
-    (setq centaur-tabs--idle t)
-    (run-with-idle-timer 0.3 nil (lambda()
-                                 (setq centaur-tabs--idle nil)
-                                 (set-buffer-modified-p (buffer-modified-p))
-                                 (centaur-tabs-set-template centaur-tabs-current-tabset nil)
-                                 (centaur-tabs-display-update)))))
+  (setq centaur-tabs--idle nil)
+  (set-buffer-modified-p (buffer-modified-p))
+  (centaur-tabs-set-template centaur-tabs-current-tabset nil)
+  (centaur-tabs-display-update))
 
 (defun centaur-tabs-get-tab-from-event (event)
   "Given a mouse EVENT, extract the tab at the mouse point."
@@ -1855,8 +1851,10 @@ Run as `centaur-tabs-init-hook'."
 			:underline nil))
   (add-hook 'after-save-hook #'centaur-tabs-on-saving-buffer)
   (add-hook 'first-change-hook #'centaur-tabs-on-modifying-buffer)
-  (add-hook 'after-change-functions #'centaur-tabs-after-modifying-buffer)
-  (add-hook 'kill-buffer-hook #'centaur-tabs-buffer-track-killed))
+  (add-hook 'kill-buffer-hook #'centaur-tabs-buffer-track-killed)
+  (advice-add #'undo :after #'centaur-tabs-after-modifying-buffer)
+  (advice-add #'undo-tree-undo-1 :after #'centaur-tabs-after-modifying-buffer)
+  (advice-add #'undo-tree-redo-1 :after #'centaur-tabs-after-modifying-buffer))
 
 (defun centaur-tabs-buffer-quit ()
   "Quit tab bar buffer.
@@ -1868,8 +1866,10 @@ Run as `centaur-tabs-quit-hook'."
 	)
   (remove-hook 'after-save-hook 'centaur-tabs-after-modifying-buffer)
   (remove-hook 'first-change-hook 'centaur-tabs-on-modifying-buffer)
-  (remove-hook 'after-change-functions 'centaur-tabs-after-modifying-buffer)
-  (remove-hook 'kill-buffer-hook 'centaur-tabs-buffer-track-killed))
+  (remove-hook 'kill-buffer-hook 'centaur-tabs-buffer-track-killed)
+  (advice-remove #'undo :after #'centaur-tabs-after-modifying-buffer)
+  (advice-remove #'undo-tree-undo-1 :after #'centaur-tabs-after-modifying-buffer)
+  (advice-remove #'undo-tree-redo-1 :after #'centaur-tabs-after-modifying-buffer))
 
 (add-hook 'centaur-tabs-init-hook #'centaur-tabs-buffer-init)
 (add-hook 'centaur-tabs-quit-hook #'centaur-tabs-buffer-quit)
