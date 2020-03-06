@@ -488,11 +488,10 @@ current cached copy."
   (set-buffer-modified-p (buffer-modified-p))
   (centaur-tabs-set-template centaur-tabs-current-tabset nil)
   (centaur-tabs-display-update))
-(defun centaur-tabs-after-modifying-buffer (_begin _end _length)
+(defun centaur-tabs-after-modifying-buffer (&rest _)
   "Function to be run after the buffer is changed.
 BEGIN, END and LENGTH are just standard arguments for after-changes-function
 hooked functions"
-  (setq centaur-tabs--idle nil)
   (set-buffer-modified-p (buffer-modified-p))
   (centaur-tabs-set-template centaur-tabs-current-tabset nil)
   (centaur-tabs-display-update))
