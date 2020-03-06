@@ -478,7 +478,7 @@ current cached copy."
   (centaur-tabs-set-template centaur-tabs-tabsets-tabset nil)
   centaur-tabs-tabsets-tabset)
 
-;; Hooks for modification
+;; Functions for modification hooks and advices
 (defun centaur-tabs-on-saving-buffer ()
   "Function to be run after the buffer is saved."
   (centaur-tabs-set-template centaur-tabs-current-tabset nil)
@@ -488,18 +488,14 @@ current cached copy."
   (set-buffer-modified-p (buffer-modified-p))
   (centaur-tabs-set-template centaur-tabs-current-tabset nil)
   (centaur-tabs-display-update))
-(defvar centaur-tabs--idle nil)
 (defun centaur-tabs-after-modifying-buffer (_begin _end _length)
   "Function to be run after the buffer is changed.
 BEGIN, END and LENGTH are just standard arguments for after-changes-function
 hooked functions"
-  (unless centaur-tabs--idle
-    (setq centaur-tabs--idle t)
-    (run-with-idle-timer 0.5 nil (lambda()
-				 (setq centaur-tabs--idle nil)
-				 (set-buffer-modified-p (buffer-modified-p))
-				 (centaur-tabs-set-template centaur-tabs-current-tabset nil)
-				 (centaur-tabs-display-update)))))
+  (setq centaur-tabs--idle nil)
+  (set-buffer-modified-p (buffer-modified-p))
+  (centaur-tabs-set-template centaur-tabs-current-tabset nil)
+  (centaur-tabs-display-update))
 
 ;;; Tabs display
 ;;
