@@ -154,6 +154,11 @@ Default is 'hand.  The following scopes are possible:
   :type '(choice :tag "Gray out icons for unselected..."
 		 (const :tag "Buffer" buffer)))
 
+(defcustom centaur-tabs-plain-icons nil
+  "When non nil, tab icons' color will be the same as tabs' foreground color."
+  :group 'centaur-tabs
+  :type 'boolean)
+
 (defun centaur-tabs-icon (tab face selected)
   "Generate all-the-icons icon for TAB using FACE's background.
 If icon gray out option enabled, gray out icon if not SELECTED."
@@ -171,10 +176,12 @@ If icon gray out option enabled, gray out icon if not SELECTED."
 		   :v-adjust centaur-tabs-icon-v-adjust
 		   :height centaur-tabs-icon-scale-factor)))
 	       (background (face-background face))
-	       (inactive (if (and (not selected)
-				  (eq centaur-tabs-gray-out-icons 'buffer))
-			     'mode-line-inactive
-			   'unspecified))
+	       (inactive (cond (centaur-tabs-plain-icons
+				'centaur-tabs-selected)
+			       ((and (not selected)
+				     (eq centaur-tabs-gray-out-icons 'buffer))
+				'mode-line-inactive)
+			       (t 'unspecified)))
 	       (underline (and (eq centaur-tabs-set-bar 'under)
 			       (face-attribute face :underline)))
 	       (overline (and (eq centaur-tabs-set-bar 'over)

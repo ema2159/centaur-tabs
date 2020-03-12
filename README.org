@@ -14,6 +14,7 @@
   - [[#tab-styles][Tab Styles]]
   - [[#tab-height][Tab height]]
   - [[#tab-icons][Tab icons]]
+  - [[#plain-icons][Plain icons]]
   - [[#graying-out-icons][Graying out icons]]
   - [[#selected-tab-bar][Selected tab bar]]
   - [[#customize-the-close-button][Customize the close button]]
@@ -118,6 +119,11 @@
    To display themed icons from all the icons
    #+BEGIN_SRC emacs-lisp :tangle yes
     (setq centaur-tabs-set-icons t)
+   #+END_SRC
+** Plain icons
+   To make icons plain (same color as tabs' text):
+   #+BEGIN_SRC emacs-lisp :tangle yes
+    (setq centaur-tabs-plain-icons t)
    #+END_SRC
 ** Graying out icons
    To gray out icons for the unselected tabs:
