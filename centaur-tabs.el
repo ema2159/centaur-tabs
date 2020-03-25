@@ -234,9 +234,9 @@ Run as `centaur-tabs-quit-hook'."
   (remove-hook 'after-save-hook 'centaur-tabs-after-modifying-buffer)
   (remove-hook 'first-change-hook 'centaur-tabs-on-modifying-buffer)
   (remove-hook 'kill-buffer-hook 'centaur-tabs-buffer-track-killed)
-  (advice-remove #'undo :after #'centaur-tabs-after-modifying-buffer)
-  (advice-remove #'undo-tree-undo-1 :after #'centaur-tabs-after-modifying-buffer)
-  (advice-remove #'undo-tree-redo-1 :after #'centaur-tabs-after-modifying-buffer))
+  (advice-remove #'undo #'centaur-tabs-after-modifying-buffer)
+  (advice-remove #'undo-tree-undo-1 #'centaur-tabs-after-modifying-buffer)
+  (advice-remove #'undo-tree-redo-1 #'centaur-tabs-after-modifying-buffer))
 
 (add-hook 'centaur-tabs-init-hook #'centaur-tabs-buffer-init)
 (add-hook 'centaur-tabs-quit-hook #'centaur-tabs-buffer-quit)
