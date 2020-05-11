@@ -269,6 +269,7 @@
 	 (or
 	  (string-prefix-p "*epc" name)
 	  (string-prefix-p "*helm" name)
+	  (string-prefix-p "*Helm" name)
 	  (string-prefix-p "*Compile-Log*" name)
 	  (string-prefix-p "*lsp" name)
 	  (and (string-prefix-p "magit" name)
