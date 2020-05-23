@@ -216,6 +216,11 @@ Run as `centaur-tabs-init-hook'."
     (set-face-attribute 'centaur-tabs-unselected-modified nil
 			:overline nil
 			:underline nil))
+  (unless (display-graphic-p)
+    (setq
+     centaur-tabs-set-icons nil
+     centaur-tabs-show-navigation-buttons nil
+     centaur-tabs-set-bar nil))
   (add-hook 'after-save-hook #'centaur-tabs-on-saving-buffer)
   (add-hook 'first-change-hook #'centaur-tabs-on-modifying-buffer)
   (add-hook 'kill-buffer-hook #'centaur-tabs-buffer-track-killed)
