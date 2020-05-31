@@ -70,7 +70,7 @@
 ;;
 (defsubst centaur-tabs-mode-on-p ()
   "Return non-nil if Centaur-Tabs mode is on."
-  (eq (default-value 'header-line-format)
+  (eq (default-value centaur-tabs-display-line-format)
       centaur-tabs-header-line-format))
 
 ;;; Centaur-Tabs-Local mode
@@ -92,8 +92,8 @@ hidden, it is shown again.  Signal an error if Centaur-Tabs mode is off."
     (error "Centaur-Tabs mode must be enabled"))
 ;;; ON
   (if centaur-tabs-local-mode
-      (if (and (local-variable-p 'header-line-format)
-	       header-line-format)
+      (if (and (local-variable-p centaur-tabs-display-line-format)
+	       (eval centaur-tabs-display-line-format))
 	  ;; A local header line exists, hide it to show the tab bar.
 	  (progn
 	    ;; Fail in case of an inconsistency because another local
@@ -101,18 +101,18 @@ hidden, it is shown again.  Signal an error if Centaur-Tabs mode is off."
 	    (when (local-variable-p 'centaur-tabs--local-hlf)
 	      (error "Another local header line is already hidden"))
 	    (set (make-local-variable 'centaur-tabs--local-hlf)
-		 header-line-format)
-	    (kill-local-variable 'header-line-format))
+		 (eval centaur-tabs-display-line-format))
+	    (kill-local-variable centaur-tabs-display-line-format))
 	;; Otherwise hide the tab bar in this buffer.
-	(setq header-line-format nil))
+	(set centaur-tabs-display-line-format nil))
 ;;; OFF
     (if (local-variable-p 'centaur-tabs--local-hlf)
 	;; A local header line is hidden, show it again.
 	(progn
-	  (setq header-line-format centaur-tabs--local-hlf)
+	  (set centaur-tabs-display-line-format centaur-tabs--local-hlf)
 	  (kill-local-variable 'centaur-tabs--local-hlf))
       ;; The tab bar is locally hidden, show it again.
-      (kill-local-variable 'header-line-format))))
+      (kill-local-variable centaur-tabs-display-line-format))))
 
 ;;; Centaur-Tabs mode
 ;;
@@ -130,18 +130,18 @@ hidden, it is shown again.  Signal an error if Centaur-Tabs mode is off."
   "The key bindings provided in Centaur-Tabs mode.")
 
 (defvar centaur-tabs-mode-map
-  (let ((km (make-sparse-keymap)))
-    (define-key km centaur-tabs-prefix-key centaur-tabs-prefix-map)
+  (let ((map (make-sparse-keymap)))
+    (define-key map centaur-tabs-prefix-key centaur-tabs-prefix-map)
 
     ;;; Use mouse wheel to switch between buffers of same group
-    (define-key km (kbd "<header-line> <mouse-5>") 'centaur-tabs-forward )
-    (define-key km (kbd "<header-line> <mouse-4>") 'centaur-tabs-backward )
+    (define-key map (vector centaur-tabs-display-line 'mouse-5) 'centaur-tabs-forward )
+    (define-key map (vector centaur-tabs-display-line 'mouse-4) 'centaur-tabs-backward )
 
     ;;; Use right click to show the rest of groups
-    (define-key km (kbd "<header-line> <mouse-3>") 'centaur-tabs--groups-menu )
+    (define-key map (vector centaur-tabs-display-line 'mouse-3) 'centaur-tabs--groups-menu )
 
 
-    km)
+    map)
   "Keymap to use in  Centaur-Tabs mode.")
 
 (defvar centaur-tabs--global-hlf nil)
@@ -160,10 +160,10 @@ Returns non-nil if the new state is enabled.
   (if centaur-tabs-mode
 ;;; ON
       (unless (centaur-tabs-mode-on-p)
-	;; Save current default value of `header-line-format'.
-	(setq centaur-tabs--global-hlf (default-value 'header-line-format))
+	;; Save current default value of `centaur-tabs-display-line-format'.
+	(setq centaur-tabs--global-hlf (default-value centaur-tabs-display-line-format))
 	(centaur-tabs-init-tabsets-store)
-	(setq-default header-line-format centaur-tabs-header-line-format))
+	(set-default centaur-tabs-display-line-format centaur-tabs-header-line-format))
 ;;; OFF
     (when (centaur-tabs-mode-on-p)
       ;; Turn off Centaur-Tabs-Local mode globally.
@@ -174,8 +174,8 @@ Returns non-nil if the new state is enabled.
 			   (centaur-tabs-local-mode -1)))
 		  (error nil)))
 	    (buffer-list))
-      ;; Restore previous `header-line-format'.
-      (setq-default header-line-format centaur-tabs--global-hlf)
+      ;; Restore previous `centaur-tabs-display-line-format'.
+      (set-default centaur-tabs-display-line-format centaur-tabs--global-hlf)
       (centaur-tabs-free-tabsets-store))
     ))
 

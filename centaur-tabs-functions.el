@@ -136,7 +136,7 @@ tab(B), move A to the left of B" t)
 
 (defun centaur-tabs-headline-match ()
   "Make headline use centaur-tabs-default-face."
-  (set-face-attribute 'header-line nil :background (face-background 'centaur-tabs-unselected)
+  (set-face-attribute centaur-tabs-display-line nil :background (face-background 'centaur-tabs-unselected)
 		      :box nil
 		      :overline nil
 		      :underline nil))
@@ -180,36 +180,36 @@ When not specified, ELLIPSIS defaults to ‘...’."
 ;;
 (defvar centaur-tabs-close-map
   (let ((map (make-sparse-keymap)))
-    (define-key map (vector 'header-line 'mouse-1) 'centaur-tabs-do-close)
-    (define-key map (vector 'header-line 'mouse-2) 'centaur-tabs-do-close)
+    (define-key map (vector centaur-tabs-display-line 'mouse-1) 'centaur-tabs-do-close)
+    (define-key map (vector centaur-tabs-display-line 'mouse-2) 'centaur-tabs-do-close)
     map)
   "Keymap used for setting mouse events for close button.")
 
 (defvar centaur-tabs-backward-tab-map
   (let ((map (make-sparse-keymap)))
-    (define-key map (vector 'header-line 'mouse-1) 'centaur-tabs-backward--button)
-    (define-key map (vector 'header-line 'mouse-3) 'centaur-tabs--groups-menu)
+    (define-key map (vector centaur-tabs-display-line 'mouse-1) 'centaur-tabs-backward--button)
+    (define-key map (vector centaur-tabs-display-line 'mouse-3) 'centaur-tabs--groups-menu)
     map)
   "Keymap used for setting mouse events for backward tab button.")
 
 (defvar centaur-tabs-forward-tab-map
   (let ((map (make-sparse-keymap)))
-    (define-key map (vector 'header-line 'mouse-1) 'centaur-tabs-forward--button)
-    (define-key map (vector 'header-line 'mouse-3) 'centaur-tabs--groups-menu)
+    (define-key map (vector centaur-tabs-display-line 'mouse-1) 'centaur-tabs-forward--button)
+    (define-key map (vector centaur-tabs-display-line 'mouse-3) 'centaur-tabs--groups-menu)
     map)
   "Keymap used for setting mouse events for forward tab button.")
 
 (defvar centaur-tabs-down-tab-map
   (let ((map (make-sparse-keymap)))
-    (define-key map (vector 'header-line 'mouse-1) 'centaur-tabs--groups-menu)
-    (define-key map (vector 'header-line 'mouse-3) 'centaur-tabs--groups-menu)
+    (define-key map (vector centaur-tabs-display-line 'mouse-1) 'centaur-tabs--groups-menu)
+    (define-key map (vector centaur-tabs-display-line 'mouse-3) 'centaur-tabs--groups-menu)
     map)
   "Keymap used for setting mouse events for down tab button.")
 
 (defvar centaur-tabs-default-map
   (let ((map (make-sparse-keymap)))
-    (define-key map (vector 'header-line 'mouse-1) 'centaur-tabs-do-select)
-    (define-key map (vector 'header-line 'mouse-2) 'centaur-tabs-do-close)
+    (define-key map (vector centaur-tabs-display-line 'mouse-1) 'centaur-tabs-do-select)
+    (define-key map (vector centaur-tabs-display-line 'mouse-2) 'centaur-tabs-do-close)
     map)
   "Keymap used for setting mouse events for a tab.")
 
@@ -356,13 +356,13 @@ Return the tab found, or nil if not found."
 
 (defsubst centaur-tabs-template (tabset)
   "Return the cached visual representation of TABSET.
-That is, a `header-line-format' template, or nil if the cache is
+That is, a `centaur-tabs-display-line-format' template, or nil if the cache is
 empty."
   (get tabset 'template))
 
 (defsubst centaur-tabs-set-template (tabset template)
   "Set the cached visual representation of TABSET to TEMPLATE.
-TEMPLATE must be a valid `header-line-format' template, or nil to
+TEMPLATE must be a valid `centaur-tabs-display-line-format' template, or nil to
 cleanup the cache."
   (put tabset 'template template))
 
@@ -500,7 +500,7 @@ hooked functions"
 ;;
 (defsubst centaur-tabs-line-tab (tab)
   "Return the display representation of tab TAB.
-That is, a propertized string used as an `header-line-format' template
+That is, a propertized string used as an `centaur-tabs-display-line-format' template
 element.
 Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
   (let* ((buf (centaur-tabs-tab-value tab))
@@ -627,7 +627,7 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
 
 (defsubst centaur-tabs-button-tab (button)
   "Return the display representation of button BUTTON.
-That is, a propertized string used as an `header-line-format' template
+That is, a propertized string used as an `centaur-tabs-display-line-format' template
 element."
   (let* ((face 'centaur-tabs-unselected))
     (concat
@@ -639,7 +639,7 @@ element."
      (centaur-tabs-separator-render centaur-tabs-style-right face))))
 
 (defun centaur-tabs-line-format (tabset)
-  "Return the `header-line-format' value to display TABSET."
+  "Return the `centaur-tabs-display-line-format' value to display TABSET."
   (let* ((sel (centaur-tabs-selected-tab tabset))
 	 (tabs (centaur-tabs-view tabset))
 	 (padcolor centaur-tabs-background-color)
@@ -714,7 +714,7 @@ Inhibit display of the tab bar in current window where
   (cond
    ((centaur-tabs-hide-tab-cached (current-buffer))
     ;; Don't show the tab bar.
-    (setq header-line-format nil))
+    (set centaur-tabs-display-line-format nil))
    ((centaur-tabs-current-tabset t)
     ;; When available, use a cached tab bar value, else recompute it.
     (or (centaur-tabs-template centaur-tabs-current-tabset)
@@ -978,7 +978,7 @@ after the current buffer has been killed.  Try first the buffer in tab
 after the current one, then the buffer in tab before.  On success, put
 the sibling buffer in front of the buffer list, so it will be selected
 first."
-  (and (eq header-line-format centaur-tabs-header-line-format)
+  (and (eq (eval centaur-tabs-display-line-format) centaur-tabs-header-line-format)
        (eq centaur-tabs-current-tabset-function 'centaur-tabs-buffer-tabs)
        (eq (current-buffer) (window-buffer (selected-window)))
        (let ((bl (centaur-tabs-tab-values (centaur-tabs-current-tabset)))
@@ -1018,6 +1018,7 @@ first."
   ;; This feature should be trigger by search plugins, such as ibuffer, helm or ivy.
   (unless (or (string-prefix-p "centaur-tabs" (format "%s" this-command))
 	      (string-prefix-p "mouse-drag-header-line" (format "%s" this-command))
+	      (string-prefix-p "mouse-drag-tab-line" (format "%s" this-command))
 	      (string-prefix-p "(lambda (event) (interactive e)" (format "%s" this-command)))
     ;; Just continue when the buffer has changed.
     (when (and centaur-tabs-adjust-buffer-order
@@ -1185,7 +1186,10 @@ Operates over buffer BUF"
 
 (mapc (lambda (hook)
 	(add-hook hook (lambda ()
-			 (setq-local header-line-format nil))))
+			 (if (version< emacs-version "27.0")
+			     (setq-local header-line-format nil)
+			   (setq-local tab-line-format nil))
+			 )))
       centaur-tabs-hide-tabs-hooks)
 
 (provide 'centaur-tabs-functions)

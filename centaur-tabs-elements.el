@@ -91,6 +91,18 @@
   "Face used for selected tab bar."
   :group 'centaur-tabs)
 
+;;; Tabs' display line
+;;
+(defvar centaur-tabs-display-line
+  (if (version< emacs-version "27.0")
+      'header-line
+    'tab-line))
+
+(defvar centaur-tabs-display-line-format
+  (if (version< emacs-version "27.0")
+      'header-line-format
+    'tab-line-format))
+
 ;;; Tabs' characteristics
 ;;
 (defcustom centaur-tabs-style "bar"
