@@ -178,6 +178,34 @@ When not specified, ELLIPSIS defaults to ‘...’."
 
 ;;; Keymaps
 ;;
+(defvar centaur-tabs-prefix-key [(control ?c)]
+  "The common prefix key used in Centaur-Tabs mode.")
+
+(defvar centaur-tabs-prefix-map
+  (let ((km (make-sparse-keymap)))
+    (define-key km [(control left)]  'centaur-tabs-backward)
+    (define-key km [(control right)] 'centaur-tabs-forward)
+    (define-key km [(control up)]    'centaur-tabs-backward-group)
+    (define-key km [(control down)]  'centaur-tabs-forward-group)
+    (define-key km [(control f10)]   'centaur-tabs-local-mode)
+    km)
+  "The key bindings provided in Centaur-Tabs mode.")
+
+(defvar centaur-tabs-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map centaur-tabs-prefix-key centaur-tabs-prefix-map)
+
+    ;;; Use mouse wheel to switch between buffers of same group
+    (define-key map (vector centaur-tabs-display-line 'mouse-5) 'centaur-tabs-forward )
+    (define-key map (vector centaur-tabs-display-line 'mouse-4) 'centaur-tabs-backward )
+
+    ;;; Use right click to show the rest of groups
+    (define-key map (vector centaur-tabs-display-line 'mouse-3) 'centaur-tabs--groups-menu )
+
+
+    map)
+  "Keymap to use in  Centaur-Tabs mode.")
+
 (defvar centaur-tabs-close-map
   (let ((map (make-sparse-keymap)))
     (define-key map (vector centaur-tabs-display-line 'mouse-1) 'centaur-tabs-do-close)
