@@ -7,6 +7,7 @@
 
   [[./images/centaur.png]]
 * Contents                                                              :TOC:
+- [[#important][IMPORTANT]]
 - [[#what-is-this][What is this?]]
 - [[#installation][Installation]]
 - [[#customization][Customization]]
@@ -31,11 +32,13 @@
   - [[#ivy-integration][Ivy integration]]
   - [[#projectile-integration][Projectile integration]]
   - [[#mouse-support][Mouse support]]
-- [[#to-do-1619][TO DO]]
+- [[#to-do-1719][TO DO]]
 - [[#my-personal-configuration][My personal configuration]]
 - [[#known-supported-theme-plugins][Known supported theme plugins]]
 - [[#how-to-contribute][How to contribute]]
 
+* IMPORTANT
+  Now =centaur-tabs= supports Emacs 27's native =tab-line= and it uses it to render the tabs. Previously the tabs were rendered in the =header-line=. Although Emacs 27's tab-line workspaces are not yet supported, the feature will be implemented in a near future.
 * What is this?
   This projects aims to become an aesthetic, functional and efficient tabs plugin for Emacs with a lot of customization options. 
   Although this is a fork from [[https://github.com/manateelazycat/awesome-tab][awesome-tab]] (that I forked with the permission from the author and it's also based on [[https://github.com/dholm/tabbar][tabbar]]) it's been heavily modified so now it may be considered a different package.
@@ -343,7 +346,7 @@
    - Use the mouse wheel to invoke ~centaur-tabs-backward/forward~.
    - Set the =centaur-tabs-show-navigation-buttons= customizable variable to =t= to display cool navigation buttons.
    [[file:images/navigation-buttons.png]]
-* TO DO [16/19]
+* TO DO [17/19]
   - [X] Integrate all-the-icons
   - [X] Improve all the icons placing
   - [X] Fix all the icons background
@@ -359,7 +362,7 @@
   - [X] Add a customizable close button
   - [X] Explore if ~after-modifying-buffer~ function can be improved
   - [X] Fix messages buffer icon an FontAwesome errors
-  - [ ] Check for Elscreen compatibility
+  - [X] Check for Elscreen compatibility
   - [X] Add this package to MELPA
   - [X] Make a configuration to display buffer groups names instead of buffer names in tabs 
   - [ ] Add full evil-mode support with tab commands 
