@@ -27,13 +27,15 @@
   - [[#enable-vim-like-tab-motions][Enable Vim like tab motions]]
   - [[#prevent-the-access-to-specified-buffers][Prevent the access to specified buffers]]
   - [[#tab-cycling][Tab cycling]]
-  - [[#buffer-reordering][Buffer reordering]]
+  - [[#buffer-reordering-thanks-to-jixiuf][Buffer reordering (thanks to jixiuf)]]
+  - [[#alphabetical-buffer-reordering-thanks-to-cburroughs][Alphabetical buffer reordering (thanks to cburroughs)]]
   - [[#helm-integration][Helm integration]]
   - [[#ivy-integration][Ivy integration]]
   - [[#projectile-integration][Projectile integration]]
-  - [[#mouse-support][Mouse support]]
+  - [[#mouse-support-thanks-to-alvarogonzalezsotillo][Mouse support (thanks to alvarogonzalezsotillo)]]
 - [[#to-do-1719][TO DO]]
 - [[#my-personal-configuration][My personal configuration]]
+- [[#useful-commands][Useful commands]]
 - [[#known-supported-theme-plugins][Known supported theme plugins]]
 - [[#how-to-contribute][How to contribute]]
 
@@ -276,8 +278,7 @@
 	  (string-prefix-p "*Compile-Log*" name)
 	  (string-prefix-p "*lsp" name)
 	  (and (string-prefix-p "magit" name)
-	       (not (file-name-extension name)))
-	  )))
+	       (not (file-name-extension name))))))
    #+END_SRC
 ** Tab cycling
    The default behaviour from the ~centaur-tabs-forward/backward~ functions is to go through all the tabs in the current group and then change the group. If this is something that is to desired to be changed the ~centaur-tabs-cycle-scope~ custom must be changed like this:
@@ -289,7 +290,7 @@
    - 'default: (Already described)
    - 'tabs: Cycle through visible tabs (that is, the tabs in the current group)
    - 'groups: Navigate through tab groups only
-** Buffer reordering
+** Buffer reordering (thanks to jixiuf)
    To enable an automatic buffer reordering function use the following function in your configuration:
    #+BEGIN_SRC emacs-lisp :tangle yes
      (centaur-tabs-enable-buffer-reordering)
@@ -325,6 +326,14 @@
    | tab4.py | tab1.el | tab2.js | tab3.c |
 
    This functionality doesn't take effect when using centaur-tabs motion functions like ~centaur-tabs-backward/forward~.
+** Alphabetical buffer reordering (thanks to cburroughs)
+   To enable an automatic alpabetical buffer reordering, put the following lines in your configuration.
+   #+BEGIN_SRC emacs-lisp :tangle yes
+     (centaur-tabs-enable-buffer-reordering)
+     (setq centaur-tabs-adjust-buffer-order t)
+   #+END_SRC
+   This function will triger each time a non centaur-tabs motion command is executed.
+   NOTE: Given the Emacs behaviour when opening a new file is a little bit funky, when a new tab is opened, it will always be placed at the right of the last visited buffer. This behaviour needs to be investigated in order to see if a possible solution exists.
 ** Helm integration
    You can integrate Helm with centaur-tabs for changing tab-groups. Just add helm-source-centaur-tabs-group in helm-source-list. Then you'll be able to use ~(centaur-tabs-build-helm-source)~ function and bind it to any key you want. (I'm not a Helm user so I'll not be able to solve problems related to this).
 ** Ivy integration
@@ -339,7 +348,7 @@
    #+BEGIN_SRC emacs-lisp :tangle yes
      (centaur-tabs-group-buffer-groups)
    #+END_SRC
-** Mouse support
+** Mouse support (thanks to alvarogonzalezsotillo)
    - Just click in a tab to change the buffer of the current window.
    - Click the mouse wheel to close a buffer.
    - Right click on any part of the header line (tabs or empty space) to show a tab groups popup.
@@ -445,6 +454,16 @@
 	  ("g T" . centaur-tabs-backward)))
 #+END_SRC
 
+* Useful commands
+  Centaur tabs has plenty of useful commands for manipulating tabs and tab groups. Some of them are:
+  - =(centaur-tabs-kill-all-buffers-in-current-group)=: Kills all buffers in current tab group.
+  - =(centaur-tabs-kill-match-buffers-in-current-group)=: Kills all buffers in current tab group with the same extension as the current buffer.
+  - =(centaur-tabs-keep-match-buffers-in-current-group)=: Asks for a file extension and kills all the buffers with a different extension.
+  - =(centaur-tabs-kill-other-buffers-in-current-group)=: Kills all buffers in current tab group except the current buffer.
+  - =(centaur-tabs-select-beg-tab)=: Selects the first tab of the group.
+  - =(centaur-tabs-select-end-tab)=: Selects the last tab of the group.
+  - =(centaur-tabs-forward-group)=: Go to the next tab group.
+  - =(centaur-tabs-backward-group)=: Go to the previous tab group.
 * Known supported theme plugins
   - [[https://github.com/jonathanchu/atom-one-dark-theme][Atom One Dark Theme]]
   - [[https://github.com/belak/base16-emacs][Base16]]

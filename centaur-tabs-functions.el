@@ -1090,11 +1090,41 @@ first."
 		))))
 
 	;; Update the group name of the last accessed tab.
-	(setq centaur-tabs-last-focused-buffer-group current-group)
-	))))
+	(setq centaur-tabs-last-focused-buffer-group current-group)))))
+
+(defun centaur-tabs-adjust-buffer-order-alphabetically ()
+  "Order tabs in group alphabetically."
+  ;; Don't trigger by centaur-tabs command, it's annoying.
+  (unless (or (string-prefix-p "centaur-tabs" (format "%s" this-command))
+	      (string-prefix-p "mouse-drag-header-line" (format "%s" this-command))
+	      (string-prefix-p "mouse-drag-tab-line" (format "%s" this-command))
+	      (string-prefix-p "(lambda (event) (interactive e)" (format "%s" this-command)))
+    ;; Just continue when the buffer has changed.
+    (when (and centaur-tabs-adjust-buffer-order
+	       (not (eq (current-buffer) centaur-tabs-last-focused-buffer)) ;;???
+	       (not (minibufferp)))
+      (let* ((current (current-buffer))
+	     (current-group (cl-first (funcall centaur-tabs-buffer-groups-function))))
+	(setq centaur-tabs-last-focused-buffer current)
+	;; Just continue if two buffers are in the same group.
+	(when (string= current-group centaur-tabs-last-focused-buffer-group)
+	  (let* ((bufset (centaur-tabs-get-tabset current-group))
+		 (current-group-tabs (centaur-tabs-tabs bufset)))
+	    (setq new-group-tabs (sort current-group-tabs
+				       (lambda (x y)
+					 (string< (buffer-name (car x)) (buffer-name (car y))))))
+	    (set bufset new-group-tabs)
+	    (centaur-tabs-set-template bufset nil)
+	    (centaur-tabs-display-update)))
+	(setq centaur-tabs-last-focused-buffer-group current-group)))))
 
 (defun centaur-tabs-enable-buffer-reordering ()
-  "Enable the buffer adjusting functionality."
+  "Enable the buffer reordering functionality, according to buffer usage."
+  (add-hook 'post-command-hook centaur-tabs-adjust-buffer-order-function))
+
+(defun centaur-tabs-enable-buffer-alphabetical-reordering ()
+  "Enable the buffer alphabetical reordering functionality."
+  (setq centaur-tabs-adjust-buffer-order-function 'centaur-tabs-adjust-buffer-order-alphabetically)
   (add-hook 'post-command-hook centaur-tabs-adjust-buffer-order-function))
 
 ;;; Buffer grouping and tab hiding
