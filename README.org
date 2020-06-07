@@ -332,7 +332,7 @@
      (centaur-tabs-enable-buffer-reordering)
      (setq centaur-tabs-adjust-buffer-order t)
    #+END_SRC
-   This function will triger each time a non centaur-tabs motion command is executed.
+   This function will trigger each time a non centaur-tabs motion command is executed.
    NOTE: Given the Emacs behaviour when opening a new file is a little bit funky, when a new tab is opened, it will always be placed at the right of the last visited buffer. This behaviour needs to be investigated in order to see if a possible solution exists.
 ** Helm integration
    You can integrate Helm with centaur-tabs for changing tab-groups. Just add helm-source-centaur-tabs-group in helm-source-list. Then you'll be able to use ~(centaur-tabs-build-helm-source)~ function and bind it to any key you want. (I'm not a Helm user so I'll not be able to solve problems related to this).
