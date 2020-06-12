@@ -188,11 +188,11 @@ If icon gray out option enabled, gray out icon if not SELECTED."
 		   :v-adjust centaur-tabs-icon-v-adjust
 		   :height centaur-tabs-icon-scale-factor)))
 	       (background (face-background face))
-	       (inactive (cond (centaur-tabs-plain-icons
-				'centaur-tabs-selected)
-			       ((and (not selected)
+	       (inactive (cond ((and (not selected)
 				     (eq centaur-tabs-gray-out-icons 'buffer))
 				'mode-line-inactive)
+			       (centaur-tabs-plain-icons
+				'mode-line)
 			       (t 'unspecified)))
 	       (underline (and (eq centaur-tabs-set-bar 'under)
 			       (face-attribute face :underline)))
