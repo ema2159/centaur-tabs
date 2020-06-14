@@ -182,7 +182,7 @@ If icon gray out option enabled, gray out icon if not SELECTED."
 		    (all-the-icons-icon-for-file
 		     (file-name-nondirectory (buffer-file-name))
 		     :v-adjust centaur-tabs-icon-v-adjust
-	             :height centaur-tabs-icon-scale-factor)
+		     :height centaur-tabs-icon-scale-factor)
 		  (all-the-icons-icon-for-mode
 		   major-mode
 		   :v-adjust centaur-tabs-icon-v-adjust
@@ -190,9 +190,9 @@ If icon gray out option enabled, gray out icon if not SELECTED."
 	       (background (face-background face))
 	       (inactive (cond ((and (not selected)
 				     (eq centaur-tabs-gray-out-icons 'buffer))
-				'mode-line-inactive)
+				(face-foreground 'mode-line-inactive))
 			       (centaur-tabs-plain-icons
-				'mode-line)
+				(face-foreground 'centaur-tabs-selected))
 			       (t 'unspecified)))
 	       (underline (and (eq centaur-tabs-set-bar 'under)
 			       (face-attribute face :underline)))
@@ -201,7 +201,7 @@ If icon gray out option enabled, gray out icon if not SELECTED."
 	  (if (stringp icon)
 	      (progn
 		(propertize icon 'face `(:inherit ,(get-text-property 0 'face icon)
-						  :inherit ,inactive
+						  :foreground ,inactive
 						  :background ,background
 						  :underline ,underline
 						  :overline ,overline)))
