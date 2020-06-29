@@ -217,6 +217,7 @@ When not specified, ELLIPSIS defaults to ‘...’."
   (let ((map (make-sparse-keymap)))
     (define-key map (vector centaur-tabs-display-line 'mouse-1) 'centaur-tabs-backward--button)
     (define-key map (vector centaur-tabs-display-line 'mouse-3) 'centaur-tabs--groups-menu)
+    (define-key map (vector centaur-tabs-display-line 'C-mouse-1) 'centaur-tabs-move-current-tab-to-left--button)
     map)
   "Keymap used for setting mouse events for backward tab button.")
 
@@ -224,6 +225,7 @@ When not specified, ELLIPSIS defaults to ‘...’."
   (let ((map (make-sparse-keymap)))
     (define-key map (vector centaur-tabs-display-line 'mouse-1) 'centaur-tabs-forward--button)
     (define-key map (vector centaur-tabs-display-line 'mouse-3) 'centaur-tabs--groups-menu)
+    (define-key map (vector centaur-tabs-display-line 'C-mouse-1) 'centaur-tabs-move-current-tab-to-right--button)
     map)
   "Keymap used for setting mouse events for forward tab button.")
 
@@ -278,6 +280,29 @@ When not specified, ELLIPSIS defaults to ‘...’."
   (interactive "e")
   (select-window (posn-window (event-start event)))
   (centaur-tabs-forward))
+
+(defun centaur-tabs-move-current-tab-to-left--button (evt)
+  "Same as centaur-tabs-move-current-tab-to-left, but ensuring the tab will remain visible.  The active window will the the EVT source."
+  (interactive "e")
+  (centaur-tabs-move-current-tab-to-left)
+  (centaur-tabs--button-ensure-selected-tab-is-visible evt))
+
+
+(defun centaur-tabs-move-current-tab-to-right--button (evt)
+  "Same as centaur-tabs-move-current-tab-to-right, but ensuring the tab will remain visible.  The active window will the the EVT source."
+  (interactive "e")
+  (centaur-tabs-move-current-tab-to-right)
+  (centaur-tabs--button-ensure-selected-tab-is-visible evt))
+
+(defun centaur-tabs--button-ensure-selected-tab-is-visible (evt)
+  "This is a nasty trick to make the current tab visible, since centaur-tabs--track-selected or centaur-tabs-auto-scroll-flag seems not to work.  EVT is used to change the active window."
+  ;;; This works if the tab has not reached the last position
+  (centaur-tabs-forward--button evt)
+  (centaur-tabs-backward--button evt)
+  ;;; Just in case the tab has the tab reached the last position
+  (centaur-tabs-backward--button evt)
+  (centaur-tabs-forward--button evt))
+
 
 ;;; Tab and tab sets
 ;;
