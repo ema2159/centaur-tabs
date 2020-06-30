@@ -353,7 +353,7 @@
    - Click the mouse wheel to close a buffer.
    - Right click on any part of the header line (tabs or empty space) to show a tab groups popup.
    - Use the mouse wheel to invoke ~centaur-tabs-backward/forward~.
-   - Set the =centaur-tabs-show-navigation-buttons= customizable variable to =t= to display cool navigation buttons.
+   - Set the =centaur-tabs-show-navigation-buttons= customizable variable to =t= to display cool navigation buttons. With the CTRL key, navigation buttons will reorder tabs.
    [[file:images/navigation-buttons.png]]
 * TO DO [17/19]
   - [X] Integrate all-the-icons
