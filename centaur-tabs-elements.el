@@ -94,14 +94,14 @@
 ;;; Tabs' display line
 ;;
 (defvar centaur-tabs-display-line
-  (if (version< emacs-version "27.0")
-      'header-line
-    'tab-line))
+  (if (boundp 'tab-line-format)
+      'tab-line
+    'header-line))
 
 (defvar centaur-tabs-display-line-format
-  (if (version< emacs-version "27.0")
-      'header-line-format
-    'tab-line-format))
+  (if (boundp 'tab-line-format)
+      'tab-line-format
+    'header-line-format))
 
 ;;; Tabs' characteristics
 ;;

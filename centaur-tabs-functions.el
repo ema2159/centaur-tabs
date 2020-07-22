@@ -1269,9 +1269,9 @@ Operates over buffer BUF"
 
 (mapc (lambda (hook)
 	(add-hook hook (lambda ()
-			 (if (version< emacs-version "27.0")
-			     (setq-local header-line-format nil)
-			   (setq-local tab-line-format nil))
+			 (if (boundp 'tab-line-format)
+			     (setq-local tab-line-format nil)
+			   (setq-local header-line-format nil))
 			 )))
       centaur-tabs-hide-tabs-hooks)
 
