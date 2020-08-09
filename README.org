@@ -269,17 +269,35 @@
 ** Prevent the access to specified buffers 
    You can prevent the access to some buffers via tab motions changing the following function like this:
    #+BEGIN_SRC emacs-lisp :tangle yes
-     (defun centaur-tabs-hide-tab (x)
-       (let ((name (format "%s" x)))
-	 (or
-	  (string-prefix-p "*epc" name)
-	  (string-prefix-p "*helm" name)
-	  (string-prefix-p "*Helm" name)
-	  (string-prefix-p "*Compile-Log*" name)
-	  (string-prefix-p "*lsp" name)
-	  (and (string-prefix-p "magit" name)
-	       (not (file-name-extension name))))))
-   #+END_SRC
+(defun centaur-tabs-hide-tab (x)
+  "Do no to show buffer X in tabs."
+  (let ((name (format "%s" x)))
+    (or
+     ;; Current window is not dedicated window.
+     (window-dedicated-p (selected-window))
+
+     ;; Buffer name not match below blacklist.
+     (string-prefix-p "*epc" name)
+     (string-prefix-p "*helm" name)
+     (string-prefix-p "*Helm" name)
+     (string-prefix-p "*Compile-Log*" name)
+     (string-prefix-p "*lsp" name)
+     (string-prefix-p "*company" name)
+     (string-prefix-p "*Flycheck" name)
+     (string-prefix-p "*tramp" name)
+     (string-prefix-p " *Mini" name)
+     (string-prefix-p "*help" name)
+     (string-prefix-p "*straight" name)
+     (string-prefix-p " *temp" name)
+     (string-prefix-p "*Help" name)
+     (string-prefix-p "*mybuf" name)
+
+     ;; Is not magit buffer.
+     (and (string-prefix-p "magit" name)
+	  (not (file-name-extension name)))
+     )))
+     #+END_SRC
+     The function shown is the default function from the =centaur-tabs= configuration, adding the =(string-prefix-p "\*mybuf" name)= part to prevent the access to every buffer with its name ending in "mybuf". You can either add this function as it is to preserve =centaur-tabs= default filters and add any Boolean function that you want to filter your buffers (i.e =string-prefix-p= or =string-suffix-p=) like in this example with the "mybuf" line, or completely override the function with your custom filters if you completely know what you're doing. 
 ** Tab cycling
    The default behaviour from the ~centaur-tabs-forward/backward~ functions is to go through all the tabs in the current group and then change the group. If this is something that is to desired to be changed the ~centaur-tabs-cycle-scope~ custom must be changed like this:
    #+BEGIN_SRC emacs-lisp :tangle yes
