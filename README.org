@@ -297,7 +297,7 @@
 	  (not (file-name-extension name)))
      )))
      #+END_SRC
-     The function shown is the default function from the =centaur-tabs= configuration, adding the =(string-prefix-p "\*mybuf" name)= part to prevent the access to every buffer with its name ending in "mybuf". You can either add this function as it is to preserve =centaur-tabs= default filters and add any Boolean function that you want to filter your buffers (i.e =string-prefix-p= or =string-suffix-p=) like in this example with the "mybuf" line, or completely override the function with your custom filters if you completely know what you're doing. 
+     The function shown is the default function from the =centaur-tabs= configuration, adding the =(string-prefix-p "*​mybuf" name)= part to prevent the access to every buffer with its name ending in "mybuf". You can either add this function as it is to preserve =centaur-tabs= default filters and add any Boolean function that you want to filter your buffers (i.e =string-prefix-p= or =string-suffix-p=) like in this example with the "mybuf" line, or completely override the function with your custom filters if you completely know what you're doing. 
 ** Tab cycling
    The default behaviour from the ~centaur-tabs-forward/backward~ functions is to go through all the tabs in the current group and then change the group. If this is something that is to desired to be changed the ~centaur-tabs-cycle-scope~ custom must be changed like this:
    #+BEGIN_SRC emacs-lisp :tangle yes
