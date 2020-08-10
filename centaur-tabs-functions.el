@@ -200,7 +200,7 @@ When not specified, ELLIPSIS defaults to ‘...’."
     (define-key map (vector centaur-tabs-display-line 'mouse-4) 'centaur-tabs-backward )
 
     ;;; Use right click to show the rest of groups
-    (define-key map (vector centaur-tabs-display-line 'mouse-3) 'centaur-tabs--groups-menu )
+    (define-key map (vector centaur-tabs-display-line 'mouse-3) 'centaur-tabs--tab-menu )
 
 
     map)

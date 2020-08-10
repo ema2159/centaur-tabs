@@ -363,8 +363,8 @@ Should be buffer local and speed up calculation of buffer groups.")
 	   (cons g g))
 	 (sort (centaur-tabs-get-groups) 'string<))))
 
-(defun centaur-tabs--groups-menu (event)
-  "Show a popup menu with the centaur tabs groups.  The clicked tab, identified by EVENT, is selected."
+(defun centaur-tabs--tab-menu (event)
+  "Show a popup menu for the clicked tab.  The clicked tab, identified by EVENT, is selected."
   (interactive "e" )
 
   (let* ((click-on-tab-p (ignore-errors (centaur-tabs-get-tab-from-event event))))
@@ -375,18 +375,36 @@ Should be buffer local and speed up calculation of buffer groups.")
   
   (let*
       ((sorted-groups (centaur-tabs--groups-menu-definition))
-       (menu (list "Centaur tabs groups menu" sorted-groups))
        (menu (easy-menu-create-menu nil (centaur-tabs--tab-menu-definition)))
        (choice (x-popup-menu t menu))
        (action (lookup-key menu (apply 'vector choice)))
        (action-is-command-p  (and (commandp action) (functionp action))))
-    (message "DEBUG: choice:%s   action:%s    action-is-command-p:%s" choice action action-is-command-p)
+    (message "DEBUG: choice:%s   action:%s  action-is-command-p:%s type-of:%s" choice action action-is-command-p (type-of action))
     (when action-is-command-p
       (call-interactively action))
     (when (not action-is-command-p)
       (let ((group (car (last choice))))
-	(message "DEBUG: group:%s" group)
-	(centaur-tabs-switch-group '(group group))))))
+	(message "DEBUG: group:%s stringp:%s listp:%s type-of:%s" group (stringp group) (listp group) (type-of group))
+	(centaur-tabs-switch-group (format "%s" group))))))
+
+(defun centaur-tabs--groups-menu ()
+  "Show a popup menu with the centaur tabs groups."
+  (interactive)
+
+  (let*
+      ((sorted-groups (centaur-tabs--tab-submenu-groups-definition))
+       (menu (easy-menu-create-menu "Tab groups" (centaur-tabs--tab-submenu-groups-definition)))
+       (choice (x-popup-menu t menu))
+       (action (lookup-key menu (apply 'vector choice)))
+       (action-is-command-p  (and (commandp action) (functionp action))))
+    (message "DEBUG: choice:%s   action:%s  action-is-command-p:%s type-of:%s" choice action action-is-command-p (type-of action))
+    (when action-is-command-p
+      (call-interactively action))
+    (when (not action-is-command-p)
+      (let ((group (car (last choice))))
+	(message "DEBUG: group:%s stringp:%s listp:%s type-of:%s" group (stringp group) (listp group) (type-of group))
+	(centaur-tabs-switch-group (format "%s" group))))))
+
 
 (provide 'centaur-tabs-interactive)
 
