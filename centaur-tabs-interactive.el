@@ -312,21 +312,81 @@ Should be buffer local and speed up calculation of buffer groups.")
      :action #'centaur-tabs-switch-group
      :caller 'centaur-tabs-counsel-switch-group)))
 
-(defun centaur-tabs--groups-menu-list ()
+(defun centaur-tabs--kill-this-buffer-dont-ask()
+  "Kill the current buffer."
+  (interactive)
+  (kill-buffer (current-buffer)))
+
+
+(defun centaur-tabs--extract-window-to-new-frame()
+  "Kill the current window in the current frame, and open the current buffer in a new frame."
+  (interactive)
+  (unless (one-window-p)
+    (let ((buffer (current-buffer)))
+      (delete-window)
+      (display-buffer-pop-up-frame buffer nil))))
+      
+(defun centaur-tabs--copy-file-name-to-clipboard ()
+  "Copy the current buffer file name to the clipboard."
+  ;;; From https://emacsredux.com/blog/2013/03/27/copy-filename-to-the-clipboard/
+  (interactive)
+  (let ((filename (if (equal major-mode 'dired-mode)
+                      default-directory
+                    (buffer-file-name))))
+    (when filename
+      (kill-new filename)
+      (message "Copied buffer file name '%s' to the clipboard." filename))))
+
+(defun centaur-tabs--tab-submenu-groups-definition ()
+  "Something."
+  (mapcar (lambda (s) `[,s  ,s]) (centaur-tabs-get-groups)))
+
+
+(defun centaur-tabs--tab-menu-definition ()
+  "Definition of the context menu of a tab."
+  `(["Kill this buffer"  centaur-tabs--kill-this-buffer-dont-ask]
+    ["Kill other buffers of group" centaur-tabs-kill-other-buffers-in-current-group]
+    ["Split horizontally" split-window-below]
+    ["Extract to new frame" centaur-tabs--extract-window-to-new-frame :active (null (one-window-p))]
+    ["Copy filepath" centaur-tabs--copy-file-name-to-clipboard]
+    ["Maximize" delete-other-windows :active (null (one-window-p))]
+    ,( append '("Tab groups") (centaur-tabs--tab-submenu-groups-definition))
+    ))
+
+
+
+(defun centaur-tabs--groups-menu-definition ()
   "Make the menu of the tabs groups."
-  (cons "Centaur tabs groups menu"
+  (cons "Tab groups"
 	(mapcar
 	 (lambda (g)
 	   (cons g g))
 	 (sort (centaur-tabs-get-groups) 'string<))))
 
-(defun centaur-tabs--groups-menu ()
-  "Show a popup menu with the centaur tabs groups."
-  (interactive)
+(defun centaur-tabs--groups-menu (event)
+  "Show a popup menu with the centaur tabs groups.  The clicked tab, identified by EVENT, is selected."
+  (interactive "e" )
+
+  (let* ((click-on-tab-p (ignore-errors (centaur-tabs-get-tab-from-event event))))
+    (message "DEBUG: Click on tab:%s" click-on-tab-p)
+    (when click-on-tab-p
+      (centaur-tabs-do-select event)
+      (redisplay t)))
+  
   (let*
-      ((sorted-groups (centaur-tabs--groups-menu-list))
-       (group (x-popup-menu t (list "Centaur tabs groups menu" sorted-groups))))
-    (centaur-tabs-switch-group group)))
+      ((sorted-groups (centaur-tabs--groups-menu-definition))
+       (menu (list "Centaur tabs groups menu" sorted-groups))
+       (menu (easy-menu-create-menu nil (centaur-tabs--tab-menu-definition)))
+       (choice (x-popup-menu t menu))
+       (action (lookup-key menu (apply 'vector choice)))
+       (action-is-command-p  (and (commandp action) (functionp action))))
+    (message "DEBUG: choice:%s   action:%s    action-is-command-p:%s" choice action action-is-command-p)
+    (when action-is-command-p
+      (call-interactively action))
+    (when (not action-is-command-p)
+      (let ((group (car (last choice))))
+	(message "DEBUG: group:%s" group)
+	(centaur-tabs-switch-group '(group group))))))
 
 (provide 'centaur-tabs-interactive)
 
