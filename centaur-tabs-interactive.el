@@ -347,13 +347,20 @@ Should be buffer local and speed up calculation of buffer groups.")
   `(["Kill this buffer"  centaur-tabs--kill-this-buffer-dont-ask]
     ["Kill other buffers of group" centaur-tabs-kill-other-buffers-in-current-group]
     ["Split horizontally" split-window-below]
-    ["Extract to new frame" centaur-tabs--extract-window-to-new-frame :active (null (one-window-p))]
+    ["Split vertically" split-window-right]
+    ["Maximize tab" delete-other-windows :active (null (centaur-tabs--one-window-p))]
+    ["Extract to new frame" centaur-tabs--extract-window-to-new-frame :active (null (centaur-tabs--one-window-p))]
+    ["Duplicate in new frame" make-frame-command]
     ["Copy filepath" centaur-tabs--copy-file-name-to-clipboard]
-    ["Maximize" delete-other-windows :active (null (one-window-p))]
     ,( append '("Tab groups") (centaur-tabs--tab-submenu-groups-definition))
     ))
 
-
+(defun centaur-tabs--one-window-p ()
+  "Like `one-window-p`, but taking into account side windows like treemacs."
+  (let* ((mainwindow (window-main-window))
+	 (child-count (window-child-count mainwindow)))
+    (message "DEBUG: child-count:%s" child-count)
+    (= 0 child-count)))
 
 (defun centaur-tabs--groups-menu-definition ()
   "Make the menu of the tabs groups."
@@ -371,21 +378,23 @@ Should be buffer local and speed up calculation of buffer groups.")
     (message "DEBUG: Click on tab:%s" click-on-tab-p)
     (when click-on-tab-p
       (centaur-tabs-do-select event)
-      (redisplay t)))
-  
-  (let*
-      ((sorted-groups (centaur-tabs--groups-menu-definition))
-       (menu (easy-menu-create-menu nil (centaur-tabs--tab-menu-definition)))
-       (choice (x-popup-menu t menu))
-       (action (lookup-key menu (apply 'vector choice)))
-       (action-is-command-p  (and (commandp action) (functionp action))))
-    (message "DEBUG: choice:%s   action:%s  action-is-command-p:%s type-of:%s" choice action action-is-command-p (type-of action))
-    (when action-is-command-p
-      (call-interactively action))
-    (when (not action-is-command-p)
-      (let ((group (car (last choice))))
-	(message "DEBUG: group:%s stringp:%s listp:%s type-of:%s" group (stringp group) (listp group) (type-of group))
-	(centaur-tabs-switch-group (format "%s" group))))))
+      (redisplay t)
+    
+      (let*
+	  ((sorted-groups (centaur-tabs--groups-menu-definition))
+	   (menu (easy-menu-create-menu nil (centaur-tabs--tab-menu-definition)))
+	   (choice (x-popup-menu t menu))
+	   (action (lookup-key menu (apply 'vector choice)))
+	   (action-is-command-p  (and (commandp action) (functionp action))))
+	(message "DEBUG: choice:%s   action:%s  action-is-command-p:%s type-of:%s" choice action action-is-command-p (type-of action))
+	(when action-is-command-p
+	  (call-interactively action))
+	(when (not action-is-command-p)
+	  (let ((group (car (last choice))))
+	    (message "DEBUG: group:%s stringp:%s listp:%s type-of:%s" group (stringp group) (listp group) (type-of group))
+	    (centaur-tabs-switch-group (format "%s" group))))))
+    (when (not click-on-tab-p)
+      (centaur-tabs--groups-menu))))
 
 (defun centaur-tabs--groups-menu ()
   "Show a popup menu with the centaur tabs groups."
