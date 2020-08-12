@@ -335,24 +335,50 @@ Should be buffer local and speed up calculation of buffer groups.")
                     (buffer-file-name))))
     (when filename
       (kill-new filename)
-      (message "Copied buffer file name '%s' to the clipboard." filename))))
+      (message "Copied buffer file name '%s' to the kill ring." filename))))
 
 (defun centaur-tabs--tab-submenu-groups-definition ()
-  "Something."
-  (mapcar (lambda (s) `[,s  ,s]) (centaur-tabs-get-groups)))
+  "Menu definition with a list of tab groups."
+  (mapcar (lambda (s) `[,s  ,s]) (sort (centaur-tabs-get-groups) #'string<)))
 
+
+(defun centaur-tabs--tab-submenu-tabs-definition ()
+  "Menu definition with a list of tabs for the current group."
+  (let* ((tabset (centaur-tabs-get-tabset centaur-tabs-last-focused-buffer-group))
+	 (tabs-in-group (centaur-tabs-tabs tabset))
+         (buffers (mapcar #'centaur-tabs-tab-value tabs-in-group))
+	 (sorted-tabnames (sort (mapcar #'buffer-name buffers) #'string<)))
+    (message "DEBUG: tabset:%s type-of:%s" tabset (type-of tabset))
+    (message "DEBUG: tabs-in-group:%s type-of:%s %s" tabs-in-group (type-of tabs-in-group) (type-of (first tabs-in-group)))
+    (message "DEBUG: sorted-tabnames:%s type-of:%s %s" sorted-tabnames (type-of sorted-tabnames) (type-of (first sorted-tabnames)))
+    (mapcar (lambda (s) `[,s  ,s]) sorted-tabnames)))
+
+
+
+(defvar centaur-tabs--groups-submenu-key "Tab groups")
+(defvar centaur-tabs--tabs-submenu-key "Go to tab")
 
 (defun centaur-tabs--tab-menu-definition ()
   "Definition of the context menu of a tab."
   `(["Kill this buffer"  centaur-tabs--kill-this-buffer-dont-ask]
     ["Kill other buffers of group" centaur-tabs-kill-other-buffers-in-current-group]
+    "----"
     ["Split horizontally" split-window-below]
     ["Split vertically" split-window-right]
-    ["Maximize tab" delete-other-windows :active (null (centaur-tabs--one-window-p))]
-    ["Extract to new frame" centaur-tabs--extract-window-to-new-frame :active (null (centaur-tabs--one-window-p))]
+    "----"
+    ["Maximize tab" delete-other-windows
+     :active (null (centaur-tabs--one-window-p))]
+    ["Extract to new frame" centaur-tabs--extract-window-to-new-frame
+     :active (null (centaur-tabs--one-window-p))]
     ["Duplicate in new frame" make-frame-command]
-    ["Copy filepath" centaur-tabs--copy-file-name-to-clipboard]
-    ,( append '("Tab groups") (centaur-tabs--tab-submenu-groups-definition))
+    "----"
+    ["Copy filepath" centaur-tabs--copy-file-name-to-clipboard
+     :active (or (buffer-file-name) (eq major-mode 'dired-mode))]
+    ["Copy folder path" centaur-tabs--copy-folder-name-to-clipboard
+     :active (default-directory)]
+    "----"
+    ,( append (list centaur-tabs--groups-submenu-key) (centaur-tabs--tab-submenu-groups-definition))
+    ,( append (list centaur-tabs--tabs-submenu-key) (centaur-tabs--tab-submenu-tabs-definition))
     ))
 
 (defun centaur-tabs--one-window-p ()
@@ -362,27 +388,32 @@ Should be buffer local and speed up calculation of buffer groups.")
     (message "DEBUG: child-count:%s" child-count)
     (= 0 child-count)))
 
-(defun centaur-tabs--groups-menu-definition ()
-  "Make the menu of the tabs groups."
-  (cons "Tab groups"
-	(mapcar
-	 (lambda (g)
-	   (cons g g))
-	 (sort (centaur-tabs-get-groups) 'string<))))
+(defun centaur-tabs--get-tab-from-name (tabname)
+  "Get the tab from the current group given de TABNAME."
+  (let ((seq (centaur-tabs-tabs (centaur-tabs-get-tabset centaur-tabs-last-focused-buffer-group))))
+    (message "DEBUG: seq:%s %s" seq (type-of seq))
+    (message "DEBUG: centaur-tabs-last-focused-buffer-group:%s %s" centaur-tabs-last-focused-buffer-group (type-of centaur-tabs-last-focused-buffer-group))
+    (cl-find-if
+     (lambda (tab) (string= tabname (buffer-name (centaur-tabs-tab-value tab))))
+     seq)))
+
 
 (defun centaur-tabs--tab-menu (event)
-  "Show a popup menu for the clicked tab.  The clicked tab, identified by EVENT, is selected."
+  "Show a context menu for the clicked tab or button.  The clicked tab, identified by EVENT, is selected."
   (interactive "e" )
 
-  (let* ((click-on-tab-p (ignore-errors (centaur-tabs-get-tab-from-event event))))
+  (let ((click-on-tab-p (ignore-errors (centaur-tabs-get-tab-from-event event))))
     (message "DEBUG: Click on tab:%s" click-on-tab-p)
+
+    (when (not click-on-tab-p)
+      (centaur-tabs--groups-menu))
+    
     (when click-on-tab-p
       (centaur-tabs-do-select event)
       (redisplay t)
-    
+      
       (let*
-	  ((sorted-groups (centaur-tabs--groups-menu-definition))
-	   (menu (easy-menu-create-menu nil (centaur-tabs--tab-menu-definition)))
+	  ((menu (easy-menu-create-menu nil (centaur-tabs--tab-menu-definition)))
 	   (choice (x-popup-menu t menu))
 	   (action (lookup-key menu (apply 'vector choice)))
 	   (action-is-command-p  (and (commandp action) (functionp action))))
@@ -390,11 +421,20 @@ Should be buffer local and speed up calculation of buffer groups.")
 	(when action-is-command-p
 	  (call-interactively action))
 	(when (not action-is-command-p)
-	  (let ((group (car (last choice))))
-	    (message "DEBUG: group:%s stringp:%s listp:%s type-of:%s" group (stringp group) (listp group) (type-of group))
-	    (centaur-tabs-switch-group (format "%s" group))))))
-    (when (not click-on-tab-p)
-      (centaur-tabs--groups-menu))))
+	  (let* ((menu-key (first choice))
+		 (choice-is-group-p (string= centaur-tabs--groups-submenu-key (symbol-name menu-key)))
+		 (name (car (last choice)))
+		 (tab (centaur-tabs--get-tab-from-name name))
+		 (buffer (first tab)))
+	    (message "DEBUG: menu-key:%s %s %s" menu-key (type-of menu-key) (symbol-name menu-key))
+	    (message "DEBUG: centaur-tabs--groups-submenu-key:%s %s" centaur-tabs--groups-submenu-key (type-of centaur-tabs--groups-submenu-key))
+	    (message "DEBUG: name:%s %s" name (type-of name))
+	    (message "DEBUG: choice-is-group-p:%s" choice-is-group-p)
+	    (message "DEBUG: tab:%s %s %s" tab (type-of (first tab)) (type-of (last tab)))
+	    (if choice-is-group-p
+		(centaur-tabs-switch-group (format "%s" name))
+	      (switch-to-buffer buffer))))))))
+
 
 (defun centaur-tabs--groups-menu ()
   "Show a popup menu with the centaur tabs groups."
