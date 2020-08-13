@@ -171,6 +171,17 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
      (lambda (buffer) (not (equal buffer currentbuffer))))
     ))
 
+(defun centaur-tabs-kill-unmodified-buffers-in-current-group ()
+  "Kill all unmodified buffer in current group."
+  (interactive)
+  (let* ((current-group-name (cdr (centaur-tabs-selected-tab (centaur-tabs-current-tabset t))))
+	 (currentbuffer (current-buffer)))
+    ;; Kill all buffers in current group.
+    (centaur-tabs-kill-buffer-match-rule
+     (lambda (buffer) (not (buffer-modified-p buffer))))
+    ))
+
+
 (defun centaur-tabs-kill-match-buffers-in-current-group ()
   "Kill all buffers match extension in current group."
   (interactive)
@@ -321,7 +332,7 @@ Should be buffer local and speed up calculation of buffer groups.")
 (defun centaur-tabs--extract-window-to-new-frame()
   "Kill the current window in the current frame, and open the current buffer in a new frame."
   (interactive)
-  (unless (one-window-p)
+  (unless (centaur-tabs--one-window-p)
     (let ((buffer (current-buffer)))
       (delete-window)
       (display-buffer-pop-up-frame buffer nil))))
@@ -336,6 +347,31 @@ Should be buffer local and speed up calculation of buffer groups.")
     (when filename
       (kill-new filename)
       (message "Copied buffer file name '%s' to the kill ring." filename))))
+
+(defun centaur-tabs--open-in-external-application ()
+  "Open FILE-OR-DIR according to its mime type in an external application.
+Modified copy of `treemacs-visit-node-in-external-application`."
+  (interactive)
+  (message "DEBUG: open in external application %s %s" default-directory (buffer-file-name))
+  (let ((path (if (buffer-file-name) (buffer-file-name) default-directory)))
+    (pcase system-type
+      ('windows-nt
+       (declare-function w32-shell-execute "w32fns.c")
+       (w32-shell-execute "open" (replace-regexp-in-string "/" "\\" path t t)))
+      ('darwin
+       (shell-command (format "open \"%s\"" path)))
+      ('gnu/linux
+       (let ((process-connection-type nil))
+	 (start-process "" nil "xdg-open" path)))
+      (_ (message "Don't know how to open files on %s." (symbol-name system-type))))))
+
+
+(defun centaur-tabs--copy-directory-name-to-clipboard ()
+  "Copy the current directory name to the clipboard."
+  (interactive)
+  (when default-directory
+    (kill-new default-directory)
+    (message "Copied directory name '%s' to the kill ring." default-directory)))
 
 (defun centaur-tabs--tab-submenu-groups-definition ()
   "Menu definition with a list of tab groups."
@@ -362,9 +398,10 @@ Should be buffer local and speed up calculation of buffer groups.")
   "Definition of the context menu of a tab."
   `(["Kill this buffer"  centaur-tabs--kill-this-buffer-dont-ask]
     ["Kill other buffers of group" centaur-tabs-kill-other-buffers-in-current-group]
+    ["Kill unmodified buffers of group" centaur-tabs-kill-unmodified-buffers-in-current-group]
     "----"
-    ["Split horizontally" split-window-below]
-    ["Split vertically" split-window-right]
+    ["Split below" split-window-below]
+    ["Split right" split-window-right]
     "----"
     ["Maximize tab" delete-other-windows
      :active (null (centaur-tabs--one-window-p))]
@@ -374,8 +411,9 @@ Should be buffer local and speed up calculation of buffer groups.")
     "----"
     ["Copy filepath" centaur-tabs--copy-file-name-to-clipboard
      :active (or (buffer-file-name) (eq major-mode 'dired-mode))]
-    ["Copy folder path" centaur-tabs--copy-folder-name-to-clipboard
-     :active (default-directory)]
+    ["Copy folder path" centaur-tabs--copy-directory-name-to-clipboard
+     :active default-directory]
+    ["Open in external application" centaur-tabs--open-in-external-application]
     "----"
     ,( append (list centaur-tabs--groups-submenu-key) (centaur-tabs--tab-submenu-groups-definition))
     ,( append (list centaur-tabs--tabs-submenu-key) (centaur-tabs--tab-submenu-tabs-definition))
