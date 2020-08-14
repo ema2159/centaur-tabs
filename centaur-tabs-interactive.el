@@ -324,12 +324,12 @@ Should be buffer local and speed up calculation of buffer groups.")
      :caller 'centaur-tabs-counsel-switch-group)))
 
 (defun centaur-tabs--kill-this-buffer-dont-ask()
-  "Kill the current buffer."
+  "Kill the current buffer without confirmation."
   (interactive)
   (kill-buffer (current-buffer)))
 
 
-(defun centaur-tabs--extract-window-to-new-frame()
+(defun centaur-tabs-extract-window-to-new-frame()
   "Kill the current window in the current frame, and open the current buffer in a new frame."
   (interactive)
   (unless (centaur-tabs--one-window-p)
@@ -348,7 +348,7 @@ Should be buffer local and speed up calculation of buffer groups.")
       (kill-new filename)
       (message "Copied buffer file name '%s' to the kill ring." filename))))
 
-(defun centaur-tabs--open-in-external-application ()
+(defun centaur-tabs-open-in-external-application ()
   "Open FILE-OR-DIR according to its mime type in an external application.
 Modified copy of `treemacs-visit-node-in-external-application`."
   (interactive)
@@ -392,7 +392,7 @@ Modified copy of `treemacs-visit-node-in-external-application`."
 
 
 (defvar centaur-tabs--groups-submenu-key "Tab groups")
-(defvar centaur-tabs--tabs-submenu-key "Go to tab")
+(defvar centaur-tabs--tabs-submenu-key "Go to tab of group")
 
 (defun centaur-tabs--tab-menu-definition ()
   "Definition of the context menu of a tab."
@@ -405,7 +405,7 @@ Modified copy of `treemacs-visit-node-in-external-application`."
     "----"
     ["Maximize tab" delete-other-windows
      :active (null (centaur-tabs--one-window-p))]
-    ["Extract to new frame" centaur-tabs--extract-window-to-new-frame
+    ["Extract to new frame" centaur-tabs-extract-window-to-new-frame
      :active (null (centaur-tabs--one-window-p))]
     ["Duplicate in new frame" make-frame-command]
     "----"
@@ -413,7 +413,7 @@ Modified copy of `treemacs-visit-node-in-external-application`."
      :active (or (buffer-file-name) (eq major-mode 'dired-mode))]
     ["Copy folder path" centaur-tabs--copy-directory-name-to-clipboard
      :active default-directory]
-    ["Open in external application" centaur-tabs--open-in-external-application]
+    ["Open in external application" centaur-tabs-open-in-external-application]
     "----"
     ,( append (list centaur-tabs--groups-submenu-key) (centaur-tabs--tab-submenu-groups-definition))
     ,( append (list centaur-tabs--tabs-submenu-key) (centaur-tabs--tab-submenu-tabs-definition))
