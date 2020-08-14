@@ -553,8 +553,8 @@ hooked functions"
 ;;
 (defsubst centaur-tabs-line-tab (tab)
   "Return the display representation of tab TAB.
-That is, a propertized string used as an `centaur-tabs-display-line-format' template
-element.
+That is, a propertized string used as an `centaur-tabs-display-line-format'
+template element.
 Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
   (let* ((buf (centaur-tabs-tab-value tab))
 	 (buf-file-name (buffer-file-name buf))
@@ -680,8 +680,8 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
 
 (defsubst centaur-tabs-button-tab (button)
   "Return the display representation of button BUTTON.
-That is, a propertized string used as an `centaur-tabs-display-line-format' template
-element."
+That is, a propertized string used as an `centaur-tabs-display-line-format'
+template element."
   (let* ((face 'centaur-tabs-unselected))
     (concat
      (centaur-tabs-separator-render centaur-tabs-style-left face)
@@ -1269,9 +1269,9 @@ Operates over buffer BUF"
 
 (mapc (lambda (hook)
 	(add-hook hook (lambda ()
-			 (if (version< emacs-version "27.0")
-			     (setq-local header-line-format nil)
-			   (setq-local tab-line-format nil))
+			 (if (boundp 'tab-line-format)
+			     (setq-local tab-line-format nil)
+			   (setq-local header-line-format nil))
 			 )))
       centaur-tabs-hide-tabs-hooks)
 
