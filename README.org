@@ -371,7 +371,7 @@
    - Click the mouse wheel to close a buffer.
    - Right click on empty space to show a tab groups popup.
    - Right click on a tab to show a context menu. The options are inspired by the options provided by VSCode.
-   [[file:images/tab-context-menu.png]]
+     [[file:images/tab-context-menu.png]]
    - Use the mouse wheel to invoke ~centaur-tabs-backward/forward~.
    - Set the =centaur-tabs-show-navigation-buttons= custom variable to =t= to display cool navigation buttons. With the CTRL key, the left and right navigation buttons will move the tabs through the tab line.
    [[file:images/navigation-buttons.png]]
