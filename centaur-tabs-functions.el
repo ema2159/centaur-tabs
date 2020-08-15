@@ -188,6 +188,10 @@ When not specified, ELLIPSIS defaults to ‘...’."
     (define-key km [(control up)]    'centaur-tabs-backward-group)
     (define-key km [(control down)]  'centaur-tabs-forward-group)
     (define-key km [(control f10)]   'centaur-tabs-local-mode)
+    (define-key km [(control 5)]   'centaur-tabs-extract-window-to-new-frame)
+    (define-key km [(control k)]   'centaur-tabs-kill-other-buffers-in-current-group)
+    (define-key km [(control o)]   'centaur-tabs-open-in-external-application)
+    (define-key km [(control d)]   'centaur-tabs-open-folder-in-external-application)
     km)
   "The key bindings provided in Centaur-Tabs mode.")
 
