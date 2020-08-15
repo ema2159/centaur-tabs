@@ -341,19 +341,31 @@ Should be buffer local and speed up calculation of buffer groups.")
   "Copy the current buffer file name to the clipboard."
   ;;; From https://emacsredux.com/blog/2013/03/27/copy-filename-to-the-clipboard/
   (interactive)
-  (let ((filename (if (equal major-mode 'dired-mode)
+  (let* ((filename (if (equal major-mode 'dired-mode)
                       default-directory
-                    (buffer-file-name))))
+                     (buffer-file-name)))
+	 (filename (expand-file-name filename)))
     (when filename
       (kill-new filename)
       (message "Copied buffer file name '%s' to the kill ring." filename))))
 
-(defun centaur-tabs-open-in-external-application ()
-  "Open FILE-OR-DIR according to its mime type in an external application.
-Modified copy of `treemacs-visit-node-in-external-application`."
+
+(defun centaur-tabs-open-folder-in-external-application ()
+  "Open the current directory in a external application."
   (interactive)
-  (message "DEBUG: open in external application %s %s" default-directory (buffer-file-name))
+  (centaur-tabs--open-externally default-directory))
+
+(defun centaur-tabs-open-in-external-application ()
+  "Open the file of the current buffer according to its mime type."
+  (interactive)
   (let ((path (if (buffer-file-name) (buffer-file-name) default-directory)))
+    (centaur-tabs--open-externally path)))
+
+(defun centaur-tabs--open-externally (file-or-path)
+  "Open FILE-OR-PATH according to its mime type in an external application.
+FILE-OR-PATH is expanded with `expand-file-name`.
+Modified copy of `treemacs-visit-node-in-external-application`."
+  (let ((path (expand-file-name file-or-path)))
     (pcase system-type
       ('windows-nt
        (declare-function w32-shell-execute "w32fns.c")
@@ -371,7 +383,7 @@ Modified copy of `treemacs-visit-node-in-external-application`."
   (interactive)
   (when default-directory
     (kill-new default-directory)
-    (message "Copied directory name '%s' to the kill ring." default-directory)))
+    (message "Copied directory name '%s' to the kill ring." (expand-file-name default-directory))))
 
 (defun centaur-tabs--tab-submenu-groups-definition ()
   "Menu definition with a list of tab groups."
@@ -384,9 +396,6 @@ Modified copy of `treemacs-visit-node-in-external-application`."
 	 (tabs-in-group (centaur-tabs-tabs tabset))
          (buffers (mapcar #'centaur-tabs-tab-value tabs-in-group))
 	 (sorted-tabnames (sort (mapcar #'buffer-name buffers) #'string<)))
-    (message "DEBUG: tabset:%s type-of:%s" tabset (type-of tabset))
-    (message "DEBUG: tabs-in-group:%s type-of:%s %s" tabs-in-group (type-of tabs-in-group) (type-of (first tabs-in-group)))
-    (message "DEBUG: sorted-tabnames:%s type-of:%s %s" sorted-tabnames (type-of sorted-tabnames) (type-of (first sorted-tabnames)))
     (mapcar (lambda (s) `[,s  ,s]) sorted-tabnames)))
 
 
@@ -410,10 +419,15 @@ Modified copy of `treemacs-visit-node-in-external-application`."
     ["Duplicate in new frame" make-frame-command]
     "----"
     ["Copy filepath" centaur-tabs--copy-file-name-to-clipboard
-     :active (or (buffer-file-name) (eq major-mode 'dired-mode))]
+     :active (buffer-file-name)]
     ["Copy folder path" centaur-tabs--copy-directory-name-to-clipboard
      :active default-directory]
-    ["Open in external application" centaur-tabs-open-in-external-application]
+    ["Open in external application" centaur-tabs-open-in-external-application
+     :active (or (buffer-file-name) default-directory)]
+    ["Open folder in dired" dired-jump
+     :active (not (eq major-mode 'dired-mode))]
+    ["Open folder externally" centaur-tabs-open-folder-in-external-application
+     :active default-directory]
     "----"
     ,( append (list centaur-tabs--groups-submenu-key) (centaur-tabs--tab-submenu-groups-definition))
     ,( append (list centaur-tabs--tabs-submenu-key) (centaur-tabs--tab-submenu-tabs-definition))
@@ -423,14 +437,11 @@ Modified copy of `treemacs-visit-node-in-external-application`."
   "Like `one-window-p`, but taking into account side windows like treemacs."
   (let* ((mainwindow (window-main-window))
 	 (child-count (window-child-count mainwindow)))
-    (message "DEBUG: child-count:%s" child-count)
     (= 0 child-count)))
 
 (defun centaur-tabs--get-tab-from-name (tabname)
   "Get the tab from the current group given de TABNAME."
   (let ((seq (centaur-tabs-tabs (centaur-tabs-get-tabset centaur-tabs-last-focused-buffer-group))))
-    (message "DEBUG: seq:%s %s" seq (type-of seq))
-    (message "DEBUG: centaur-tabs-last-focused-buffer-group:%s %s" centaur-tabs-last-focused-buffer-group (type-of centaur-tabs-last-focused-buffer-group))
     (cl-find-if
      (lambda (tab) (string= tabname (buffer-name (centaur-tabs-tab-value tab))))
      seq)))
@@ -441,7 +452,6 @@ Modified copy of `treemacs-visit-node-in-external-application`."
   (interactive "e" )
 
   (let ((click-on-tab-p (ignore-errors (centaur-tabs-get-tab-from-event event))))
-    (message "DEBUG: Click on tab:%s" click-on-tab-p)
 
     (when (not click-on-tab-p)
       (centaur-tabs--groups-menu))
@@ -455,7 +465,6 @@ Modified copy of `treemacs-visit-node-in-external-application`."
 	   (choice (x-popup-menu t menu))
 	   (action (lookup-key menu (apply 'vector choice)))
 	   (action-is-command-p  (and (commandp action) (functionp action))))
-	(message "DEBUG: choice:%s   action:%s  action-is-command-p:%s type-of:%s" choice action action-is-command-p (type-of action))
 	(when action-is-command-p
 	  (call-interactively action))
 	(when (not action-is-command-p)
@@ -463,10 +472,6 @@ Modified copy of `treemacs-visit-node-in-external-application`."
 		 (choice-is-group-p (string= centaur-tabs--groups-submenu-key (symbol-name menu-key)))
 		 (name (car (last choice)))
 		 (name-as-string (symbol-name name)))
-	    (message "DEBUG: menu-key:%s %s %s" menu-key (type-of menu-key) (symbol-name menu-key))
-	    (message "DEBUG: centaur-tabs--groups-submenu-key:%s %s" centaur-tabs--groups-submenu-key (type-of centaur-tabs--groups-submenu-key))
-	    (message "DEBUG: name:%s %s" name (type-of name))
-	    (message "DEBUG: choice-is-group-p:%s" choice-is-group-p)
 	    (if choice-is-group-p
 		(centaur-tabs-switch-group name-as-string)
 	      (switch-to-buffer name-as-string))))))))
@@ -482,12 +487,10 @@ Modified copy of `treemacs-visit-node-in-external-application`."
        (choice (x-popup-menu t menu))
        (action (lookup-key menu (apply 'vector choice)))
        (action-is-command-p  (and (commandp action) (functionp action))))
-    (message "DEBUG: choice:%s   action:%s  action-is-command-p:%s type-of:%s" choice action action-is-command-p (type-of action))
     (when action-is-command-p
       (call-interactively action))
     (when (not action-is-command-p)
       (let ((group (car (last choice))))
-	(message "DEBUG: group:%s stringp:%s listp:%s type-of:%s" group (stringp group) (listp group) (type-of group))
 	(centaur-tabs-switch-group (format "%s" group))))))
 
 
