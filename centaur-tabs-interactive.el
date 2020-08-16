@@ -326,7 +326,9 @@ Should be buffer local and speed up calculation of buffer groups.")
 (defun centaur-tabs--kill-this-buffer-dont-ask()
   "Kill the current buffer without confirmation."
   (interactive)
-  (kill-buffer (current-buffer)))
+  (kill-buffer (current-buffer))
+  (centaur-tabs-display-update)
+  (redisplay t))
 
 
 (defun centaur-tabs-extract-window-to-new-frame()
