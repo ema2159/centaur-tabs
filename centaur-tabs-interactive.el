@@ -350,7 +350,7 @@ Should be buffer local and speed up calculation of buffer groups.")
       (message "Copied buffer file name '%s' to the kill ring." filename))))
 
 
-(defun centaur-tabs-open-folder-in-external-application ()
+(defun centaur-tabs-open-directory-in-external-application ()
   "Open the current directory in a external application."
   (interactive)
   (centaur-tabs--open-externally default-directory))
@@ -420,13 +420,13 @@ Modified copy of `treemacs-visit-node-in-external-application`."
     "----"
     ["Copy filepath" centaur-tabs--copy-file-name-to-clipboard
      :active (buffer-file-name)]
-    ["Copy folder path" centaur-tabs--copy-directory-name-to-clipboard
+    ["Copy directory path" centaur-tabs--copy-directory-name-to-clipboard
      :active default-directory]
     ["Open in external application" centaur-tabs-open-in-external-application
      :active (or (buffer-file-name) default-directory)]
-    ["Open folder in dired" dired-jump
+    ["Open directory in dired" dired-jump
      :active (not (eq major-mode 'dired-mode))]
-    ["Open folder externally" centaur-tabs-open-folder-in-external-application
+    ["Open directory externally" centaur-tabs-open-directory-in-external-application
      :active default-directory]
     "----"
     ,( append (list centaur-tabs--groups-submenu-key) (centaur-tabs--tab-submenu-groups-definition))
