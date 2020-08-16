@@ -191,7 +191,7 @@ When not specified, ELLIPSIS defaults to ‘...’."
     (define-key km [(control 5)]   'centaur-tabs-extract-window-to-new-frame)
     (define-key km [(control k)]   'centaur-tabs-kill-other-buffers-in-current-group)
     (define-key km [(control o)]   'centaur-tabs-open-in-external-application)
-    (define-key km [(control d)]   'centaur-tabs-open-folder-in-external-application)
+    (define-key km [(control d)]   'centaur-tabs-open-directory-in-external-application)
     km)
   "The key bindings provided in Centaur-Tabs mode.")
 
