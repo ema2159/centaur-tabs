@@ -398,30 +398,20 @@ Modified copy of `treemacs-visit-node-in-external-application`."
 (defvar centaur-tabs--groups-submenu-key "Tab groups")
 (defvar centaur-tabs--tabs-submenu-key "Go to tab of group")
 
-(defun centaur-tabs--kill-other-buffers-in-current-group-in-a-while()
-  "Intermediate function that try to fix a redisplay problem with `centaur-tabs-kill-other-buffers-in-current-group` when is called from context menu."
-  (interactive)
-  ;;;(centaur-tabs-kill-other-buffers-in-current-group)
-  ;;;(run-at-time 0.1 nil #'centaur-tabs-kill-other-buffers-in-current-group)
-  (run-with-idle-timer 0.1 nil (lambda ()
-				 (centaur-tabs-kill-other-buffers-in-current-group)
-				 (centaur-tabs-display-update)
-				 (redisplay t))))
 
 
 (defun centaur-tabs--kill-this-buffer-dont-ask()
   "Kill the current buffer without confirmation."
   (interactive)
-  (run-with-idle-timer 0.1 nil (lambda ()
-				 (kill-buffer (current-buffer))
-				 (centaur-tabs-display-update)
-				 (redisplay t))))
+  (kill-buffer (current-buffer))
+  (centaur-tabs-display-update)
+  (redisplay t))
 
 
 (defun centaur-tabs--tab-menu-definition ()
   "Definition of the context menu of a tab."
   `(["Kill this buffer"  centaur-tabs--kill-this-buffer-dont-ask]
-    ["Kill other buffers of group" centaur-tabs--kill-other-buffers-in-current-group-in-a-while]
+    ["Kill other buffers of group" centaur-tabs-kill-other-buffers-in-current-group]
     ["Kill unmodified buffers of group" centaur-tabs-kill-unmodified-buffers-in-current-group]
     "----"
     ["Split below" split-window-below]
