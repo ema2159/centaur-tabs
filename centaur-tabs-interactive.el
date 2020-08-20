@@ -1,4 +1,4 @@
-;;; centaur-tabs-functions.el --- centaur-tabs interactive functions and plugins support lexical-binding: t; -*-
+;;; centaur-tabs-interactive.el --- centaur-tabs interactive functions and plugins support lexical-binding: t; -*-
 
 ;; Copyright (C) 2019-2020 Emmanuel Bustos
 
