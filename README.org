@@ -480,6 +480,7 @@
   - =(centaur-tabs-kill-match-buffers-in-current-group)=: Kills all buffers in current tab group with the same extension as the current buffer.
   - =(centaur-tabs-keep-match-buffers-in-current-group)=: Asks for a file extension and kills all the buffers with a different extension.
   - =(centaur-tabs-kill-other-buffers-in-current-group)=: Kills all buffers in current tab group except the current buffer.
+  - =(centaur-tabs-kill-unmodified-buffers-in-current-group)=: Kills all buffers in current tab group that are unmodified.
   - =(centaur-tabs-select-beg-tab)=: Selects the first tab of the group.
   - =(centaur-tabs-select-end-tab)=: Selects the last tab of the group.
   - =(centaur-tabs-forward-group)=: Go to the next tab group.
