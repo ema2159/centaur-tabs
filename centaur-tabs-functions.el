@@ -188,6 +188,10 @@ When not specified, ELLIPSIS defaults to ‘...’."
     (define-key km [(control up)]    'centaur-tabs-backward-group)
     (define-key km [(control down)]  'centaur-tabs-forward-group)
     (define-key km [(control f10)]   'centaur-tabs-local-mode)
+    (define-key km [(control 5)]   'centaur-tabs-extract-window-to-new-frame)
+    (define-key km [(control k)]   'centaur-tabs-kill-other-buffers-in-current-group)
+    (define-key km [(control o)]   'centaur-tabs-open-in-external-application)
+    (define-key km [(control d)]   'centaur-tabs-open-directory-in-external-application)
     km)
   "The key bindings provided in Centaur-Tabs mode.")
 
@@ -200,8 +204,10 @@ When not specified, ELLIPSIS defaults to ‘...’."
     (define-key map (vector centaur-tabs-display-line 'mouse-4) 'centaur-tabs-backward )
 
     ;;; Use right click to show the rest of groups
-    (define-key map (vector centaur-tabs-display-line 'mouse-3) 'centaur-tabs--groups-menu )
+    (define-key map (vector centaur-tabs-display-line 'mouse-3) 'centaur-tabs--tab-menu )
 
+    ;;; Use double click to maximize window
+    (define-key map (vector centaur-tabs-display-line 'double-mouse-1) 'delete-other-windows)
 
     map)
   "Keymap to use in  Centaur-Tabs mode.")

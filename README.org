@@ -369,10 +369,12 @@
 ** Mouse support (thanks to alvarogonzalezsotillo)
    - Just click in a tab to change the buffer of the current window.
    - Click the mouse wheel to close a buffer.
-   - Right click on any part of the header line (tabs or empty space) to show a tab groups popup.
+   - Right click on empty space to show a tab groups popup.
+   - Right click on a tab to show a context menu. The options are inspired by the options provided by VSCode.
+     [[file:images/tab-context-menu.png]]
    - Use the mouse wheel to invoke ~centaur-tabs-backward/forward~.
    - Set the =centaur-tabs-show-navigation-buttons= custom variable to =t= to display cool navigation buttons. With the CTRL key, the left and right navigation buttons will move the tabs through the tab line.
-   [[file:images/navigation-buttons.png]]
+     [[file:images/navigation-buttons.png]]
 * TO DO [17/19]
   - [X] Integrate all-the-icons
   - [X] Improve all the icons placing

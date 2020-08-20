@@ -171,6 +171,17 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
      (lambda (buffer) (not (equal buffer currentbuffer))))
     ))
 
+(defun centaur-tabs-kill-unmodified-buffers-in-current-group ()
+  "Kill all unmodified buffer in current group."
+  (interactive)
+  (let* ((current-group-name (cdr (centaur-tabs-selected-tab (centaur-tabs-current-tabset t))))
+	 (currentbuffer (current-buffer)))
+    ;; Kill all buffers in current group.
+    (centaur-tabs-kill-buffer-match-rule
+     (lambda (buffer) (not (buffer-modified-p buffer))))
+    ))
+
+
 (defun centaur-tabs-kill-match-buffers-in-current-group ()
   "Kill all buffers match extension in current group."
   (interactive)
@@ -312,21 +323,181 @@ Should be buffer local and speed up calculation of buffer groups.")
      :action #'centaur-tabs-switch-group
      :caller 'centaur-tabs-counsel-switch-group)))
 
-(defun centaur-tabs--groups-menu-list ()
-  "Make the menu of the tabs groups."
-  (cons "Centaur tabs groups menu"
-	(mapcar
-	 (lambda (g)
-	   (cons g g))
-	 (sort (centaur-tabs-get-groups) 'string<))))
+
+(defun centaur-tabs-extract-window-to-new-frame()
+  "Kill the current window in the current frame, and open the current buffer in a new frame."
+  (interactive)
+  (unless (centaur-tabs--one-window-p)
+    (let ((buffer (current-buffer)))
+      (delete-window)
+      (display-buffer-pop-up-frame buffer nil))))
+      
+(defun centaur-tabs--copy-file-name-to-clipboard ()
+  "Copy the current buffer file name to the clipboard."
+  ;;; From https://emacsredux.com/blog/2013/03/27/copy-filename-to-the-clipboard/
+  (interactive)
+  (let* ((filename (if (equal major-mode 'dired-mode)
+                      default-directory
+                     (buffer-file-name)))
+	 (filename (expand-file-name filename)))
+    (when filename
+      (kill-new filename)
+      (message "Copied buffer file name '%s' to the kill ring." filename))))
+
+
+(defun centaur-tabs-open-directory-in-external-application ()
+  "Open the current directory in a external application."
+  (interactive)
+  (centaur-tabs--open-externally default-directory))
+
+(defun centaur-tabs-open-in-external-application ()
+  "Open the file of the current buffer according to its mime type."
+  (interactive)
+  (let ((path (if (buffer-file-name) (buffer-file-name) default-directory)))
+    (centaur-tabs--open-externally path)))
+
+(defun centaur-tabs--open-externally (file-or-path)
+  "Open FILE-OR-PATH according to its mime type in an external application.
+FILE-OR-PATH is expanded with `expand-file-name`.
+Modified copy of `treemacs-visit-node-in-external-application`."
+  (let ((path (expand-file-name file-or-path)))
+    (pcase system-type
+      ('windows-nt
+       (declare-function w32-shell-execute "w32fns.c")
+       (w32-shell-execute "open" (replace-regexp-in-string "/" "\\" path t t)))
+      ('darwin
+       (shell-command (format "open \"%s\"" path)))
+      ('gnu/linux
+       (let ((process-connection-type nil))
+	 (start-process "" nil "xdg-open" path)))
+      (_ (message "Don't know how to open files on %s." (symbol-name system-type))))))
+
+
+(defun centaur-tabs--copy-directory-name-to-clipboard ()
+  "Copy the current directory name to the clipboard."
+  (interactive)
+  (when default-directory
+    (kill-new default-directory)
+    (message "Copied directory name '%s' to the kill ring." (expand-file-name default-directory))))
+
+(defun centaur-tabs--tab-submenu-groups-definition ()
+  "Menu definition with a list of tab groups."
+  (mapcar (lambda (s) `[,s  ,s]) (sort (centaur-tabs-get-groups) #'string<)))
+
+
+(defun centaur-tabs--tab-submenu-tabs-definition ()
+  "Menu definition with a list of tabs for the current group."
+  (let* ((tabset (centaur-tabs-get-tabset centaur-tabs-last-focused-buffer-group))
+	 (tabs-in-group (centaur-tabs-tabs tabset))
+         (buffers (mapcar #'centaur-tabs-tab-value tabs-in-group))
+	 (sorted-tabnames (sort (mapcar #'buffer-name buffers) #'string<)))
+    (mapcar (lambda (s) `[,s  ,s]) sorted-tabnames)))
+
+
+
+(defvar centaur-tabs--groups-submenu-key "Tab groups")
+(defvar centaur-tabs--tabs-submenu-key "Go to tab of group")
+
+
+
+(defun centaur-tabs--kill-this-buffer-dont-ask()
+  "Kill the current buffer without confirmation."
+  (interactive)
+  (kill-buffer (current-buffer))
+  (centaur-tabs-display-update)
+  (redisplay t))
+
+
+(defun centaur-tabs--tab-menu-definition ()
+  "Definition of the context menu of a tab."
+  `(["Kill this buffer"  centaur-tabs--kill-this-buffer-dont-ask]
+    ["Kill other buffers of group" centaur-tabs-kill-other-buffers-in-current-group]
+    ["Kill unmodified buffers of group" centaur-tabs-kill-unmodified-buffers-in-current-group]
+    "----"
+    ["Split below" split-window-below]
+    ["Split right" split-window-right]
+    "----"
+    ["Maximize tab" delete-other-windows
+     :active (null (centaur-tabs--one-window-p))]
+    ["Extract to new frame" centaur-tabs-extract-window-to-new-frame
+     :active (null (centaur-tabs--one-window-p))]
+    ["Duplicate in new frame" make-frame-command]
+    "----"
+    ["Copy filepath" centaur-tabs--copy-file-name-to-clipboard
+     :active (buffer-file-name)]
+    ["Copy directory path" centaur-tabs--copy-directory-name-to-clipboard
+     :active default-directory]
+    ["Open in external application" centaur-tabs-open-in-external-application
+     :active (or (buffer-file-name) default-directory)]
+    ["Open directory in dired" dired-jump
+     :active (not (eq major-mode 'dired-mode))]
+    ["Open directory externally" centaur-tabs-open-directory-in-external-application
+     :active default-directory]
+    "----"
+    ,( append (list centaur-tabs--groups-submenu-key) (centaur-tabs--tab-submenu-groups-definition))
+    ,( append (list centaur-tabs--tabs-submenu-key) (centaur-tabs--tab-submenu-tabs-definition))
+    ))
+
+(defun centaur-tabs--one-window-p ()
+  "Like `one-window-p`, but taking into account side windows like treemacs."
+  (let* ((mainwindow (window-main-window))
+	 (child-count (window-child-count mainwindow)))
+    (= 0 child-count)))
+
+(defun centaur-tabs--get-tab-from-name (tabname)
+  "Get the tab from the current group given de TABNAME."
+  (let ((seq (centaur-tabs-tabs (centaur-tabs-get-tabset centaur-tabs-last-focused-buffer-group))))
+    (cl-find-if
+     (lambda (tab) (string= tabname (buffer-name (centaur-tabs-tab-value tab))))
+     seq)))
+
+
+(defun centaur-tabs--tab-menu (event)
+  "Show a context menu for the clicked tab or button.  The clicked tab, identified by EVENT, is selected."
+  (interactive "e" )
+
+  (let ((click-on-tab-p (ignore-errors (centaur-tabs-get-tab-from-event event))))
+
+    (when (not click-on-tab-p)
+      (centaur-tabs--groups-menu))
+    
+    (when click-on-tab-p
+      (centaur-tabs-do-select event)
+      (redisplay t)
+      
+      (let*
+	  ((menu (easy-menu-create-menu nil (centaur-tabs--tab-menu-definition)))
+	   (choice (x-popup-menu t menu))
+	   (action (lookup-key menu (apply 'vector choice)))
+	   (action-is-command-p  (and (commandp action) (functionp action))))
+	(when action-is-command-p
+	  (call-interactively action))
+	(when (not action-is-command-p)
+	  (let* ((menu-key (first choice))
+		 (choice-is-group-p (string= centaur-tabs--groups-submenu-key (symbol-name menu-key)))
+		 (name (car (last choice)))
+		 (name-as-string (symbol-name name)))
+	    (if choice-is-group-p
+		(centaur-tabs-switch-group name-as-string)
+	      (switch-to-buffer name-as-string))))))))
+
 
 (defun centaur-tabs--groups-menu ()
   "Show a popup menu with the centaur tabs groups."
   (interactive)
+
   (let*
-      ((sorted-groups (centaur-tabs--groups-menu-list))
-       (group (x-popup-menu t (list "Centaur tabs groups menu" sorted-groups))))
-    (centaur-tabs-switch-group group)))
+      ((sorted-groups (centaur-tabs--tab-submenu-groups-definition))
+       (menu (easy-menu-create-menu "Tab groups" (centaur-tabs--tab-submenu-groups-definition)))
+       (choice (x-popup-menu t menu))
+       (action (lookup-key menu (apply 'vector choice)))
+       (action-is-command-p  (and (commandp action) (functionp action))))
+    (when action-is-command-p
+      (call-interactively action))
+    (when (not action-is-command-p)
+      (let ((group (car (last choice))))
+	(centaur-tabs-switch-group (format "%s" group))))))
+
 
 (provide 'centaur-tabs-interactive)
 
