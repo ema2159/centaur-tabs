@@ -134,6 +134,11 @@ tab(B), move A to the left of B" t)
 		 (const :tag "Move the currently selected tab to the left of the the last visited tab." left)
 		 (const :tag "Move the currently selected tab to the right of the the last visited tab." right)))
 
+(defcustom centaur-tabs-enable-key-bindings nil
+  "Enable a selection of default key bindings for centaur-tabs."
+  :group 'centaur-tabs
+  :type 'boolean)
+
 (defun centaur-tabs-headline-match ()
   "Make headline use centaur-tabs-default-face."
   (set-face-attribute centaur-tabs-display-line nil :background (face-background 'centaur-tabs-unselected)
@@ -197,8 +202,9 @@ When not specified, ELLIPSIS defaults to ‘...’."
 
 (defvar centaur-tabs-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map centaur-tabs-prefix-key centaur-tabs-prefix-map)
-
+    ;; Optional keybord bindings
+    (when centaur-tabs-enable-key-bindings
+      (define-key map centaur-tabs-prefix-key centaur-tabs-prefix-map))
     ;;; Use mouse wheel to switch between buffers of same group
     (define-key map (vector centaur-tabs-display-line 'mouse-5) 'centaur-tabs-forward )
     (define-key map (vector centaur-tabs-display-line 'mouse-4) 'centaur-tabs-backward )

@@ -33,6 +33,7 @@
   - [[#ivy-integration][Ivy integration]]
   - [[#projectile-integration][Projectile integration]]
   - [[#mouse-support-thanks-to-alvarogonzalezsotillo][Mouse support (thanks to alvarogonzalezsotillo)]]
+  - [[#key-bindings][Key bindings]]
 - [[#to-do-1719][TO DO]]
 - [[#my-personal-configuration][My personal configuration]]
 - [[#useful-commands][Useful commands]]
@@ -375,6 +376,21 @@
    - Use the mouse wheel to invoke ~centaur-tabs-backward/forward~.
    - Set the =centaur-tabs-show-navigation-buttons= custom variable to =t= to display cool navigation buttons. With the CTRL key, the left and right navigation buttons will move the tabs through the tab line.
      [[file:images/navigation-buttons.png]]
+** Key bindings
+   If you want to enable a series of key bindings with different tab managing functions, put the following in your configuration before the package is loaded (if you use =use-package=, this should go in the =:init= section):
+   #+BEGIN_SRC emacs-lisp
+     (setq centaur-tabs-enable-key-bindings t)
+   #+END_SRC
+   The key bindings enabled will be the following:
+    ="C-c C-left"=: (centaur-tabs-backward)
+    ="C-c C-right"=: (centaur-tabs-forward)
+    ="C-c C-up"=: (centaur-tabs-backward-group)
+    ="C-c C-down"=: (centaur-tabs-forward-group)
+    ="C-c C-f10"=: (centaur-tabs-local-mode)
+    ="C-c C-5"=: (centaur-tabs-extract-window-to-new-frame)
+    ="C-c C-k"=: (centaur-tabs-kill-other-buffers-in-current-group)
+    ="C-c C-o"=: (centaur-tabs-open-in-external-application)
+    ="C-c C-d"=: (centaur-tabs-open-directory-in-external-application)
 * TO DO [17/19]
   - [X] Integrate all-the-icons
   - [X] Improve all the icons placing
