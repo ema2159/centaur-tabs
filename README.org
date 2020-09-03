@@ -3,6 +3,7 @@
 #+OPTIONS: toc:nil 
 
   [[https://melpa.org/#/centaur-tabs][file:https://melpa.org/packages/centaur-tabs-badge.svg]] 
+  [[https://stable.melpa.org/#/centaur-tabs][file:https://stable.melpa.org/packages/centaur-tabs-badge.svg]]
   [[http://www.gnu.org/licenses/gpl-3.0][file:https://img.shields.io/badge/License-GPL%20v3-blue.svg]] 
 
   [[./images/centaur.png]]
