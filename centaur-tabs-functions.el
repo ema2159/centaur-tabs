@@ -400,7 +400,7 @@ It is initialized with tabs build from the list of OBJECTS."
 			      (centaur-tabs-make-tab object tabset))
 			  objects)))
     (set tabset tabs)
-    (put tabset 'select (car tabs))
+    (centaur-tabs-put-cache tabset 'select (car tabs))
     (put tabset 'start 0)
     tabset))
 
@@ -422,6 +422,22 @@ That is, remove it from the tab sets store."
   "Return the list of tab values in TABSET."
   (cl-mapcar 'centaur-tabs-tab-value (centaur-tabs-tabs tabset)))
 
+(defun centaur-tabs-get-cache (cache key)
+  "Return the per-frame cached value of KEY in CACHE"
+  (let
+      ((cached-hash (frame-parameter nil cache)))
+    (if (hash-table-p cached-hash)
+	(gethash key cached-hash nil))))
+
+(defun centaur-tabs-put-cache (cache key value)
+  "Set the per-frame cached value of KEY in CACHE to VALUE"
+  (let*
+      ((cached-hash (frame-parameter nil cache))
+       (hash (if (hash-table-p cached-hash) cached-hash (make-hash-table))))
+    (puthash key value hash)
+    (set-frame-parameter nil cache hash))
+  value)
+
 (defsubst centaur-tabs-get-tab (object tabset)
   "Search for a tab with value OBJECT in TABSET.
 Return the tab found, or nil if not found."
@@ -436,17 +452,17 @@ Return the tab found, or nil if not found."
   "Return the cached visual representation of TABSET.
 That is, a `centaur-tabs-display-line-format' template, or nil if the cache is
 empty."
-  (get tabset 'template))
+  (centaur-tabs-get-cache tabset 'template))
 
 (defsubst centaur-tabs-set-template (tabset template)
   "Set the cached visual representation of TABSET to TEMPLATE.
 TEMPLATE must be a valid `centaur-tabs-display-line-format' template, or nil to
 cleanup the cache."
-  (put tabset 'template template))
+  (centaur-tabs-put-cache tabset 'template template))
 
 (defsubst centaur-tabs-selected-tab (tabset)
   "Return the tab selected in TABSET."
-  (get tabset 'select))
+  (centaur-tabs-get-cache tabset 'select))
 
 (defsubst centaur-tabs-selected-value (tabset)
   "Return the value of the tab selected in TABSET."
@@ -466,7 +482,7 @@ Return TAB if selected, nil if not."
     (unless (centaur-tabs-selected-p tab tabset)
       (centaur-tabs-set-template tabset nil)
       (setq centaur-tabs--track-selected centaur-tabs-auto-scroll-flag))
-    (put tabset 'select tab)))
+    (centaur-tabs-put-cache tabset 'select tab)))
 
 (defsubst centaur-tabs-select-tab-value (object tabset)
   "Make the tab with value OBJECT, the selected tab in TABSET.
@@ -597,7 +613,7 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
 		 (if modified-p
 		     'centaur-tabs-unselected-modified
 		   'centaur-tabs-unselected)))
-	 (bar (if (and selected-p (eq centaur-tabs-set-bar 'left))
+	 (bar (if (and selected-p (eq (if (display-graphic-p) centaur-tabs-set-bar) 'left))
 		  (propertize
 		   centaur-tabs-active-bar
 		   'centaur-tabs-tab tab
@@ -605,6 +621,7 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
 		   'local-map centaur-tabs-default-map)
 		""))
 	 (icon (if (and centaur-tabs-set-icons
+			(display-graphic-p)
 			(not centaur-tabs--buffer-show-groups))
 		   (propertize
 		    (centaur-tabs-icon tab face selected-p)
@@ -772,7 +789,7 @@ template element."
 
 (defun centaur-tabs-line-format--buttons ()
   "Return the buttons fragment of the header line."
-  (if centaur-tabs-show-navigation-buttons
+  (if (and centaur-tabs-show-navigation-buttons (display-graphic-p))
       (concat
        (propertize (centaur-tabs-button-tab centaur-tabs-down-tab-text)
                    'local-map centaur-tabs-down-tab-map
