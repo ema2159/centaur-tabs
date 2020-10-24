@@ -349,7 +349,7 @@
 ** Alphabetical buffer reordering (thanks to cburroughs)
    To enable an automatic alpabetical buffer reordering, put the following lines in your configuration.
    #+BEGIN_SRC emacs-lisp :tangle yes
-     (centaur-tabs-enable-buffer-reordering)
+     (centaur-tabs-enable-buffer-alphabetical-reordering)
      (setq centaur-tabs-adjust-buffer-order t)
    #+END_SRC
    This function will trigger each time a non centaur-tabs motion command is executed.
