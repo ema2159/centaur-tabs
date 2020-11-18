@@ -278,7 +278,16 @@ When not specified, ELLIPSIS defaults to ‘...’."
 (defun centaur-tabs-do-close (event)
   "Given a mouse EVENT, close the tab at the mouse point."
   (interactive "e")
-  (centaur-tabs-buffer-close-tab `,(centaur-tabs-get-tab-from-event event)))
+  (let ((window (posn-window (event-start event))))
+    (with-selected-window window
+      (select-window window)
+      (centaur-tabs-buffer-select-tab `,(centaur-tabs-get-tab-from-event event))
+
+      (let* ((buffer     (window-buffer window))
+             (window-num (length (get-buffer-window-list buffer))))
+        (if (> window-num 1)
+            (delete-window window)
+          (centaur-tabs-buffer-close-tab `,(centaur-tabs-get-tab-from-event event)))))))
 
 (defun centaur-tabs-backward--button (event)
   "Same as centaur-tabs-backward, but changing window to EVENT source."
