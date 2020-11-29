@@ -281,13 +281,17 @@ When not specified, ELLIPSIS defaults to ‘...’."
   (let ((window (posn-window (event-start event))))
     (with-selected-window window
       (select-window window)
-      (centaur-tabs-buffer-select-tab `,(centaur-tabs-get-tab-from-event event))
+      (let ((forground-buffer-name (buffer-name)))
+	(centaur-tabs-buffer-select-tab `,(centaur-tabs-get-tab-from-event event))
 
-      (let* ((buffer     (window-buffer window))
-             (window-num (length (get-buffer-window-list buffer))))
-        (if (> window-num 1)
-            (delete-window window)
-          (centaur-tabs-buffer-close-tab `,(centaur-tabs-get-tab-from-event event)))))))
+	(let* ((buffer             (window-buffer window))
+               (target-buffer-name (buffer-name))
+               (same-target-check  (string-equal forground-buffer-name target-buffer-name))
+               (window-num         (- (length (get-buffer-window-list buffer))
+                                      (if same-target-check 0 1))))
+          (if (> window-num 1)
+              (delete-window window)
+            (centaur-tabs-buffer-close-tab `,(centaur-tabs-get-tab-from-event event))))))))
 
 (defun centaur-tabs-backward--button (event)
   "Same as centaur-tabs-backward, but changing window to EVENT source."
