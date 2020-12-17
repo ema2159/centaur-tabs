@@ -121,10 +121,10 @@ hidden, it is shown again.  Signal an error if Centaur-Tabs mode is off."
 
 (defvar centaur-tabs-prefix-map
   (let ((km (make-sparse-keymap)))
-    (define-key km [(control left)]  'centaur-tabs-backward)
-    (define-key km [(control right)] 'centaur-tabs-forward)
-    (define-key km [(control up)]    'centaur-tabs-backward-group)
-    (define-key km [(control down)]  'centaur-tabs-forward-group)
+    (define-key km [(control left)]  'centaur-select-tabs-backward)
+    (define-key km [(control right)] 'centaur-select-tabs-forward)
+    (define-key km [(control up)]    'centaur-select-tabs-backward-group)
+    (define-key km [(control down)]  'centaur-select-tabs-forward-group)
     (define-key km [(control f10)]   'centaur-tabs-local-mode)
     km)
   "The key bindings provided in Centaur-Tabs mode.")

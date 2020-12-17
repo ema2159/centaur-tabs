@@ -134,6 +134,19 @@ tab(B), move A to the left of B" t)
 		 (const :tag "Move the currently selected tab to the left of the the last visited tab." left)
 		 (const :tag "Move the currently selected tab to the right of the the last visited tab." right)))
 
+
+(defcustom centaur-tabs-auto-hide nil
+  "If non-nil hide tabs automatically after TABS-AUTO-HIDE-DELAY seconds."
+  :type '(boolean)
+  :group 'centaur-tabs)
+
+(defcustom centaur-tabs-auto-hide-delay 2
+  "Tabs auto hide delay in seconds."
+  :type '(float)
+  :group 'centaur-tabs)
+
+;;; functions
+;;
 (defun centaur-tabs-headline-match ()
   "Make headline use centaur-tabs-default-face."
   (set-face-attribute 'header-line nil :background (face-background 'centaur-tabs-unselected)
@@ -722,6 +735,74 @@ Inhibit display of the tab bar in current window where
 
 (defconst centaur-tabs-header-line-format '(:eval (centaur-tabs-line))
   "The tab bar header line format.")
+
+;;; Tabs auto hide
+;;
+(defun centaur-tabs--timer-initialize (secs)
+  (setq centaur-tabs-timer (run-with-timer secs nil (lambda () (centaur-tabs-local-mode 1)))))
+
+(defun centaur-tabs--timer-hide ()
+  (centaur-tabs--timer-initialize centaur-tabs-auto-hide-delay))
+
+(when centaur-tabs-auto-hide
+  (add-hook 'window-setup-hook 'centaur-tabs--timer-hide)
+  (add-hook 'find-file-hook 'centaur-tabs--timer-hide)
+  (add-hook 'change-major-mode-hook 'centaur-tabs--timer-hide))
+
+(defun centaur-tabs--switch-and-hide (arg)
+  (cancel-timer centaur-tabs-timer)
+  (centaur-tabs-local-mode 1)
+  ;; (if arg
+  ;;     (centaur-tabs-backward)
+  ;;   (centaur-tabs-forward))
+  (cond ((equal arg 'backward)
+         (centaur-tabs-backward))
+        ((equal arg 'forward)
+         (centaur-tabs-forward))
+        ((equal arg 'backward-group)
+         (centaur-tabs-backward-group))
+        ((equal arg 'forward-group)
+         (centaur-tabs-forward-group)))
+  (centaur-tabs-local-mode 0)
+  (centaur-tabs--timer-hide))
+
+(defun centaur-tabs--forward-and-hide ()
+  (centaur-tabs--switch-and-hide 'forward))
+
+(defun centaur-tabs--backward-and-hide ()
+  (centaur-tabs--switch-and-hide 'backward))
+
+(defun centaur-select-tabs-forward ()
+  (interactive)
+  (if centaur-tabs-auto-hide
+      (centaur-tabs--forward-and-hide)
+    (centaur-tabs-forward)))
+
+(defun centaur-select-tabs-backward ()
+  (interactive)
+  (if centaur-tabs-auto-hide
+      (centaur-tabs--backward-and-hide)
+    (centaur-tabs-backward)))
+
+(defun centaur-tabs--forward-group-and-hide ()
+  (interactive)
+  (centaur-tabs--switch-and-hide 'forward-group))
+
+(defun centaur-tabs--backward-group-and-hide ()
+  (interactive)
+  (centaur-tabs--switch-and-hide 'backward-group))
+
+(defun centaur-select-tabs-forward-group ()
+  (interactive)
+  (if centaur-tabs-auto-hide
+      (centaur-tabs--forward-group-and-hide)
+    (centaur-tabs-forward-group)))
+
+(defun centaur-select-tabs-backward-group ()
+  (interactive)
+  (if centaur-tabs-auto-hide
+      (centaur-tabs--backward-group-and-hide)
+    (centaur-tabs-backward-group)))
 
 ;;; Cyclic navigation through tabs
 ;;
