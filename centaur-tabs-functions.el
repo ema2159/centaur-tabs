@@ -206,8 +206,10 @@ When not specified, ELLIPSIS defaults to ‘...’."
     (when centaur-tabs-enable-key-bindings
       (define-key map centaur-tabs-prefix-key centaur-tabs-prefix-map))
     ;;; Use mouse wheel to switch between buffers of same group
-    (define-key map (vector centaur-tabs-display-line 'mouse-5) 'centaur-tabs-forward )
-    (define-key map (vector centaur-tabs-display-line 'mouse-4) 'centaur-tabs-backward )
+    (define-key map (vector centaur-tabs-display-line 'mouse-5   ) 'centaur-tabs-forward )
+    (define-key map (vector centaur-tabs-display-line 'mouse-4   ) 'centaur-tabs-backward)
+    (define-key map (vector centaur-tabs-display-line 'wheel-down) 'centaur-tabs-forward )
+    (define-key map (vector centaur-tabs-display-line 'wheel-up  ) 'centaur-tabs-backward)
 
     ;;; Use right click to show the rest of groups
     (define-key map (vector centaur-tabs-display-line 'mouse-3) 'centaur-tabs--tab-menu )
