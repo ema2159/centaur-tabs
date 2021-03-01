@@ -176,7 +176,7 @@ long.
 When not specified, ELLIPSIS defaults to ‘...’."
   (declare (pure t) (side-effect-free t))
   (unless ellipsis
-    (setq ellipsis "..."))
+    (setq ellipsis (if (char-displayable-p ?…) "…" "...")))
   (if (> (length s) len)
       (format "%s%s" (substring s 0 (- len (length ellipsis))) ellipsis)
     (concat s (make-string (- len (length s)) ? ))))
