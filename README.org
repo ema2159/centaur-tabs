@@ -30,6 +30,7 @@
   - [[#tab-cycling][Tab cycling]]
   - [[#buffer-reordering-thanks-to-jixiuf][Buffer reordering (thanks to jixiuf)]]
   - [[#alphabetical-buffer-reordering-thanks-to-cburroughs][Alphabetical buffer reordering (thanks to cburroughs)]]
+  - [[#fixed-tab-length][Fixed tab length]]
   - [[#helm-integration][Helm integration]]
   - [[#ivy-integration][Ivy integration]]
   - [[#projectile-integration][Projectile integration]]
@@ -354,6 +355,15 @@
    #+END_SRC
    This function will trigger each time a non centaur-tabs motion command is executed.
    NOTE: Given the Emacs behaviour when opening a new file is a little bit funky, when a new tab is opened, it will always be placed at the right of the last visited buffer. This behaviour needs to be investigated in order to see if a possible solution exists.
+** Fixed tab length
+   If you desire to make the width of your tabs fixed, you have to modify the ~centaur-tabs-label-fixed-length~ custom variable with the maximum length desired (defaults to 0 for dynamic). Example:
+   #+BEGIN_SRC emacs-lisp :tangle yes 
+     (setq centaur-tabs-label-fixed-length 16)
+   #+END_SRC
+   Would render the following tabs:
+
+   |foo.org|a_very_d...|bar.org|
+
 ** Helm integration
    You can integrate Helm with centaur-tabs for changing tab-groups. Just add helm-source-centaur-tabs-group in helm-source-list. Then you'll be able to use ~(centaur-tabs-build-helm-source)~ function and bind it to any key you want. (I'm not a Helm user so I'll not be able to solve problems related to this).
 ** Ivy integration
