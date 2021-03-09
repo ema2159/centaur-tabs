@@ -358,7 +358,7 @@
 ** Fixed tab length
    If you desire to make the width of your tabs fixed, you have to modify the ~centaur-tabs-label-fixed-length~ custom variable with the maximum length desired (defaults to 0 for dynamic). Example:
    #+BEGIN_SRC emacs-lisp :tangle yes 
-     (setq centaur-tabs-label-fixed-length 16)
+     (setq centaur-tabs-label-fixed-length 8)
    #+END_SRC
    Would render the following tabs:
 
