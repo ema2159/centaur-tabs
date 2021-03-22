@@ -315,6 +315,11 @@ Taken from `doom-modeline'."
   :group 'centaur-tabs
   :type 'string)
 
+(defcustom centaur-tabs-new-tab-text " + "
+  "Text icon to show in the down button tab."
+  :group 'centaur-tabs
+  :type 'string)
+
 ;;; Separators
 ;;
 (defvar centaur-tabs-style-left nil)

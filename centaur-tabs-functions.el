@@ -257,6 +257,12 @@ When not specified, ELLIPSIS defaults to ‘...’."
     map)
   "Keymap used for setting mouse events for a tab.")
 
+(defvar centaur-tabs-new-tab-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (vector centaur-tabs-display-line 'mouse-1) 'centaur-tabs--create-new-tab)
+    map)
+  "Keymap used for setting mouse events for new tab button.")
+
 ;;; Events and event functions
 ;;
 (defun centaur-tabs-buffer-close-tab (tab)
@@ -769,7 +775,8 @@ template element."
       (nreverse elts)
       (propertize "% "
                   'face (list :background padcolor)
-                  'pointer 'arrow)))
+                  'pointer 'arrow)
+      (centaur-tabs-line-format--new-button)))
     ))
 
 (defun centaur-tabs-line-format--buttons ()
@@ -786,6 +793,15 @@ template element."
                    'local-map centaur-tabs-forward-tab-map
                    'help-echo "Next tab"))
     ""))
+
+(defun centaur-tabs-line-format--new-button ()
+  "Return the buttons fragment of the header line."
+  (if centaur-tabs-show-navigation-buttons
+      (concat
+       (propertize (centaur-tabs-button-tab centaur-tabs-new-tab-text)
+                   'local-map centaur-tabs-new-tab-map
+                   'help-echo "Create new tab")
+    "")))
 
 (defun centaur-tabs-line ()
   "Return the header line templates that represent the tab bar.
@@ -1234,6 +1250,19 @@ Other buffer group by `centaur-tabs-get-group-name' with project name."
      "OrgMode")
     (t
      (centaur-tabs-get-group-name (current-buffer))))))
+
+(defun centaur-tabs--create-new-tab ()
+  "Create a new tab"
+  (interactive)
+  (cond
+   ((string= exwm-class-name "Firefox-esr")
+            (start-process "firefox" nil "firefox"))
+   ((eq major-mode 'exwm)
+          (call-interactively #'app-laucher-run-app))
+   ((eq major-mode 'vterm-mode)
+    (vterm))
+   (t
+    (call-interactively #'find-file))))
 
 (defun centaur-tabs-hide-tab (x)
   "Do no to show buffer X in tabs."
