@@ -1255,12 +1255,10 @@ Other buffer group by `centaur-tabs-get-group-name' with project name."
   "Create a new tab"
   (interactive)
   (cond
-   ((string= exwm-class-name "Firefox-esr")
-            (start-process "firefox" nil "firefox"))
-   ((eq major-mode 'exwm)
-          (call-interactively #'app-laucher-run-app))
    ((eq major-mode 'vterm-mode)
     (vterm))
+   ((eq major-mode 'term-mode)
+    (ansi-term))
    (t
     (call-interactively #'find-file))))
 
