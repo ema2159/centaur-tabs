@@ -323,7 +323,7 @@ Taken from `doom-modeline'."
   :type 'boolean)
 
 (defcustom centaur-tabs-new-tab-text " + "
-  "Text icon to show in the down button tab."
+  "Text icon to show in the new-tab button."
   :group 'centaur-tabs
   :type 'string)
 
