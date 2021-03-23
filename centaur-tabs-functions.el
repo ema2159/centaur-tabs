@@ -796,7 +796,7 @@ template element."
 
 (defun centaur-tabs-line-format--new-button ()
   "Return the buttons fragment of the header line."
-  (if centaur-tabs-show-navigation-buttons
+  (if centaur-tabs-show-new-tab-button
       (concat
        (propertize (centaur-tabs-button-tab centaur-tabs-new-tab-text)
                    'local-map centaur-tabs-new-tab-map
