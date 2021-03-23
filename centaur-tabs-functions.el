@@ -1255,10 +1255,15 @@ Other buffer group by `centaur-tabs-get-group-name' with project name."
   "Create a context-aware new tab."
   (interactive)
   (cond
+   ((eq major-mode 'eshell-mode)
+    (eshell))
    ((eq major-mode 'vterm-mode)
     (vterm))
    ((eq major-mode 'term-mode)
     (ansi-term))
+   ((derived-mode-p 'eww-mode)
+    (let ((current-prefix-arg 4))
+      (call-interactively #'eww)))
    (t
     (call-interactively #'find-file))))
 
