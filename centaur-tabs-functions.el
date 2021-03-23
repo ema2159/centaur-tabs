@@ -1252,7 +1252,7 @@ Other buffer group by `centaur-tabs-get-group-name' with project name."
      (centaur-tabs-get-group-name (current-buffer))))))
 
 (defun centaur-tabs--create-new-tab ()
-  "Create a new tab"
+  "Create a context-aware new tab."
   (interactive)
   (cond
    ((eq major-mode 'vterm-mode)
