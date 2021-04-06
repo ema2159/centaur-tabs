@@ -28,6 +28,7 @@
 (require 'centaur-tabs-elements)
 (require 'centaur-tabs-functions)
 ;;;;;;;;;;;;;;;;;;;;;;; Interactive functions ;;;;;;;;;;;;;;;;;;;;;;;
+
 (defun centaur-tabs-switch-group (&optional groupname)
   "Switch tab groups using ido.  GROUPNAME can optionaly be provided."
   (interactive)
@@ -39,7 +40,7 @@
 				       (funcall centaur-tabs-buffer-groups-function) )))
 			   (funcall centaur-tabs-buffer-list-function)))
 	 (groups (centaur-tabs-get-groups))
-	 (group-name (or groupname (ido-completing-read "Groups: " groups))) )
+	 (group-name (or groupname (centaur-completing-read "Groups: " groups))) )
     (catch 'done
       (mapc
        #'(lambda (group)
@@ -189,7 +190,7 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
 	 (extension-names (centaur-tabs-get-extensions))
 	 match-extension)
     ;; Read extension need to kill.
-    (setq match-extension (ido-completing-read "Kill buffers suffix with: " extension-names))
+    (setq match-extension (centaur-completing-read "Kill buffers suffix with: " extension-names))
     ;; Kill all buffers match extension in current group.
     (centaur-tabs-kill-buffer-match-rule
      (lambda (buffer)
@@ -208,7 +209,7 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
 	 (extension-names (centaur-tabs-get-extensions))
 	 match-extension)
     ;; Read extension need to kill.
-    (setq match-extension (ido-completing-read "Just keep buffers suffix with: " extension-names))
+    (setq match-extension (centaur-completing-read "Just keep buffers suffix with: " extension-names))
     ;; Kill all buffers match extension in current group.
     (centaur-tabs-kill-buffer-match-rule
      (lambda (buffer)
@@ -331,7 +332,7 @@ Should be buffer local and speed up calculation of buffer groups.")
     (let ((buffer (current-buffer)))
       (delete-window)
       (display-buffer-pop-up-frame buffer nil))))
-      
+
 (defun centaur-tabs--copy-file-name-to-clipboard ()
   "Copy the current buffer file name to the clipboard."
   ;;; From https://emacsredux.com/blog/2013/03/27/copy-filename-to-the-clipboard/
@@ -460,11 +461,11 @@ Modified copy of `treemacs-visit-node-in-external-application`."
 
     (when (not click-on-tab-p)
       (centaur-tabs--groups-menu))
-    
+
     (when click-on-tab-p
       (centaur-tabs-do-select event)
       (redisplay t)
-      
+
       (let*
 	  ((menu (easy-menu-create-menu nil (centaur-tabs--tab-menu-definition)))
 	   (choice (x-popup-menu t menu))
