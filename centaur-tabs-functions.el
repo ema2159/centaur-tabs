@@ -1293,6 +1293,18 @@ Operates over buffer BUF"
 	  (buffer-list))
     extension-names))
 
+(defcustom centaur-tabs-enable-ido-completion t
+  "use ido-completing-read for completing reads else completing-read"
+  :group 'centaur-tabs
+  :type 'boolean)
+
+(defun centaur-completing-read (prompt choices)
+  "select a completing read"
+  (interactive)
+  (if centaur-tabs-enable-ido-completion
+      (ido-completing-read prompt choices)
+    (completing-read prompt choices)))
+
 ;;;;;;;;;;;;;;;;;;;;;;; Default configurations ;;;;;;;;;;;;;;;;;;;;;;;
 
 (mapc (lambda (hook)
