@@ -40,7 +40,7 @@
 				       (funcall centaur-tabs-buffer-groups-function) )))
 			   (funcall centaur-tabs-buffer-list-function)))
 	 (groups (centaur-tabs-get-groups))
-	 (group-name (or groupname (centaur-completing-read "Groups: " groups))) )
+	 (group-name (or groupname (centaur-tabs-completing-read "Groups: " groups))) )
     (catch 'done
       (mapc
        #'(lambda (group)
@@ -190,7 +190,7 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
 	 (extension-names (centaur-tabs-get-extensions))
 	 match-extension)
     ;; Read extension need to kill.
-    (setq match-extension (centaur-completing-read "Kill buffers suffix with: " extension-names))
+    (setq match-extension (centaur-tabs-completing-read "Kill buffers suffix with: " extension-names))
     ;; Kill all buffers match extension in current group.
     (centaur-tabs-kill-buffer-match-rule
      (lambda (buffer)
@@ -209,7 +209,7 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
 	 (extension-names (centaur-tabs-get-extensions))
 	 match-extension)
     ;; Read extension need to kill.
-    (setq match-extension (centaur-completing-read "Just keep buffers suffix with: " extension-names))
+    (setq match-extension (centaur-tabs-completing-read "Just keep buffers suffix with: " extension-names))
     ;; Kill all buffers match extension in current group.
     (centaur-tabs-kill-buffer-match-rule
      (lambda (buffer)
