@@ -1298,7 +1298,7 @@ Operates over buffer BUF"
   :group 'centaur-tabs
   :type 'boolean)
 
-(defun centaur-completing-read (prompt choices)
+(defun centaur-tabs-completing-read (prompt choices)
   "select an option using a completing read"
   (interactive)
   (if centaur-tabs-enable-ido-completion
