@@ -259,7 +259,7 @@ When not specified, ELLIPSIS defaults to ‘...’."
 
 (defvar centaur-tabs-new-tab-map
   (let ((map (make-sparse-keymap)))
-    (define-key map (vector centaur-tabs-display-line 'mouse-1) 'centaur-tabs--create-new-tab)
+    (define-key map (vector centaur-tabs-display-line 'mouse-1) 'centaur-tabs-new-tab--button)
     map)
   "Keymap used for setting mouse events for new tab button.")
 
@@ -313,6 +313,11 @@ When not specified, ELLIPSIS defaults to ‘...’."
   (interactive "e")
   (select-window (posn-window (event-start event)))
   (centaur-tabs-forward))
+
+(defun centaur-tabs-create-new-tab--button (event)
+  (interactive "e")
+  (select-window (posn-window (event-start event)))
+  (centaur-tabs--create-new-tab))
 
 (defun centaur-tabs-move-current-tab-to-left--button (evt)
   "Same as centaur-tabs-move-current-tab-to-left, but ensuring the tab will remain visible.  The active window will the the EVT source."
