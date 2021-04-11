@@ -307,14 +307,13 @@ When not specified, ELLIPSIS defaults to ‘...’."
   (select-window (posn-window (event-start event)))
   (centaur-tabs-backward))
 
-
 (defun centaur-tabs-forward--button (event)
   "Same as centaur-tabs-forward, but changing window to EVENT source."
   (interactive "e")
   (select-window (posn-window (event-start event)))
   (centaur-tabs-forward))
 
-(defun centaur-tabs-create-new-tab--button (event)
+(defun centaur-tabs-new-tab--button (event)
   (interactive "e")
   (select-window (posn-window (event-start event)))
   (centaur-tabs--create-new-tab))
