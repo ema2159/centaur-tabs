@@ -1294,7 +1294,7 @@ Operates over buffer BUF"
     extension-names))
 
 (defcustom centaur-tabs-enable-ido-completion t
-  "non-nil means use `ido-completing-read' for completing reads else `completing-read'."
+  "Non-nil means use `ido-completing-read' for completing reads else `completing-read'."
   :group 'centaur-tabs
   :type 'boolean)
 
