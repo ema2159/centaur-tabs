@@ -8,7 +8,6 @@
 
   [[./images/centaur.png]]
 * Contents                                                              :TOC:
-- [[#important][IMPORTANT]]
 - [[#what-is-this][What is this?]]
 - [[#installation][Installation]]
 - [[#customization][Customization]]
