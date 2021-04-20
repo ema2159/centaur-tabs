@@ -1269,11 +1269,11 @@ Other buffer group by `centaur-tabs-get-group-name' with project name."
   (interactive)
   (cond
    ((eq major-mode 'eshell-mode)
-    (eshell))
+    (eshell t))
    ((eq major-mode 'vterm-mode)
     (vterm))
    ((eq major-mode 'term-mode)
-    (ansi-term))
+    (ansi-term "/bin/bash"))
    ((derived-mode-p 'eww-mode)
     (let ((current-prefix-arg 4))
       (call-interactively #'eww)))
