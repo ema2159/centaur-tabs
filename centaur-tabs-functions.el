@@ -1271,7 +1271,7 @@ Other buffer group by `centaur-tabs-get-group-name' with project name."
    ((eq major-mode 'eshell-mode)
     (eshell t))
    ((eq major-mode 'vterm-mode)
-    (vterm))
+    (vterm t))
    ((eq major-mode 'term-mode)
     (ansi-term "/bin/bash"))
    ((derived-mode-p 'eww-mode)
