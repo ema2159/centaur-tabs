@@ -34,6 +34,7 @@
   - [[#ivy-integration][Ivy integration]]
   - [[#projectile-integration][Projectile integration]]
   - [[#mouse-support-thanks-to-alvarogonzalezsotillo][Mouse support (thanks to alvarogonzalezsotillo)]]
+  - [[#new-tab-button-thanks-to-lucasgruss][New-tab button (thanks to lucasgruss)]]
   - [[#key-bindings][Key bindings]]
 - [[#to-do-1719][TO DO]]
 - [[#my-personal-configuration][My personal configuration]]
@@ -386,6 +387,20 @@
    - Use the mouse wheel to invoke ~centaur-tabs-backward/forward~.
    - Set the =centaur-tabs-show-navigation-buttons= custom variable to =t= to display cool navigation buttons. With the CTRL key, the left and right navigation buttons will move the tabs through the tab line.
      [[file:images/navigation-buttons.png]]
+** New-tab button (thanks to lucasgruss)
+   The new-tab button is a button at the right of the tabs that will spawn a new
+   tab based on the current context. For instance in
+   ~vterm/eshell/ansi-term~ mode, the new tab will spawn a new buffer
+   corresponding to the current major mode. In ~eww~, you are prompted for a
+   search term and the result is displayed in a new buffer. The default
+   behaviour in other modes is to open a new empty buffer.
+
+   - the variable ~centaur-tabs-show-new-tab-button~ controls whether the button
+     is shown.
+   - the variable ~centaur-tabs-new-tab-text~ controls the appearance of the button.
+   - the function ~centaur-tabs--create-new-tab~ controls the behaviour of the
+     context-based new tab.
+
 ** Key bindings
    If you want to enable a series of key bindings with different tab managing functions, put the following in your configuration before the package is loaded (if you use =use-package=, this should go in the =:init= section):
    #+BEGIN_SRC emacs-lisp
