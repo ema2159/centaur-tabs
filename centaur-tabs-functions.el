@@ -1256,6 +1256,14 @@ Other buffer group by `centaur-tabs-get-group-name' with project name."
     (t
      (centaur-tabs-get-group-name (current-buffer))))))
 
+(defun centaur-tabs--create-new-empty-buffer ()
+  "Open a New empty buffer."
+  (interactive)
+  (let ((buf (generate-new-buffer "New empty")))
+    (switch-to-buffer buf)
+    (funcall (and initial-major-mode))
+    (setq buffer-offer-save t)))
+
 (defun centaur-tabs--create-new-tab ()
   "Create a context-aware new tab."
   (interactive)
@@ -1270,7 +1278,7 @@ Other buffer group by `centaur-tabs-get-group-name' with project name."
     (let ((current-prefix-arg 4))
       (call-interactively #'eww)))
    (t
-    (call-interactively #'find-file))))
+    (centaur-tabs--create-new-empty-buffer))))
 
 (defun centaur-tabs-hide-tab (x)
   "Do no to show buffer X in tabs."
