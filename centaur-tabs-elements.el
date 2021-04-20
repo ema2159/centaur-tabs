@@ -317,7 +317,7 @@ Taken from `doom-modeline'."
 
 ;;; New tab button
 ;;
-(defcustom centaur-tabs-show-new-tab-button nil
+(defcustom centaur-tabs-show-new-tab-button t
   "When non-nil, show the button to create a new tab."
   :group 'centaur-tabs
   :type 'boolean)
