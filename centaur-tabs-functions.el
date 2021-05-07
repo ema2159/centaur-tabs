@@ -721,12 +721,10 @@ That is, a propertized string used as an `centaur-tabs-display-line-format'
 template element."
   (let* ((face 'centaur-tabs-unselected))
     (concat
-     (centaur-tabs-separator-render centaur-tabs-style-left face)
      (propertize
       button
       'face face
-      'mouse-face 'highlight)
-     (centaur-tabs-separator-render centaur-tabs-style-right face))))
+      'mouse-face 'highlight))))
 
 (defun centaur-tabs-line-format (tabset)
   "Return the `centaur-tabs-display-line-format' value to display TABSET."
