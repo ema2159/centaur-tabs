@@ -314,6 +314,7 @@ When not specified, ELLIPSIS defaults to ‘...’."
   (centaur-tabs-forward))
 
 (defun centaur-tabs-new-tab--button (event)
+  "Same as centaur-tabs--create-new-tab, but changing window to EVENT source."
   (interactive "e")
   (select-window (posn-window (event-start event)))
   (centaur-tabs--create-new-tab))
@@ -797,8 +798,7 @@ template element."
     ""))
 
 (defun centaur-tabs-line-format--new-button ()
-  "Return the new-tab button fragment at the right end of the
-header line."
+  "Return the new-tab button fragment at the right end of the header line."
   (if centaur-tabs-show-new-tab-button
       (concat
        (propertize (centaur-tabs-button-tab centaur-tabs-new-tab-text)
