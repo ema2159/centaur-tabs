@@ -194,9 +194,9 @@ If icon gray out option enabled, gray out icon if not SELECTED."
 			       (centaur-tabs-plain-icons
 				(face-foreground 'centaur-tabs-selected))
 			       (t 'unspecified)))
-	       (underline (and (eq centaur-tabs-set-bar 'under)
+	       (underline (and (eq (if (display-graphic-p) centaur-tabs-set-bar) 'under)
 			       (face-attribute face :underline)))
-	       (overline (and (eq centaur-tabs-set-bar 'over)
+	       (overline (and (eq (if (display-graphic-p) centaur-tabs-set-bar) 'over)
 			      (face-attribute face :overline))))
 	  (if (stringp icon)
 	      (progn
