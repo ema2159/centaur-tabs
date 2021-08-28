@@ -536,6 +536,7 @@
   - [[https://github.com/ianpan870102/tron-legacy-emacs-theme][Tron Legacy]]
   - [[https://github.com/ianpan870102/wilmersdorf-emacs-theme][Wilmersdorf Theme]]
   - [[https://github.com/bbatsov/zenburn-emacs][Zenburn]]
+  - [[https://github.com/bbatsov/solarized-emacs][Solarized]]
 * How to contribute
   You can contribute by forking the repo and then creating a pull request with the changes you consider will improve the package. There's a TO DO list with wanted features so you can start from there. I'll be glad to receive help.
   Please try to keep the code as clear and documented as possible.
