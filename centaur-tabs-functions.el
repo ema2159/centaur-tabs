@@ -732,6 +732,9 @@ template element."
   (let* ((sel (centaur-tabs-selected-tab tabset))
 	 (tabs (centaur-tabs-view tabset))
 	 (padcolor centaur-tabs-background-color)
+	 (all-tabs (centaur-tabs-tabs tabset))
+	 (total-tabs (length all-tabs))
+         (sel-index (+ (cl-position (car sel) (cl-mapcar 'car all-tabs)) 1))
 	 atsel elts)
     ;; Track the selected tab to ensure it is always visible.
     (when centaur-tabs--track-selected
@@ -774,6 +777,7 @@ template element."
     (centaur-tabs-set-template
      tabset
      (list
+      (centaur-tabs-count sel-index total-tabs)
       (centaur-tabs-line-format--buttons)
       (nreverse elts)
       (propertize "% "
@@ -781,6 +785,12 @@ template element."
                   'pointer 'arrow)
       (centaur-tabs-line-format--new-button)))
     ))
+
+(defun centaur-tabs-count (index count)
+  "Return the tabs count"
+  (if centaur-tabs-show-count
+      (propertize (centaur-tabs-button-tab (format " [%d/%d] " index count))
+		  'help-echo "Tabs count")))
 
 (defun centaur-tabs-line-format--buttons ()
   "Return the buttons fragment of the header line."
