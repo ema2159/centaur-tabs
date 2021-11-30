@@ -35,6 +35,7 @@
   - [[#projectile-integration][Projectile integration]]
   - [[#mouse-support-thanks-to-alvarogonzalezsotillo][Mouse support (thanks to alvarogonzalezsotillo)]]
   - [[#new-tab-button-thanks-to-lucasgruss][New-tab button (thanks to lucasgruss)]]
+  - [[#tab-count-thanks-to-kamilwaheed][Tab count (thanks to kamilwaheed)]]
   - [[#key-bindings][Key bindings]]
 - [[#to-do-1719][TO DO]]
 - [[#my-personal-configuration][My personal configuration]]
@@ -400,7 +401,8 @@
    - the variable ~centaur-tabs-new-tab-text~ controls the appearance of the button.
    - the function ~centaur-tabs--create-new-tab~ controls the behaviour of the
      context-based new tab.
-** Tabs count (thanks to kamilwaheed)
+
+** Tab count (thanks to kamilwaheed)
    Adds a count of the current tab position in the total number of
    tabs in the current window. Controlled by the variable
    ~centaur-tabs-show-count~.
