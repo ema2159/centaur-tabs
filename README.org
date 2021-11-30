@@ -400,6 +400,10 @@
    - the variable ~centaur-tabs-new-tab-text~ controls the appearance of the button.
    - the function ~centaur-tabs--create-new-tab~ controls the behaviour of the
      context-based new tab.
+** Tabs count (thanks to kamilwaheed)
+   Adds a count of the current tab position in the total number of
+   tabs in the current window. Controlled by the variable
+   ~centaur-tabs-show-count~.
 
 ** Key bindings
    If you want to enable a series of key bindings with different tab managing functions, put the following in your configuration before the package is loaded (if you use =use-package=, this should go in the =:init= section):
