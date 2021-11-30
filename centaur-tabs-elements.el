@@ -315,6 +315,12 @@ Taken from `doom-modeline'."
   :group 'centaur-tabs
   :type 'string)
 
+(defcustom centaur-tabs-show-count nil
+  "When non-nil, show the current index and count of tabs in
+ the current group."
+  :group 'centaur-tabs
+  :type 'boolean)
+
 ;;; New tab button
 ;;
 (defcustom centaur-tabs-show-new-tab-button t
