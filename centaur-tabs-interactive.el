@@ -251,6 +251,125 @@ not the actual logical index position of the current group."
     (centaur-tabs-select-visible-nth-tab
      (string-to-number (car (last (split-string key-desc "-")))))))
 
+;; ace-jump style tab switching
+(defvar centaur-tabs-ace-jump-keys
+  '(?1 ?2 ?3 ?4 ?5 ?6 ?7 ?8 ?9)
+  "Buffer jump keys used by centaur-tabs-ace-jump.")
+
+(defvar centuar-tabs-ace-dispatch-alist
+  '((?q exit "Exit")
+    (?\C-g exit "Exit")
+    (?j jump-to-tab "Jump to tab")
+    (?x close-tab "Close tab")
+    (?s swap-tab "Swap tab")
+    (?\[ backward-group "Previous group")
+    (?\] forward-group "Next group")
+    (?? show-help "Show dispatch help"))
+  "Action keys used by centaur-tabs-ace-jump.
+The value of each element must be in the form:
+\(key keyword docstring), where keyword must be one of the follows:
+\(exit, jump-to-tab, close-tab, swap-tab, backward-group,
+forward-group, show-help).")
+
+(defvar centaur-tabs-ace-jump-active nil)
+
+(defun centaur-tabs-swap-tab (tab)
+  "Swap the position of current tab with TAB.
+TAB has to be in the same group as the current tab."
+  (if (eq (centaur-tabs-tab-tabset tab) (centaur-tabs-current-tabset t))
+      (let* ((group (centaur-tabs-current-tabset t))
+	     (tabs (cl-copy-list (centaur-tabs-tabs group)))
+	     (current (centaur-tabs-selected-tab group))
+	     (current-index (cl-position current tabs))
+	     (target-index (cl-position tab tabs)))
+	(if (eq tab current)
+	    (message "Can't swap with current tab itself.")
+	(setcar (nthcdr current-index tabs) tab)
+	(setcar (nthcdr target-index tabs) current)
+	(set group tabs)
+	(centaur-tabs-set-template (centaur-tabs-current-tabset t) nil)
+	(centaur-tabs-display-update)))
+    (message "Error: %s is not in the same group as the current tab." tab)))
+
+(defun centaur-tabs-ace-action (action)
+  "Preform ACTION on a visible tab. Ace-jump style.
+ACTION has to be one of value in `centuar-tabs-ace-dispatch-alist'"
+  (when (centaur-tabs-current-tabset t)
+    (cond ((eq action 'jump-to-tab)
+	   (message "Jump to tab: "))
+	  ((eq action 'close-tab)
+	   (message "Close tab: "))
+	  ((eq action 'swap-tab)
+	   (message "Swap current tab with: ")))
+    
+    (let ((centaur-tabs-ace-jump-active t))
+      (catch 'done
+	(while t
+	  (centaur-tabs-set-template (centaur-tabs-current-tabset t) nil)
+	  (centaur-tabs-display-update)
+	  (let ((char (read-key)) (action-cache))
+	    (cond
+	     ;; tab keys
+	     ((memq char centaur-tabs-ace-jump-keys)
+	      (let ((sel (nth (cl-position char centaur-tabs-ace-jump-keys) (centaur-tabs-view (centaur-tabs-current-tabset t)))))
+		(cond ((eq sel nil)
+		       (message "Tab %s does not exist" (key-description (vector char))))
+		      ((eq action 'jump-to-tab)
+		       (centaur-tabs-buffer-select-tab sel))
+		      ((eq action 'close-tab)
+		       (centaur-tabs-buffer-close-tab sel))
+		      ((eq action 'swap-tab)
+		       (centaur-tabs-swap-tab sel))))
+	      (throw 'done nil))
+	     ;; actions
+	     ((setq action-cache (assoc char centuar-tabs-ace-dispatch-alist))
+	      (setq action-cache (cadr action-cache))
+	      (cond ((eq action-cache 'exit)           ; exit
+		     (message "Quit")
+		     (throw 'done nil))
+		    ((eq action-cache 'forward-group)  ; forward group
+		     (message "Forward group")
+		     (centaur-tabs-forward-group))
+		    ((eq action-cache 'backward-group) ; backward group
+		     (message "Backward group")
+		     (centaur-tabs-backward-group))
+		    ((eq action-cache 'show-help)      ; help menu
+		     (message "%s" (mapconcat
+				    (lambda (elem) (format "%s: %s"
+						      (key-description (vector (car elem)))
+						      (caddr elem)))
+				    centuar-tabs-ace-dispatch-alist
+				    "\n")))
+		    (t (setq action action-cache)      ; other actions
+		     (cond ((eq action-cache 'jump-to-tab)
+			    (message "Jump to tab: "))
+			   ((eq action-cache 'close-tab)
+			    (message "Close tab: "))
+			   ((eq action-cache 'swap-tab)
+			    (message "Swap current tab with: "))))))
+	     ;; no match, repeat
+	     (t
+	      (message "No such candidate: %s, hit ? for help." (key-description (vector char)))))))))
+    (centaur-tabs-set-template (centaur-tabs-current-tabset t) nil)
+    (centaur-tabs-display-update)))
+
+(defun centaur-tabs-ace-jump (&optional arg)
+  "Select a tab and perform an action. Ace-jump style.
+If no ARG is provided, select that tab.
+If prefixed with one `universal-argument', swap the current
+tab with the selected tab.
+If prefixed with two `universal-argument's, close
+selected tab."
+  (interactive "p")
+  (cond ((eq arg 1)
+	 (centaur-tabs-ace-action 'jump-to-tab))
+	((eq arg 4)
+	 (centaur-tabs-ace-action 'swap-tab))
+	((eq arg 16)
+	 (centaur-tabs-ace-action 'close-tab))
+	(t
+	 (centaur-tabs-ace-action 'jump-to-tab))))
+
 (defun centaur-tabs-group-buffer-groups ()
   "Use centaur-tabs's own buffer grouping function."
   (interactive)
