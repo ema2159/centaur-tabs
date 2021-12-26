@@ -210,6 +210,18 @@ If icon gray out option enabled, gray out icon if not SELECTED."
 
 ;;; Close buttons, modified marker and edges' margins
 ;;
+(defcustom centaur-tabs-show-jump-identifier 'prompted
+  "Whether to show the tab identifier for centaur-tabs-ace-jump.
+It has 3 options:
+- 'nil, never show the jump identifier.
+- 'prompted, only show it when using centaur-tabs-ace-jump.
+- 'always, always show it regardless of the status."  
+  :group 'centaur-tabs
+  :type '(choice :tag "show identifier when..."
+		 (const :tag "Never" nil)
+		 (const :tag "Only when prompted" prompted)
+		 (const :tag "Always" always)))
+
 (defcustom centaur-tabs-set-close-button t
   "When non nil, display a clickable close button on the right side of the tabs."
   :group 'centaur-tabs
