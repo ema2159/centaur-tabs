@@ -137,6 +137,11 @@
    #+BEGIN_SRC emacs-lisp :tangle yes
     (setq centaur-tabs-gray-out-icons 'buffer)
    #+END_SRC
+** Displaying an index
+   To display an index in the tabs:
+   #+BEGIN_SRC emacs-lisp :tangle yes
+    (setq centaur-tabs-show-tab-index t)
+   #+END_SRC
 ** Selected tab bar
    To display a colored bar at the left of the selected tab
    #+BEGIN_SRC emacs-lisp :tangle yes

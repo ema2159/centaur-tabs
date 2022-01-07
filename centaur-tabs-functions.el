@@ -85,6 +85,11 @@ visible."
   :type '(repeat symbol)
   :group 'centaur-tabs)
 
+(defcustom centaur-tabs-index-format-str "[%d] "
+  "Format string for tab index."
+  :group 'centaur-tabs
+  :type 'string)
+
 (defvar centaur-tabs-hide-tab-function 'centaur-tabs-hide-tab
   "Function to hide tabs.
 This function filters tabs.  The tab will hide if this function returns t.")
@@ -596,10 +601,12 @@ template element.
 Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
   (let* ((buf (centaur-tabs-tab-value tab))
 	 (buf-file-name (buffer-file-name buf))
-	 (selected-p (centaur-tabs-selected-p tab (centaur-tabs-current-tabset)))
+	 (tabset (centaur-tabs-current-tabset))
+	 (selected-p (centaur-tabs-selected-p tab tabset))
 	 (not-read-only-p (with-current-buffer buf (not buffer-read-only)))
 	 (modified-p (and not-read-only-p (buffer-modified-p buf)))
 	 (use-mod-mark-p (and centaur-tabs-set-modified-marker modified-p))
+	 (current-buffer-index (cl-position tab (centaur-tabs-tabs tabset)))
 	 (mod-mark-face (if selected-p
 			    'centaur-tabs-modified-marker-selected
 			  'centaur-tabs-modified-marker-unselected))
@@ -678,6 +685,15 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
       'pointer centaur-tabs-mouse-pointer
       'help-echo buf-file-name
       'local-map centaur-tabs-default-map)
+
+     (when centaur-tabs-show-tab-index
+       (propertize
+	(format centaur-tabs-index-format-str (+ current-buffer-index 1))
+	'face face
+	'pointer centaur-tabs-mouse-pointer
+	'centaur-tabs-tab tab
+	'help-echo buf-file-name
+	'local-map centaur-tabs-default-map))
 
      ;; close button and/or modified marker
      (if centaur-tabs-set-close-button

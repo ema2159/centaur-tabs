@@ -321,6 +321,11 @@ Taken from `doom-modeline'."
   :group 'centaur-tabs
   :type 'boolean)
 
+(defcustom centaur-tabs-show-tab-index nil
+  "Non-nil to display index in tab."
+  :group 'centaurs-tabs
+  :type 'boolean)
+
 ;;; New tab button
 ;;
 (defcustom centaur-tabs-show-new-tab-button t
