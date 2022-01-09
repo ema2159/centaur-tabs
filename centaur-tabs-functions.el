@@ -423,14 +423,14 @@ That is, remove it from the tab sets store."
   (cl-mapcar 'centaur-tabs-tab-value (centaur-tabs-tabs tabset)))
 
 (defun centaur-tabs-get-cache (cache key)
-  "Return the per-frame cached value of KEY in CACHE"
+  "Return the per-frame cached value of KEY in CACHE."
   (let
       ((cached-hash (frame-parameter nil cache)))
     (if (hash-table-p cached-hash)
 	(gethash key cached-hash nil))))
 
 (defun centaur-tabs-put-cache (cache key value)
-  "Set the per-frame cached value of KEY in CACHE to VALUE"
+  "Set the per-frame cached value of KEY in CACHE to VALUE."
   (let*
       ((cached-hash (frame-parameter nil cache))
        (hash (if (hash-table-p cached-hash) cached-hash (make-hash-table))))
