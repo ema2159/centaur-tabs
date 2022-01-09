@@ -316,8 +316,7 @@ Taken from `doom-modeline'."
   :type 'string)
 
 (defcustom centaur-tabs-show-count nil
-  "When non-nil, show the current index and count of tabs in
- the current group."
+  "When non-nil, show the current index and count of tabs in the current group."
   :group 'centaur-tabs
   :type 'boolean)
 
