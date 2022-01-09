@@ -790,7 +790,8 @@ template element."
   "Return the tabs count"
   (if centaur-tabs-show-count
       (propertize (centaur-tabs-button-tab (format " [%d/%d] " index count))
-		  'help-echo "Tabs count")))
+		  'help-echo "Tabs count")
+    ""))
 
 (defun centaur-tabs-line-format--buttons ()
   "Return the buttons fragment of the header line."
