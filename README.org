@@ -542,7 +542,9 @@ If the icons in your tabs are not showing, it is likely because of one of the tw
 If [[https://github.com/domtronn/all-the-icons.el][all-the-icons]] is not installed properly, your mode icons won't show up. To solve this issue, you have to install all-the-icons and follow the instructions indicated in its repository.
 *** Font with required unicode symbols missing
 If you get something like the following image in your tabs:
+
   [[./images/font-missing.png]]
+
 it is likely that you're missing a font that has the required unicode symbols. To solve this issue, simply install a font that has this symbols such as Google Noto Sans Symbols2.
 * Known supported theme plugins
   - [[https://github.com/jonathanchu/atom-one-dark-theme][Atom One Dark Theme]]
