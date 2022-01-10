@@ -537,7 +537,7 @@
   - =(centaur-tabs-backward-group)=: Go to the previous tab group.
 * Common issues
 ** Icons not showing
-If the icons in your tabs are not showing, it is likely because of any of the two following reasons:
+If the icons in your tabs are not showing, it is likely because of one of the two following reasons:
 ***  all-the-icons not installed
 If [[https://github.com/domtronn/all-the-icons.el][all-the-icons]] is not installed properly, your mode icons won't show up. To solve this issue, you have to install all-the-icons and follow the instructions indicated in its repository.
 *** Font with required unicode symbols missing
