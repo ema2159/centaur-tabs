@@ -85,6 +85,27 @@ visible."
   :type '(repeat symbol)
   :group 'centaur-tabs)
 
+(defcustom centaur-tabs-excluded-prefixes
+  '("*epc"
+    "*helm"
+    "*Helm"
+    " *which"
+    "*Compile-Log*"
+    "*lsp"
+    "*LSP"
+    "*company"
+    "*Flycheck"
+    "*tramp"
+    " *Mini"
+    "*help"
+    "*straight"
+    " *temp"
+    "*Help")
+  "List of prefixes that indicates which buffers should not be included as tabs.
+Buffers that have names that start with any of these strings will be ignored."
+  :type '(repeat string)
+  :group 'centaur-tabs)
+
 (defvar centaur-tabs-hide-tab-function 'centaur-tabs-hide-tab
   "Function to hide tabs.
 This function filters tabs.  The tab will hide if this function returns t.")
@@ -1314,21 +1335,9 @@ Other buffer group by `centaur-tabs-get-group-name' with project name."
      (window-dedicated-p (selected-window))
 
      ;; Buffer name not match below blacklist.
-     (string-prefix-p "*epc" name)
-     (string-prefix-p "*helm" name)
-     (string-prefix-p "*Helm" name)
-     (string-prefix-p " *which" name)
-     (string-prefix-p "*Compile-Log*" name)
-     (string-prefix-p "*lsp" name)
-     (string-prefix-p "*LSP" name)
-     (string-prefix-p "*company" name)
-     (string-prefix-p "*Flycheck" name)
-     (string-prefix-p "*tramp" name)
-     (string-prefix-p " *Mini" name)
-     (string-prefix-p "*help" name)
-     (string-prefix-p "*straight" name)
-     (string-prefix-p " *temp" name)
-     (string-prefix-p "*Help" name)
+     (cl-dolist (prefix centaur-tabs-excluded-prefixes)
+       (when (string-prefix-p prefix name)
+	 (cl-return t)))
 
      ;; Is not magit buffer.
      (and (string-prefix-p "magit" name)
