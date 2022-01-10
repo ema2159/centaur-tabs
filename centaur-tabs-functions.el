@@ -1317,6 +1317,7 @@ Other buffer group by `centaur-tabs-get-group-name' with project name."
      (string-prefix-p "*epc" name)
      (string-prefix-p "*helm" name)
      (string-prefix-p "*Helm" name)
+     (string-prefix-p " *which" name)
      (string-prefix-p "*Compile-Log*" name)
      (string-prefix-p "*lsp" name)
      (string-prefix-p "*LSP" name)
