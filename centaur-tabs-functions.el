@@ -713,6 +713,7 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
        " ")
       'centaur-tabs-tab tab
       'face face
+      'mouse-face 'centaur-tabs-name-mouse-face
       'pointer centaur-tabs-mouse-pointer
       'help-echo buf-file-name
       'local-map centaur-tabs-default-map)

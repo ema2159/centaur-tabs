@@ -71,6 +71,11 @@
   "Face used for selected close button."
   :group 'centaur-tabs)
 
+(defface centaur-tabs-name-mouse-face
+  '((t nil))
+  "Face used for tab name when hovered with the mouse."
+  :group 'centaur-tabs)
+
 (defface centaur-tabs-close-mouse-face
   '((t (:inherit underline)))
   "Face used for close button when hovered with the mouse."
