@@ -837,7 +837,7 @@ template element."
 (defun centaur-tabs-line-format--buttons ()
   "Return the buttons fragment of the header line."
   (if (and centaur-tabs-show-navigation-buttons (display-graphic-p))
-      (concat
+      (list
        (propertize (centaur-tabs-button-tab centaur-tabs-down-tab-text)
                    'local-map centaur-tabs-down-tab-map
                    'help-echo "Change tab group")
