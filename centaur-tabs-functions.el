@@ -1307,9 +1307,9 @@ Other buffer group by `centaur-tabs-get-group-name' with project name."
      (centaur-tabs-get-group-name (current-buffer))))))
 
 (defun centaur-tabs--create-new-empty-buffer ()
-  "Open a New empty buffer."
+  "Open an Untitled buffer."
   (interactive)
-  (let ((buf (generate-new-buffer "New empty")))
+  (let ((buf (generate-new-buffer "Untitled")))
     (switch-to-buffer buf)
     (funcall (and initial-major-mode))
     (setq buffer-offer-save t)))
