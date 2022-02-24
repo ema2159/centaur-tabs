@@ -120,7 +120,8 @@
   :group 'centaur-tabs
   :type 'int)
 
-(defcustom centaur-tabs-background-color (face-background 'centaur-tabs-default)
+(defcustom centaur-tabs-background-color
+  (or (face-background 'centaur-tabs-default) (face-background 'default))
   "*Background color of the tab bar.
 By default, use the background color specified for the
 `centaur-tabs-default' face (or inherited from another face), or the
