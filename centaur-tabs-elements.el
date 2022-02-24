@@ -121,7 +121,7 @@
   :type 'int)
 
 (defcustom centaur-tabs-background-color
-  (or (face-background 'centaur-tabs-default) (face-background 'default))
+  (face-background 'centaur-tabs-default nil 'default)
   "*Background color of the tab bar.
 By default, use the background color specified for the
 `centaur-tabs-default' face (or inherited from another face), or the
@@ -193,7 +193,7 @@ If icon gray out option enabled, gray out icon if not SELECTED."
 		   major-mode
 		   :v-adjust centaur-tabs-icon-v-adjust
 		   :height centaur-tabs-icon-scale-factor)))
-	       (background (face-background face))
+	       (background (face-background face nil 'default))
 	       (inactive (cond ((and (not selected)
 				     (eq centaur-tabs-gray-out-icons 'buffer))
 				(face-foreground 'mode-line-inactive))
