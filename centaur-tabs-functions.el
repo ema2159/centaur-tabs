@@ -164,7 +164,7 @@ tab(B), move A to the left of B" t)
 
 (defun centaur-tabs-headline-match ()
   "Make headline use centaur-tabs-default-face."
-  (set-face-attribute centaur-tabs-display-line nil :background (face-background 'centaur-tabs-unselected)
+  (set-face-attribute centaur-tabs-display-line nil :background (face-background 'centaur-tabs-unselected nil 'default)
 		      :box nil
 		      :overline nil
 		      :underline nil))
