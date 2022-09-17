@@ -1254,7 +1254,7 @@ first."
 ;;
 (defun centaur-tabs-project-name ()
   "Get project name for tabs."
-  (let ((project-name (cdr (project-current))))
+  (let ((project-name (car (last (project-current)))))
     (if project-name
 	(format "Project: %s" (expand-file-name project-name))
       centaur-tabs-common-group-name)))
