@@ -196,9 +196,9 @@ If icon gray out option enabled, gray out icon if not SELECTED."
 	       (background (face-background face nil 'default))
 	       (inactive (cond ((and (not selected)
 				     (eq centaur-tabs-gray-out-icons 'buffer))
-				(face-foreground 'mode-line-inactive))
+				(face-foreground 'mode-line-inactive nil 'default))
 			       (centaur-tabs-plain-icons
-				(face-foreground 'centaur-tabs-selected))
+				(face-foreground 'centaur-tabs-selected nil 'default))
 			       (t 'unspecified)))
 	       (underline (and (eq (if (display-graphic-p) centaur-tabs-set-bar) 'under)
 			       (face-attribute face :underline)))
