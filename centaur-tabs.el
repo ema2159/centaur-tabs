@@ -164,10 +164,10 @@ Run as `centaur-tabs-init-hook'."
   ;; If set, initialize selected overline
   (when (eq centaur-tabs-set-bar 'under)
     (set-face-attribute 'centaur-tabs-selected nil
-			:underline (face-background 'centaur-tabs-active-bar-face)
+			:underline (face-background 'centaur-tabs-active-bar-face nil 'default)
 			:overline nil)
     (set-face-attribute 'centaur-tabs-selected-modified nil
-			:underline (face-background 'centaur-tabs-active-bar-face)
+			:underline (face-background 'centaur-tabs-active-bar-face nil 'default)
 			:overline nil)
     (set-face-attribute 'centaur-tabs-unselected nil
 			:underline nil
@@ -177,10 +177,10 @@ Run as `centaur-tabs-init-hook'."
 			:overline nil))
   (when (eq centaur-tabs-set-bar 'over)
     (set-face-attribute 'centaur-tabs-selected nil
-			:overline (face-background 'centaur-tabs-active-bar-face)
+			:overline (face-background 'centaur-tabs-active-bar-face nil 'default)
 			:underline nil)
     (set-face-attribute 'centaur-tabs-selected-modified nil
-			:overline (face-background 'centaur-tabs-active-bar-face)
+			:overline (face-background 'centaur-tabs-active-bar-face nil 'default)
 			:underline nil)
     (set-face-attribute 'centaur-tabs-unselected nil
 			:overline nil
@@ -188,11 +188,6 @@ Run as `centaur-tabs-init-hook'."
     (set-face-attribute 'centaur-tabs-unselected-modified nil
 			:overline nil
 			:underline nil))
-  (unless (display-graphic-p)
-    (setq
-     centaur-tabs-set-icons nil
-     centaur-tabs-show-navigation-buttons nil
-     centaur-tabs-set-bar nil))
   (add-hook 'after-save-hook #'centaur-tabs-on-saving-buffer)
   (add-hook 'first-change-hook #'centaur-tabs-on-modifying-buffer)
   (add-hook 'kill-buffer-hook #'centaur-tabs-buffer-track-killed)

@@ -71,6 +71,11 @@
   "Face used for selected close button."
   :group 'centaur-tabs)
 
+(defface centaur-tabs-name-mouse-face
+  '((t nil))
+  "Face used for tab name when hovered with the mouse."
+  :group 'centaur-tabs)
+
 (defface centaur-tabs-close-mouse-face
   '((t (:inherit underline)))
   "Face used for close button when hovered with the mouse."
@@ -115,7 +120,8 @@
   :group 'centaur-tabs
   :type 'int)
 
-(defcustom centaur-tabs-background-color (face-background 'centaur-tabs-default)
+(defcustom centaur-tabs-background-color
+  (face-background 'centaur-tabs-default nil 'default)
   "*Background color of the tab bar.
 By default, use the background color specified for the
 `centaur-tabs-default' face (or inherited from another face), or the
@@ -187,16 +193,16 @@ If icon gray out option enabled, gray out icon if not SELECTED."
 		   major-mode
 		   :v-adjust centaur-tabs-icon-v-adjust
 		   :height centaur-tabs-icon-scale-factor)))
-	       (background (face-background face))
+	       (background (face-background face nil 'default))
 	       (inactive (cond ((and (not selected)
 				     (eq centaur-tabs-gray-out-icons 'buffer))
-				(face-foreground 'mode-line-inactive))
+				(face-foreground 'mode-line-inactive nil 'default))
 			       (centaur-tabs-plain-icons
-				(face-foreground 'centaur-tabs-selected))
+				(face-foreground 'centaur-tabs-selected nil 'default))
 			       (t 'unspecified)))
-	       (underline (and (eq centaur-tabs-set-bar 'under)
+	       (underline (and (eq (if (display-graphic-p) centaur-tabs-set-bar) 'under)
 			       (face-attribute face :underline)))
-	       (overline (and (eq centaur-tabs-set-bar 'over)
+	       (overline (and (eq (if (display-graphic-p) centaur-tabs-set-bar) 'over)
 			      (face-attribute face :overline))))
 	  (if (stringp icon)
 	      (progn
@@ -328,8 +334,7 @@ Taken from `doom-modeline'."
   :type 'string)
 
 (defcustom centaur-tabs-show-count nil
-  "When non-nil, show the current index and count of tabs in
- the current group."
+  "When non-nil, show the current index and count of tabs in the current group."
   :group 'centaur-tabs
   :type 'boolean)
 

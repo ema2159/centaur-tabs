@@ -85,6 +85,29 @@ visible."
   :type '(repeat symbol)
   :group 'centaur-tabs)
 
+(defcustom centaur-tabs-excluded-prefixes
+  '("*epc"
+    "*helm"
+    "*Helm"
+    " *which"
+    "*Compile-Log*"
+    "*lsp"
+    "*LSP"
+    "*company"
+    "*Flycheck"
+    "*Ediff"
+    "*ediff"
+    "*tramp"
+    " *Mini"
+    "*help"
+    "*straight"
+    " *temp"
+    "*Help")
+  "List of prefixes that indicates which buffers should not be included as tabs.
+Buffers that have names that start with any of these strings will be ignored."
+  :type '(repeat string)
+  :group 'centaur-tabs)
+
 (defvar centaur-tabs-hide-tab-function 'centaur-tabs-hide-tab
   "Function to hide tabs.
 This function filters tabs.  The tab will hide if this function returns t.")
@@ -141,7 +164,7 @@ tab(B), move A to the left of B" t)
 
 (defun centaur-tabs-headline-match ()
   "Make headline use centaur-tabs-default-face."
-  (set-face-attribute centaur-tabs-display-line nil :background (face-background 'centaur-tabs-unselected)
+  (set-face-attribute centaur-tabs-display-line nil :background (face-background 'centaur-tabs-unselected nil 'default)
 		      :box nil
 		      :overline nil
 		      :underline nil))
@@ -413,7 +436,7 @@ It is initialized with tabs build from the list of OBJECTS."
 			      (centaur-tabs-make-tab object tabset))
 			  objects)))
     (set tabset tabs)
-    (put tabset 'select (car tabs))
+    (centaur-tabs-put-cache tabset 'select (car tabs))
     (put tabset 'start 0)
     tabset))
 
@@ -435,6 +458,22 @@ That is, remove it from the tab sets store."
   "Return the list of tab values in TABSET."
   (cl-mapcar 'centaur-tabs-tab-value (centaur-tabs-tabs tabset)))
 
+(defun centaur-tabs-get-cache (cache key)
+  "Return the per-frame cached value of KEY in CACHE."
+  (let
+      ((cached-hash (frame-parameter nil cache)))
+    (if (hash-table-p cached-hash)
+	(gethash key cached-hash nil))))
+
+(defun centaur-tabs-put-cache (cache key value)
+  "Set the per-frame cached value of KEY in CACHE to VALUE."
+  (let*
+      ((cached-hash (frame-parameter nil cache))
+       (hash (if (hash-table-p cached-hash) cached-hash (make-hash-table))))
+    (puthash key value hash)
+    (set-frame-parameter nil cache hash))
+  value)
+
 (defsubst centaur-tabs-get-tab (object tabset)
   "Search for a tab with value OBJECT in TABSET.
 Return the tab found, or nil if not found."
@@ -449,17 +488,17 @@ Return the tab found, or nil if not found."
   "Return the cached visual representation of TABSET.
 That is, a `centaur-tabs-display-line-format' template, or nil if the cache is
 empty."
-  (get tabset 'template))
+  (centaur-tabs-get-cache tabset 'template))
 
 (defsubst centaur-tabs-set-template (tabset template)
   "Set the cached visual representation of TABSET to TEMPLATE.
 TEMPLATE must be a valid `centaur-tabs-display-line-format' template, or nil to
 cleanup the cache."
-  (put tabset 'template template))
+  (centaur-tabs-put-cache tabset 'template template))
 
 (defsubst centaur-tabs-selected-tab (tabset)
   "Return the tab selected in TABSET."
-  (get tabset 'select))
+  (centaur-tabs-get-cache tabset 'select))
 
 (defsubst centaur-tabs-selected-value (tabset)
   "Return the value of the tab selected in TABSET."
@@ -479,7 +518,7 @@ Return TAB if selected, nil if not."
     (unless (centaur-tabs-selected-p tab tabset)
       (centaur-tabs-set-template tabset nil)
       (setq centaur-tabs--track-selected centaur-tabs-auto-scroll-flag))
-    (put tabset 'select tab)))
+    (centaur-tabs-put-cache tabset 'select tab)))
 
 (defsubst centaur-tabs-select-tab-value (object tabset)
   "Make the tab with value OBJECT, the selected tab in TABSET.
@@ -610,7 +649,7 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
 		 (if modified-p
 		     'centaur-tabs-unselected-modified
 		   'centaur-tabs-unselected)))
-	 (bar (if (and selected-p (eq centaur-tabs-set-bar 'left))
+	 (bar (if (and selected-p (eq (if (display-graphic-p) centaur-tabs-set-bar) 'left))
 		  (propertize
 		   centaur-tabs-active-bar
 		   'centaur-tabs-tab tab
@@ -618,6 +657,7 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
 		   'local-map centaur-tabs-default-map)
 		""))
 	 (icon (if (and centaur-tabs-set-icons
+			(display-graphic-p)
 			(not centaur-tabs--buffer-show-groups))
 		   (propertize
 		    (centaur-tabs-icon tab face selected-p)
@@ -675,6 +715,7 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
        " ")
       'centaur-tabs-tab tab
       'face face
+      'mouse-face 'centaur-tabs-name-mouse-face
       'pointer centaur-tabs-mouse-pointer
       'help-echo buf-file-name
       'local-map centaur-tabs-default-map)
@@ -798,15 +839,16 @@ template element."
     ))
 
 (defun centaur-tabs-count (index count)
-  "Return the tabs count"
+  "Return a centaur-tabs-button-tab with the current tab INDEX and the total tabs COUNT."
   (if centaur-tabs-show-count
       (propertize (centaur-tabs-button-tab (format " [%d/%d] " index count))
-		  'help-echo "Tabs count")))
+		  'help-echo "Tabs count")
+    ""))
 
 (defun centaur-tabs-line-format--buttons ()
   "Return the buttons fragment of the header line."
-  (if centaur-tabs-show-navigation-buttons
-      (concat
+  (if (and centaur-tabs-show-navigation-buttons (display-graphic-p))
+      (list
        (propertize (centaur-tabs-button-tab centaur-tabs-down-tab-text)
                    'local-map centaur-tabs-down-tab-map
                    'help-echo "Change tab group")
@@ -1223,7 +1265,10 @@ first."
 ;;
 (defun centaur-tabs-project-name ()
   "Get project name for tabs."
-  (let ((project-name (cdr (project-current))))
+  (let* ((project-current (project-current))
+	 (project-name (if (proper-list-p project-current)
+			   (car (last project-current))
+			 (cdr project-current))))
     (if project-name
 	(format "Project: %s" (expand-file-name project-name))
       centaur-tabs-common-group-name)))
@@ -1276,9 +1321,9 @@ Other buffer group by `centaur-tabs-get-group-name' with project name."
      (centaur-tabs-get-group-name (current-buffer))))))
 
 (defun centaur-tabs--create-new-empty-buffer ()
-  "Open a New empty buffer."
+  "Open an Untitled buffer."
   (interactive)
-  (let ((buf (generate-new-buffer "New empty")))
+  (let ((buf (generate-new-buffer "Untitled")))
     (switch-to-buffer buf)
     (funcall (and initial-major-mode))
     (setq buffer-offer-save t)))
@@ -1307,20 +1352,9 @@ Other buffer group by `centaur-tabs-get-group-name' with project name."
      (window-dedicated-p (selected-window))
 
      ;; Buffer name not match below blacklist.
-     (string-prefix-p "*epc" name)
-     (string-prefix-p "*helm" name)
-     (string-prefix-p "*Helm" name)
-     (string-prefix-p "*Compile-Log*" name)
-     (string-prefix-p "*lsp" name)
-     (string-prefix-p "*LSP" name)
-     (string-prefix-p "*company" name)
-     (string-prefix-p "*Flycheck" name)
-     (string-prefix-p "*tramp" name)
-     (string-prefix-p " *Mini" name)
-     (string-prefix-p "*help" name)
-     (string-prefix-p "*straight" name)
-     (string-prefix-p " *temp" name)
-     (string-prefix-p "*Help" name)
+     (cl-dolist (prefix centaur-tabs-excluded-prefixes)
+       (when (string-prefix-p prefix name)
+	 (cl-return t)))
 
      ;; Is not magit buffer.
      (and (string-prefix-p "magit" name)
