@@ -252,26 +252,22 @@ not the actual logical index position of the current group."
      (string-to-number (car (last (split-string key-desc "-")))))))
 
 ;; ace-jump style tab switching
-(defvar centaur-tabs-ace-jump-keys
-  '(?1 ?2 ?3 ?4 ?5 ?6 ?7 ?8 ?9)
-  "Buffer jump keys used by centaur-tabs-ace-jump.")
 
-(defvar centuar-tabs-ace-dispatch-alist
-  '((?q exit "Exit")
-    (?\C-g exit "Exit")
-    (?j jump-to-tab "Jump to tab")
-    (?x close-tab "Close tab")
-    (?s swap-tab "Swap tab")
-    (?\[ backward-group "Previous group")
-    (?\] forward-group "Next group")
-    (?? show-help "Show dispatch help"))
-  "Action keys used by centaur-tabs-ace-jump.
-The value of each element must be in the form:
-\(key keyword docstring), where keyword must be one of the follows:
-\(exit, jump-to-tab, close-tab, swap-tab, backward-group,
-forward-group, show-help).")
+(defvar centaur-tabs-ace-jump-active nil
+  "t if centaur-tabs-ace-jump is invoked.")
 
-(defvar centaur-tabs-ace-jump-active nil)
+(defvar centaur-tabs-dim-overlay nil
+  "Holds the overlay for dimming buffer when invoking centaur-tabs-ace-jump.")
+
+(defun centaur-tabs--dim-window ()
+  "Create a dim background overlay for the current window."
+  (when centaur-tabs-ace-jump-dim-buffer
+    (when centaur-tabs-dim-overlay
+      (delete-overlay centaur-tabs-dim-overlay))
+    (setq centaur-tabs-dim-overlay
+	  (let ((ol (make-overlay (window-start) (window-end))))
+	    (overlay-put ol 'face 'centaur-tabs-dim-buffer-face)
+	    ol))))
 
 (defun centaur-tabs-swap-tab (tab)
   "Swap the position of current tab with TAB.
@@ -295,6 +291,8 @@ TAB has to be in the same group as the current tab."
   "Preform ACTION on a visible tab. Ace-jump style.
 ACTION has to be one of value in `centuar-tabs-ace-dispatch-alist'"
   (when (centaur-tabs-current-tabset t)
+    (when centaur-tabs-ace-jump-dim-buffer
+      (centaur-tabs--dim-window))
     (cond ((eq action 'jump-to-tab)
 	   (message "Jump to tab: "))
 	  ((eq action 'close-tab)
@@ -329,10 +327,12 @@ ACTION has to be one of value in `centuar-tabs-ace-dispatch-alist'"
 		     (throw 'done nil))
 		    ((eq action-cache 'forward-group)  ; forward group
 		     (message "Forward group")
-		     (centaur-tabs-forward-group))
+		     (centaur-tabs-forward-group)
+		     (centaur-tabs--dim-window))
 		    ((eq action-cache 'backward-group) ; backward group
 		     (message "Backward group")
-		     (centaur-tabs-backward-group))
+		     (centaur-tabs-backward-group)
+		     (centaur-tabs--dim-window))
 		    ((eq action-cache 'show-help)      ; help menu
 		     (message "%s" (mapconcat
 				    (lambda (elem) (format "%s: %s"
@@ -351,6 +351,9 @@ ACTION has to be one of value in `centuar-tabs-ace-dispatch-alist'"
 	     (t
 	      (message "No such candidate: %s, hit ? for help." (key-description (vector char)))))))))
     (centaur-tabs-set-template (centaur-tabs-current-tabset t) nil)
+    (when centaur-tabs-ace-jump-dim-buffer
+      (delete-overlay centaur-tabs-dim-overlay)
+      (setq centaur-tabs-dim-overlay nil))
     (centaur-tabs-display-update)))
 
 (defun centaur-tabs-ace-jump (&optional arg)

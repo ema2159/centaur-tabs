@@ -726,36 +726,39 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
 	 (propertize
 	  (format "%c" (nth (cl-position tab (centaur-tabs-view (centaur-tabs-current-tabset t))) centaur-tabs-ace-jump-keys))
 	  'centaur-tabs-tab tab
-	  'face face
+	  'face (if selected-p
+		    'centaur-tabs-jump-identifier-selected
+		  'centaur-tabs-jump-identifier-unselected)
 	  'pointer centaur-tabs-mouse-pointer
 	  'help-echo buf-file-name
 	  'local-map centaur-tabs-default-map)))
      
      ;; close button and/or modified marker
-     (if centaur-tabs-set-close-button
-	 (propertize
-	  (if use-mod-mark-p
-	      centaur-tabs-modified-marker
-	    centaur-tabs-close-button)
-	  'face (if use-mod-mark-p
-		    mod-mark-face
-		  (if selected-p
-		      'centaur-tabs-close-selected
-		    'centaur-tabs-close-unselected))
-	  'pointer centaur-tabs-mouse-pointer
-	  'help-echo "Close buffer"
-	  'centaur-tabs-tab tab
-	  'mouse-face 'centaur-tabs-close-mouse-face
-	  'local-map centaur-tabs-close-map)
-       (if (and centaur-tabs-set-modified-marker modified-p)
+     (unless centaur-tabs-ace-jump-active
+       (if centaur-tabs-set-close-button
 	   (propertize
-	    centaur-tabs-modified-marker
-	    'face mod-mark-face
+	    (if use-mod-mark-p
+		centaur-tabs-modified-marker
+	      centaur-tabs-close-button)
+	    'face (if use-mod-mark-p
+		      mod-mark-face
+		    (if selected-p
+			'centaur-tabs-close-selected
+		      'centaur-tabs-close-unselected))
 	    'pointer centaur-tabs-mouse-pointer
+	    'help-echo "Close buffer"
 	    'centaur-tabs-tab tab
-	    'help-echo buf-file-name
-	    'local-map centaur-tabs-default-map)
-	 ""))
+	    'mouse-face 'centaur-tabs-close-mouse-face
+	    'local-map centaur-tabs-close-map)
+	 (if (and centaur-tabs-set-modified-marker modified-p)
+	     (propertize
+	      centaur-tabs-modified-marker
+	      'face mod-mark-face
+	      'pointer centaur-tabs-mouse-pointer
+	      'centaur-tabs-tab tab
+	      'help-echo buf-file-name
+	      'local-map centaur-tabs-default-map)
+	   "" )))
 
      ;; right margin
      (if centaur-tabs-right-edge-margin

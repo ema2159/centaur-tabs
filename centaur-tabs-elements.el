@@ -96,6 +96,20 @@
   "Face used for selected tab bar."
   :group 'centaur-tabs)
 
+(defface centaur-tabs-jump-identifier-selected
+  '((t (:inherit centaur-tabs-selected :foreground "orange red")))
+  "Face used for selected tab identifiers when centaur-tabs-ace-jump is invoked."
+  :group 'centaur-tabs)
+
+(defface centaur-tabs-jump-identifier-unselected
+  '((t (:inherit centaur-tabs-unselected :foreground "orange red")))
+  "Face used for unselected tab identifiers when centaur-tabs-ace-jump is invoked."
+  :group 'centaur-tabs)
+
+(defface centaur-tabs-dim-buffer-face
+  '((t (:foreground "gray40")))
+  "Face for the buffer when centaur-tabs-ace-jump is invoked.")
+
 ;;; Tabs' display line
 ;;
 (defvar centaur-tabs-display-line
@@ -214,20 +228,44 @@ If icon gray out option enabled, gray out icon if not SELECTED."
 	    "")))
     ""))
 
-;;; Close buttons, modified marker and edges' margins
+;;; Ace-window style tab switching
 ;;
 (defcustom centaur-tabs-show-jump-identifier 'prompted
   "Whether to show the tab identifier for centaur-tabs-ace-jump.
 It has 3 options:
 - 'nil, never show the jump identifier.
 - 'prompted, only show it when using centaur-tabs-ace-jump.
-- 'always, always show it regardless of the status."  
+- 'always, always show it regardless of the status."
   :group 'centaur-tabs
   :type '(choice :tag "show identifier when..."
 		 (const :tag "Never" nil)
 		 (const :tag "Only when prompted" prompted)
 		 (const :tag "Always" always)))
 
+(defcustom centaur-tabs-ace-jump-dim-buffer t
+  "Whether to dim the current buffer when centaur-ace-jump is activated.")
+
+(defvar centaur-tabs-ace-jump-keys
+  '(?1 ?2 ?3 ?4 ?5 ?6 ?7 ?8 ?9)
+  "Buffer jump keys used by centaur-tabs-ace-jump.")
+
+(defvar centuar-tabs-ace-dispatch-alist
+  '((?q exit "Exit")
+    (?\C-g exit "Exit")
+    (?j jump-to-tab "Jump to tab")
+    (?x close-tab "Close tab")
+    (?s swap-tab "Swap tab")
+    (?\[ backward-group "Previous group")
+    (?\] forward-group "Next group")
+    (?? show-help "Show dispatch help"))
+  "Action keys used by centaur-tabs-ace-jump.
+The value of each element must be in the form:
+\(key keyword docstring), where keyword must be one of the follows:
+\(exit, jump-to-tab, close-tab, swap-tab, backward-group,
+forward-group, show-help).")
+
+;;; Close buttons, modified marker and edges' margins
+;;
 (defcustom centaur-tabs-set-close-button t
   "When non nil, display a clickable close button on the right side of the tabs."
   :group 'centaur-tabs
