@@ -420,16 +420,7 @@
    #+BEGIN_SRC emacs-lisp
      (setq centaur-tabs-enable-key-bindings t)
    #+END_SRC
-   The key bindings enabled will be the following:
-   - =C-c C-left=: (centaur-tabs-backward)
-   - =C-c C-right=: (centaur-tabs-forward)
-   - =C-c C-up=: (centaur-tabs-backward-group)
-   - =C-c C-down=: (centaur-tabs-forward-group)
-   - =C-c C-f10=: (centaur-tabs-local-mode)
-   - =C-c C-5=: (centaur-tabs-extract-window-to-new-frame)
-   - =C-c C-k=: (centaur-tabs-kill-other-buffers-in-current-group)
-   - =C-c C-o=: (centaur-tabs-open-in-external-application)
-   - =C-c C-d=: (centaur-tabs-open-directory-in-external-application)
+   This will enable a series of key bindings for centaur-tabs prefixed by ~"C-c t"~.
 * TO DO [17/19]
   - [X] Integrate all-the-icons
   - [X] Improve all the icons placing
@@ -455,83 +446,83 @@
   My personal configuration for reference:
 
 #+BEGIN_SRC emacs-lisp :tangle yes
-  (use-package centaur-tabs
-    :load-path "~/.emacs.d/other/centaur-tabs"
-    :config
-    (setq centaur-tabs-style "bar"
-          centaur-tabs-height 32
-          centaur-tabs-set-icons t
-          centaur-tabs-set-modified-marker t
-          centaur-tabs-show-navigation-buttons t
-          centaur-tabs-set-bar 'under
-          x-underline-at-descent-line t)
-    (centaur-tabs-headline-match)
-    ;; (setq centaur-tabs-gray-out-icons 'buffer)
-    ;; (centaur-tabs-enable-buffer-reordering)
-    ;; (setq centaur-tabs-adjust-buffer-order t)
-    (centaur-tabs-mode t)
-    (setq uniquify-separator "/")
-    (setq uniquify-buffer-name-style 'forward)
-    (defun centaur-tabs-buffer-groups ()
-      "`centaur-tabs-buffer-groups' control buffers' group rules.
+(use-package centaur-tabs
+  :init
+  (setq centaur-tabs-enable-key-bindings t)
+  :config
+  (setq centaur-tabs-style "bar"
+        centaur-tabs-height 32
+        centaur-tabs-set-icons t
+        centaur-tabs-show-new-tab-button t
+        centaur-tabs-set-modified-marker t
+        centaur-tabs-show-navigation-buttons t
+        centaur-tabs-set-bar 'under
+        centaur-tabs-show-count nil
+        ;; centaur-tabs-label-fixed-length 15
+        ;; centaur-tabs-gray-out-icons 'buffer
+        ;; centaur-tabs-plain-icons t
+        x-underline-at-descent-line t
+        centaur-tabs-left-edge-margin nil)
+  (centaur-tabs-change-fonts (face-attribute 'default :font) 110)
+  (centaur-tabs-headline-match)
+  ;; (centaur-tabs-enable-buffer-alphabetical-reordering)
+  ;; (setq centaur-tabs-adjust-buffer-order t)
+  (centaur-tabs-mode t)
+  (setq uniquify-separator "/")
+  (setq uniquify-buffer-name-style 'forward)
+  (defun centaur-tabs-buffer-groups ()
+    "`centaur-tabs-buffer-groups' control buffers' group rules.
 
-  Group centaur-tabs with mode if buffer is derived from `eshell-mode' `emacs-lisp-mode' `dired-mode' `org-mode' `magit-mode'.
-  All buffer name start with * will group to \"Emacs\".
-  Other buffer group by `centaur-tabs-get-group-name' with project name."
-      (list
-       (cond
-        ;; ((not (eq (file-remote-p (buffer-file-name)) nil))
-        ;; "Remote")
-        ((or (string-equal "*" (substring (buffer-name) 0 1))
-             (memq major-mode '(magit-process-mode
-                                magit-status-mode
-                                magit-diff-mode
-                                magit-log-mode
-                                magit-file-mode
-                                magit-blob-mode
-                                magit-blame-mode
-                                )))
-         "Emacs")
-        ((derived-mode-p 'prog-mode)
-         "Editing")
-        ((derived-mode-p 'dired-mode)
-         "Dired")
-        ((memq major-mode '(helpful-mode
-                            help-mode))
-         "Help")
-        ((memq major-mode '(org-mode
-                            org-agenda-clockreport-mode
-                            org-src-mode
-                            org-agenda-mode
-                            org-beamer-mode
-                            org-indent-mode
-                            org-bullets-mode
-                            org-cdlatex-mode
-                            org-agenda-log-mode
-                            diary-mode))
-         "OrgMode")
-        (t
-         (centaur-tabs-get-group-name (current-buffer))))))
-    :hook
-    (dashboard-mode . centaur-tabs-local-mode)
-    (term-mode . centaur-tabs-local-mode)
-    (calendar-mode . centaur-tabs-local-mode)
-    (org-agenda-mode . centaur-tabs-local-mode)
-    (helpful-mode . centaur-tabs-local-mode)
-    :bind
-    ("C-<prior>" . centaur-tabs-backward)
-    ("C-<next>" . centaur-tabs-forward)
-    ("C-S-<prior>" . centaur-tabs-move-current-tab-to-left)
-    ("C-S-<next>" . centaur-tabs-move-current-tab-to-right)
-    ("C-c t a" . centaur-tabs-ace-jump)
-    ("C-c t s" . centaur-tabs-counsel-switch-group)
-    ("C-c t p" . centaur-tabs-group-by-projectile-project)
-    ("C-c t g" . centaur-tabs-group-buffer-groups)
-    ("C-c t o" . centaur-tabs-kill-other-buffers-in-current-group)
-    ("C-c t k" . centaur-tabs-kill-all-buffers-in-current-group)
-    (:map evil-normal-state-map
-          ("g t" . centaur-tabs-forward)
-          ("g T" . centaur-tabs-backward)))
+Group centaur-tabs with mode if buffer is derived from `eshell-mode' `emacs-lisp-mode' `dired-mode' `org-mode' `magit-mode'.
+All buffer name start with * will group to \"Emacs\".
+Other buffer group by `centaur-tabs-get-group-name' with project name."
+    (list
+     (cond
+      ;; ((not (eq (file-remote-p (buffer-file-name)) nil))
+      ;; "Remote")
+      ((or (string-equal "*" (substring (buffer-name) 0 1))
+           (memq major-mode '(magit-process-mode
+                              magit-status-mode
+                              magit-diff-mode
+                              magit-log-mode
+                              magit-file-mode
+                              magit-blob-mode
+                              magit-blame-mode
+                              )))
+       "Emacs")
+      ((derived-mode-p 'prog-mode)
+       "Editing")
+      ((derived-mode-p 'dired-mode)
+       "Dired")
+      ((memq major-mode '(helpful-mode
+                          help-mode))
+       "Help")
+      ((memq major-mode '(org-mode
+                          org-agenda-clockreport-mode
+                          org-src-mode
+                          org-agenda-mode
+                          org-beamer-mode
+                          org-indent-mode
+                          org-bullets-mode
+                          org-cdlatex-mode
+                          org-agenda-log-mode
+                          diary-mode))
+       "OrgMode")
+      (t
+       (centaur-tabs-get-group-name (current-buffer))))))
+  :hook
+  (dashboard-mode . centaur-tabs-local-mode)
+  (term-mode . centaur-tabs-local-mode)
+  (calendar-mode . centaur-tabs-local-mode)
+  (org-agenda-mode . centaur-tabs-local-mode)
+  :bind
+  ("C-<prior>" . centaur-tabs-backward)
+  ("C-<next>" . centaur-tabs-forward)
+  ("C-S-<prior>" . centaur-tabs-move-current-tab-to-left)
+  ("C-S-<next>" . centaur-tabs-move-current-tab-to-right)
+  (:map evil-normal-state-map
+        ("g t" . centaur-tabs-forward)
+        ("g T" . centaur-tabs-backward)))
 #+END_SRC
 
 * Useful commands
