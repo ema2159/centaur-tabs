@@ -97,12 +97,12 @@
   :group 'centaur-tabs)
 
 (defface centaur-tabs-jump-identifier-selected
-  '((t (:inherit centaur-tabs-selected :foreground "orange red")))
+  '((t (:inherit centaur-tabs-modified-marker-selected :weight extra-bold)))
   "Face used for selected tab identifiers when centaur-tabs-ace-jump is invoked."
   :group 'centaur-tabs)
 
 (defface centaur-tabs-jump-identifier-unselected
-  '((t (:inherit centaur-tabs-unselected :foreground "orange red")))
+  '((t (:inherit centaur-tabs-modified-marker-unselected :weight extra-bold)))
   "Face used for unselected tab identifiers when centaur-tabs-ace-jump is invoked."
   :group 'centaur-tabs)
 
