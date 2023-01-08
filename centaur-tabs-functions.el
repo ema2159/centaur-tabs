@@ -732,7 +732,7 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
 	  'pointer centaur-tabs-mouse-pointer
 	  'help-echo buf-file-name
 	  'local-map centaur-tabs-default-map)))
-     
+
      ;; close button and/or modified marker
      (unless centaur-tabs-ace-jump-active
        (if centaur-tabs-set-close-button
@@ -870,7 +870,7 @@ template element."
        (propertize (centaur-tabs-button-tab centaur-tabs-new-tab-text)
                    'local-map centaur-tabs-new-tab-map
                    'help-echo "Create new tab")
-    "")))
+       "")))
 
 (defun centaur-tabs-line ()
   "Return the header line templates that represent the tab bar.

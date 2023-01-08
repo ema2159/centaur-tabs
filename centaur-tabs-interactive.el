@@ -280,11 +280,11 @@ TAB has to be in the same group as the current tab."
 	     (target-index (cl-position tab tabs)))
 	(if (eq tab current)
 	    (message "Can't swap with current tab itself.")
-	(setcar (nthcdr current-index tabs) tab)
-	(setcar (nthcdr target-index tabs) current)
-	(set group tabs)
-	(centaur-tabs-set-template (centaur-tabs-current-tabset t) nil)
-	(centaur-tabs-display-update)))
+	  (setcar (nthcdr current-index tabs) tab)
+	  (setcar (nthcdr target-index tabs) current)
+	  (set group tabs)
+	  (centaur-tabs-set-template (centaur-tabs-current-tabset t) nil)
+	  (centaur-tabs-display-update)))
     (message "Error: %s is not in the same group as the current tab." tab)))
 
 (defun centaur-tabs-ace-action (action)
@@ -299,7 +299,7 @@ ACTION has to be one of value in `centuar-tabs-ace-dispatch-alist'"
 	   (message "Close tab: "))
 	  ((eq action 'swap-tab)
 	   (message "Swap current tab with: ")))
-    
+
     (let ((centaur-tabs-ace-jump-active t))
       (catch 'done
 	(while t
@@ -336,17 +336,17 @@ ACTION has to be one of value in `centuar-tabs-ace-dispatch-alist'"
 		    ((eq action-cache 'show-help)      ; help menu
 		     (message "%s" (mapconcat
 				    (lambda (elem) (format "%s: %s"
-						      (key-description (vector (car elem)))
-						      (caddr elem)))
+						           (key-description (vector (car elem)))
+						           (caddr elem)))
 				    centuar-tabs-ace-dispatch-alist
 				    "\n")))
 		    (t (setq action action-cache)      ; other actions
-		     (cond ((eq action-cache 'jump-to-tab)
-			    (message "Jump to tab: "))
-			   ((eq action-cache 'close-tab)
-			    (message "Close tab: "))
-			   ((eq action-cache 'swap-tab)
-			    (message "Swap current tab with: "))))))
+		       (cond ((eq action-cache 'jump-to-tab)
+			      (message "Jump to tab: "))
+			     ((eq action-cache 'close-tab)
+			      (message "Close tab: "))
+			     ((eq action-cache 'swap-tab)
+			      (message "Swap current tab with: "))))))
 	     ;; no match, repeat
 	     (t
 	      (message "No such candidate: %s, hit ? for help." (key-description (vector char)))))))))
@@ -460,7 +460,7 @@ Should be buffer local and speed up calculation of buffer groups.")
   ;;; From https://emacsredux.com/blog/2013/03/27/copy-filename-to-the-clipboard/
   (interactive)
   (let* ((filename (if (equal major-mode 'dired-mode)
-                      default-directory
+                       default-directory
                      (buffer-file-name)))
 	 (filename (expand-file-name filename)))
     (when filename
