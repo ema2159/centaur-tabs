@@ -37,6 +37,7 @@
   - [[#mouse-support-thanks-to-alvarogonzalezsotillo][Mouse support (thanks to alvarogonzalezsotillo)]]
   - [[#new-tab-button-thanks-to-lucasgruss][New-tab button (thanks to lucasgruss)]]
   - [[#tab-count-thanks-to-kamilwaheed][Tab count (thanks to kamilwaheed)]]
+  - [[#ace-jump-thanks-to-simon-lin][Ace jump (thanks to Simon-Lin)]]
   - [[#key-bindings][Key bindings]]
 - [[#to-do-1719][TO DO]]
 - [[#my-personal-configuration][My personal configuration]]
@@ -215,37 +216,37 @@
      All buffer name start with * will group to \"Emacs\".
      Other buffer group by `centaur-tabs-get-group-name' with project name."
        (list
-	(cond
-	 ((or (string-equal "*" (substring (buffer-name) 0 1))
-	      (memq major-mode '(magit-process-mode
-				 magit-status-mode
-				 magit-diff-mode
-				 magit-log-mode
-				 magit-file-mode
-				 magit-blob-mode
-				 magit-blame-mode
-				 )))
-	  "Emacs")
-	 ((derived-mode-p 'prog-mode)
-	  "Editing")
-	 ((derived-mode-p 'dired-mode)
-	  "Dired")
-	 ((memq major-mode '(helpful-mode
-			     help-mode))
-	  "Help")
-	 ((memq major-mode '(org-mode
-			     org-agenda-clockreport-mode
-			     org-src-mode
-			     org-agenda-mode
-			     org-beamer-mode
-			     org-indent-mode
-			     org-bullets-mode
-			     org-cdlatex-mode
-			     org-agenda-log-mode
-			     diary-mode))
-	  "OrgMode")
-	 (t
-	  (centaur-tabs-get-group-name (current-buffer))))))
+        (cond
+         ((or (string-equal "*" (substring (buffer-name) 0 1))
+              (memq major-mode '(magit-process-mode
+                                 magit-status-mode
+                                 magit-diff-mode
+                                 magit-log-mode
+                                 magit-file-mode
+                                 magit-blob-mode
+                                 magit-blame-mode
+                                 )))
+          "Emacs")
+         ((derived-mode-p 'prog-mode)
+          "Editing")
+         ((derived-mode-p 'dired-mode)
+          "Dired")
+         ((memq major-mode '(helpful-mode
+                             help-mode))
+          "Help")
+         ((memq major-mode '(org-mode
+                             org-agenda-clockreport-mode
+                             org-src-mode
+                             org-agenda-mode
+                             org-beamer-mode
+                             org-indent-mode
+                             org-bullets-mode
+                             org-cdlatex-mode
+                             org-agenda-log-mode
+                             diary-mode))
+          "OrgMode")
+         (t
+          (centaur-tabs-get-group-name (current-buffer))))))
    #+END_SRC
 
 ** Show buffer groups names instead of buffer names in tabs
@@ -267,8 +268,8 @@
        ...
        :bind
        (:map evil-normal-state-map
-	     ("g t" . centaur-tabs-forward)
-	     ("g T" . centaur-tabs-backward))
+             ("g t" . centaur-tabs-forward)
+             ("g T" . centaur-tabs-backward))
        ...)
    #+END_SRC
 ** Prevent the access to specified buffers
@@ -299,7 +300,7 @@
 
      ;; Is not magit buffer.
      (and (string-prefix-p "magit" name)
-	  (not (file-name-extension name)))
+          (not (file-name-extension name)))
      )))
      #+END_SRC
      The function shown is the default function from the =centaur-tabs= configuration, adding the =(string-prefix-p "*​mybuf" name)= part to prevent the access to every buffer with its name ending in "mybuf". You can either add this function as it is to preserve =centaur-tabs= default filters and add any Boolean function that you want to filter your buffers (i.e =string-prefix-p= or =string-suffix-p=) like in this example with the "mybuf" line, or completely override the function with your custom filters if you completely know what you're doing.
@@ -410,6 +411,10 @@
    tabs in the current window. Controlled by the variable
    ~centaur-tabs-show-count~.
 
+** Ace jump (thanks to Simon-Lin)
+   Enables quick tab switching through an Ace-jump/Avy-like interface. To use it, interactively call the ~centaur-tabs-ace-jump~ function. While on Ace-jump mode, you can press ~?~ to display a menu showing the possible actions available.
+     [[file:images/ace-jump.png]]
+
 ** Key bindings
    If you want to enable a series of key bindings with different tab managing functions, put the following in your configuration before the package is loaded (if you use =use-package=, this should go in the =:init= section):
    #+BEGIN_SRC emacs-lisp
@@ -454,12 +459,12 @@
     :load-path "~/.emacs.d/other/centaur-tabs"
     :config
     (setq centaur-tabs-style "bar"
-	  centaur-tabs-height 32
-	  centaur-tabs-set-icons t
-	  centaur-tabs-set-modified-marker t
-	  centaur-tabs-show-navigation-buttons t
-	  centaur-tabs-set-bar 'under
-	  x-underline-at-descent-line t)
+          centaur-tabs-height 32
+          centaur-tabs-set-icons t
+          centaur-tabs-set-modified-marker t
+          centaur-tabs-show-navigation-buttons t
+          centaur-tabs-set-bar 'under
+          x-underline-at-descent-line t)
     (centaur-tabs-headline-match)
     ;; (setq centaur-tabs-gray-out-icons 'buffer)
     ;; (centaur-tabs-enable-buffer-reordering)
@@ -475,38 +480,38 @@
   Other buffer group by `centaur-tabs-get-group-name' with project name."
       (list
        (cond
-	;; ((not (eq (file-remote-p (buffer-file-name)) nil))
-	;; "Remote")
-	((or (string-equal "*" (substring (buffer-name) 0 1))
-	     (memq major-mode '(magit-process-mode
-				magit-status-mode
-				magit-diff-mode
-				magit-log-mode
-				magit-file-mode
-				magit-blob-mode
-				magit-blame-mode
-				)))
-	 "Emacs")
-	((derived-mode-p 'prog-mode)
-	 "Editing")
-	((derived-mode-p 'dired-mode)
-	 "Dired")
-	((memq major-mode '(helpful-mode
-			    help-mode))
-	 "Help")
-	((memq major-mode '(org-mode
-			    org-agenda-clockreport-mode
-			    org-src-mode
-			    org-agenda-mode
-			    org-beamer-mode
-			    org-indent-mode
-			    org-bullets-mode
-			    org-cdlatex-mode
-			    org-agenda-log-mode
-			    diary-mode))
-	 "OrgMode")
-	(t
-	 (centaur-tabs-get-group-name (current-buffer))))))
+        ;; ((not (eq (file-remote-p (buffer-file-name)) nil))
+        ;; "Remote")
+        ((or (string-equal "*" (substring (buffer-name) 0 1))
+             (memq major-mode '(magit-process-mode
+                                magit-status-mode
+                                magit-diff-mode
+                                magit-log-mode
+                                magit-file-mode
+                                magit-blob-mode
+                                magit-blame-mode
+                                )))
+         "Emacs")
+        ((derived-mode-p 'prog-mode)
+         "Editing")
+        ((derived-mode-p 'dired-mode)
+         "Dired")
+        ((memq major-mode '(helpful-mode
+                            help-mode))
+         "Help")
+        ((memq major-mode '(org-mode
+                            org-agenda-clockreport-mode
+                            org-src-mode
+                            org-agenda-mode
+                            org-beamer-mode
+                            org-indent-mode
+                            org-bullets-mode
+                            org-cdlatex-mode
+                            org-agenda-log-mode
+                            diary-mode))
+         "OrgMode")
+        (t
+         (centaur-tabs-get-group-name (current-buffer))))))
     :hook
     (dashboard-mode . centaur-tabs-local-mode)
     (term-mode . centaur-tabs-local-mode)
@@ -516,12 +521,17 @@
     :bind
     ("C-<prior>" . centaur-tabs-backward)
     ("C-<next>" . centaur-tabs-forward)
+    ("C-S-<prior>" . centaur-tabs-move-current-tab-to-left)
+    ("C-S-<next>" . centaur-tabs-move-current-tab-to-right)
+    ("C-c t a" . centaur-tabs-ace-jump)
     ("C-c t s" . centaur-tabs-counsel-switch-group)
     ("C-c t p" . centaur-tabs-group-by-projectile-project)
     ("C-c t g" . centaur-tabs-group-buffer-groups)
+    ("C-c t o" . centaur-tabs-kill-other-buffers-in-current-group)
+    ("C-c t k" . centaur-tabs-kill-all-buffers-in-current-group)
     (:map evil-normal-state-map
-	  ("g t" . centaur-tabs-forward)
-	  ("g T" . centaur-tabs-backward)))
+          ("g t" . centaur-tabs-forward)
+          ("g T" . centaur-tabs-backward)))
 #+END_SRC
 
 * Useful commands
