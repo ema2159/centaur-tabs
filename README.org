@@ -420,7 +420,7 @@
    #+BEGIN_SRC emacs-lisp
      (setq centaur-tabs-enable-key-bindings t)
    #+END_SRC
-   This will enable a series of key bindings for centaur-tabs prefixed by ~"C-c t"~.
+   This will enable a series of key bindings for centaur-tabs prefixed by "C-c t".
 * TO DO [17/19]
   - [X] Integrate all-the-icons
   - [X] Improve all the icons placing
