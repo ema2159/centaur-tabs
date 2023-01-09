@@ -661,7 +661,6 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
 		   'local-map centaur-tabs-default-map)
 		""))
 	 (icon (if (and centaur-tabs-set-icons
-			(display-graphic-p)
 			(not centaur-tabs--buffer-show-groups))
 		   (propertize
 		    (centaur-tabs-icon tab face selected-p)
