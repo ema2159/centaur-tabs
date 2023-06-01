@@ -168,9 +168,30 @@ Default is 'hand.  The following scopes are possible:
 ;;; Icons
 ;;
 (defcustom centaur-tabs-set-icons nil
-  "When non nil, display an icon from all-the-icons alongside the tab name."
+  "When non nil, display an icon based on `centaur-tabs-icon-type' alongside the tab name."
   :group 'centaur-tabs
   :type 'boolean)
+
+(defcustom centaur-tabs-icon-type (and centaur-tabs-set-icons
+				       (or (require 'all-the-icons nil t)
+					   (require 'nerd-icons nil t)))
+  "Icon type. It should be one of `all-the-icons' and `nerd-icons'."
+  :group 'centaur-tabs
+  :type 'symbol
+  :set
+  (lambda (k v)
+    (pcase v
+      ('all-the-icons
+       (unless (require 'all-the-icons nil t)
+         (setq v nil)))
+      ('nerd-icons
+       (unless (require 'nerd-icons nil t)
+         (setq v nil)))
+      (type
+       (if (require 'all-the-icons nil t)
+	   (setq v 'all-the-icons)
+         (setq v nil))))
+    (set k v)))
 
 (defvar centaur-tabs-icon-scale-factor
   1.0
@@ -191,19 +212,41 @@ Default is 'hand.  The following scopes are possible:
   :group 'centaur-tabs
   :type 'boolean)
 
+(defun centaur-tabs--icon-for-file (file &rest args)
+  "Get the formatted icon for FILE.
+ARGS should be a plist containing `:height', `:v-adjust', or `:face' properties."
+  (pcase centaur-tabs-icon-type
+    ('all-the-icons (apply #'all-the-icons-icon-for-file file args))
+    ('nerd-icons (apply #'nerd-icons-icon-for-file file args))))
+
+(defun centaur-tabs--icon-for-mode (mode &rest args)
+  "Get the formatted icon for MODE.
+ARG-OVERRIDES should be a plist containining `:height',
+`:v-adjust' or `:face' properties like in the normal icon
+inserting functions."
+  (pcase centaur-tabs-icon-type
+    ('all-the-icons (apply #'all-the-icons-icon-for-mode mode args))
+    ('nerd-icons (apply #'nerd-icons-icon-for-mode mode args))))
+
+(defun centaur-tabs--auto-mode-match? (&optional file)
+  "Whether or not FILE's `major-mode' match against its `auto-mode-alist'."
+  (pcase centaur-tabs-icon-type
+    ('all-the-icons (apply #'all-the-icons-auto-mode-match? file))
+    ('nerd-icons (apply #'nerd-icons-auto-mode-match? file))))
+
 (defun centaur-tabs-icon (tab face selected)
-  "Generate all-the-icons icon for TAB using FACE's background.
+  "Generate icon for TAB using FACE's background.
 If icon gray out option enabled, gray out icon if not SELECTED."
-  (if (featurep 'all-the-icons)
+  (if centaur-tabs-icon-type
       (with-current-buffer (car tab)
 	(let* ((icon
 		(if (and (buffer-file-name)
-			 (all-the-icons-auto-mode-match?))
-		    (all-the-icons-icon-for-file
+			 (centaur-tabs--auto-mode-match?))
+		    (centaur-tabs--icon-for-file
 		     (file-name-nondirectory (buffer-file-name))
 		     :v-adjust centaur-tabs-icon-v-adjust
 		     :height centaur-tabs-icon-scale-factor)
-		  (all-the-icons-icon-for-mode
+		  (centaur-tabs--icon-for-mode
 		   major-mode
 		   :v-adjust centaur-tabs-icon-v-adjust
 		   :height centaur-tabs-icon-scale-factor)))
