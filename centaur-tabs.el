@@ -114,6 +114,13 @@ hidden, it is shown again.  Signal an error if Centaur-Tabs mode is off."
       ;; The tab bar is locally hidden, show it again.
       (kill-local-variable centaur-tabs-display-line-format))))
 
+(defun centaur-tabs-local-mode-if-enabled ()
+  "Enable `centaur-tabs-local-mode' if `centaur-tabs-mode' is on.
+Can safely be used in hooks without erroring-out in case that
+`centaur-tabs-mode' is disabled."
+  (when centaur-tabs-mode
+    (centaur-tabs-local-mode)))
+
 ;;; Centaur-Tabs mode
 ;;
 (defvar centaur-tabs--global-hlf nil)
