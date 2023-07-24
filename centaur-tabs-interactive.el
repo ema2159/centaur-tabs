@@ -596,7 +596,7 @@ Modified copy of `treemacs-visit-node-in-external-application`."
 	(when action-is-command-p
 	  (call-interactively action))
 	(when (not action-is-command-p)
-	  (let* ((menu-key (first choice))
+	  (let* ((menu-key (cl-first choice))
 		 (choice-is-group-p (string= centaur-tabs--groups-submenu-key (symbol-name menu-key)))
 		 (name (car (last choice)))
 		 (name-as-string (symbol-name name)))
