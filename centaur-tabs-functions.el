@@ -106,10 +106,8 @@ visible."
     "*ediff"
     "*tramp"
     " *Mini"
-    "*help"
     "*straight"
-    " *temp"
-    "*Help")
+    " *temp")
   "List of prefixes that indicates which buffers should not be included as tabs.
 Buffers that have names that start with any of these strings will be ignored."
   :type '(repeat string)
