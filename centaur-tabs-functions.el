@@ -727,17 +727,17 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
             (when centaur-tabs-show-jump-identifier
               (when (or (eq centaur-tabs-show-jump-identifier 'always)
                         centaur-tabs-ace-jump-active)
-                (propertize
-                 (format "%c" (nth (cl-position tab
-                                                (centaur-tabs-view (centaur-tabs-current-tabset t)))
-                                   centaur-tabs-ace-jump-keys))
-                 'centaur-tabs-tab tab
-                 'face (if selected-p
-                           'centaur-tabs-jump-identifier-selected
-                         'centaur-tabs-jump-identifier-unselected)
-                 'pointer centaur-tabs-mouse-pointer
-                 'help-echo buf-file-name
-                 'local-map centaur-tabs-default-map)))
+                (when-let ((position (nth (cl-position tab (centaur-tabs-view (centaur-tabs-current-tabset t)))
+                                          centaur-tabs-ace-jump-keys)))
+                  (propertize
+                   (format "%c" position)
+                   'centaur-tabs-tab tab
+                   'face (if selected-p
+                             'centaur-tabs-jump-identifier-selected
+                           'centaur-tabs-jump-identifier-unselected)
+                   'pointer centaur-tabs-mouse-pointer
+                   'help-echo buf-file-name
+                   'local-map centaur-tabs-default-map))))
 
             ;; close button and/or modified marker
             (unless centaur-tabs-ace-jump-active
