@@ -1,6 +1,7 @@
 ;;; centaur-tabs-functions.el --- centaur-tabs logic components -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2019-2020 Emmanuel Bustos
+;; Copyright (C) 2019-2024  Emmanuel Bustos
+;; Copyright (C) 2024  Jen-Chieh Shen
 
 ;; This file is not part of GNU Emacs.
 
@@ -18,9 +19,11 @@
 ;; along with this program; see the file COPYING.  If not, write to
 ;; the Free Software Foundation, Inc., 51 Franklin Street, Fifth
 ;; Floor, Boston, MA 02110-1301, USA.
-;;
+
 ;;; Commentary:
+;;
 ;; This file contains functions that control the logic of centaur-tabs
+;;
 
 ;;; Code:
 

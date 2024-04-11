@@ -1,10 +1,10 @@
 ;;; centaur-tabs-interactive.el --- centaur-tabs interactive functions and plugins support lexical-binding: t; -*-
 
-;; Copyright (C) 2019-2020 Emmanuel Bustos
+;; Copyright (C) 2019-2024  Emmanuel Bustos
+;; Copyright (C) 2024  Jen-Chieh Shen
 
 ;; This file is not part of GNU Emacs.
 
-;;
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
 ;; published by the Free Software Foundation; either version 2, or
@@ -19,9 +19,11 @@
 ;; along with this program; see the file COPYING.  If not, write to
 ;; the Free Software Foundation, Inc., 51 Franklin Street, Fifth
 ;; Floor, Boston, MA 02110-1301, USA.
-;;
+
 ;;; Commentary:
+;;
 ;; This file contains centaur-tabs interactive functions and plugins support
+;;
 
 ;;; Code:
 
