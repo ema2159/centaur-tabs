@@ -24,9 +24,11 @@
 ;; This file contains centaur-tabs interactive functions and plugins support
 
 ;;; Code:
+
 ;;; Requires
 (require 'centaur-tabs-elements)
 (require 'centaur-tabs-functions)
+
 ;;;;;;;;;;;;;;;;;;;;;;; Interactive functions ;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun centaur-tabs-switch-group (&optional groupname)
@@ -623,5 +625,4 @@ Modified copy of `treemacs-visit-node-in-external-application`."
 
 
 (provide 'centaur-tabs-interactive)
-
 ;;; centaur-tabs-interactive.el ends here

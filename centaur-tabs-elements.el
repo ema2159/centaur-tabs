@@ -25,11 +25,14 @@
 ;; This file contains the visual components of centaur-tabs
 
 ;;; Code:
+
 ;;
 ;;; Requires
 ;;
+
 (require 'color)
 (require 'powerline)
+
 ;;; Faces
 ;;
 (defface centaur-tabs-default
@@ -861,5 +864,4 @@ Create one if the frame doesn't have one yet."
   (setq centaur-tabs-style-right (funcall (intern (format "powerline-%s-left" tab-style)) nil 'centaur-tabs-default centaur-tabs-height)))
 
 (provide 'centaur-tabs-elements)
-
 ;;; centaur-tabs-elements.el ends here

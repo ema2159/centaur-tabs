@@ -6,13 +6,12 @@
 ;; Description: Provide an out of box configuration to use highly customizable tabs.
 ;; URL: https://github.com/ema2159/centaur-tabs
 ;; Author: Emmanuel Bustos <ema2159@gmail.com>
-;; Maintainer: Emmanuel Bustos <ema2159@gmail.com>
+;; Maintainer: Jen-Chieh Shen <jcs090218@gmail.com>
 ;; Created: 2019-21-19 22:14:34
 ;; Version: 5
 ;; Known Compatibility: GNU Emacs 26.2
 ;; Package-Requires: ((emacs "24.4") (powerline "2.4")  (cl-lib "0.5"))
-;;
-;;
+;; Keywords: frames
 
 ;;; This file is NOT part of GNU Emacs
 
@@ -54,10 +53,12 @@
 ;;
 
 ;;; Code:
+
 ;;; Requires
 (require 'centaur-tabs-elements)
 (require 'centaur-tabs-functions)
 (require 'centaur-tabs-interactive)
+
 ;;;;;;;;;;;;;;;;;;;;;;; Centaur-Tabs source code ;;;;;;;;;;;;;;;;;;;;;;;
 
 (defgroup centaur-tabs nil
@@ -214,5 +215,4 @@ Run as `centaur-tabs-quit-hook'."
 (add-hook 'centaur-tabs-quit-hook #'centaur-tabs-buffer-quit)
 
 (provide 'centaur-tabs)
-
 ;;; centaur-tabs.el ends here

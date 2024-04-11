@@ -24,6 +24,7 @@
 ;; This file contains functions that control the logic of centaur-tabs
 
 ;;; Code:
+
 ;;; Require
 (require 'cl-lib)
 (require 'seq)
@@ -1425,5 +1426,4 @@ Refer to  the variable `centaur-tabs-enable-ido-completion'."
       centaur-tabs-hide-tabs-hooks)
 
 (provide 'centaur-tabs-functions)
-
 ;;; centaur-tabs-functions.el ends here
