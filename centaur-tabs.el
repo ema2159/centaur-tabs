@@ -58,6 +58,10 @@
 (require 'centaur-tabs-functions)
 (require 'centaur-tabs-interactive)
 
+;; Compiler pacifier
+(declare-function undo-tree-undo-1 "ext:undo-tree.el")
+(declare-function undo-tree-redo-1 "ext:undo-tree.el")
+
 ;;;;;;;;;;;;;;;;;;;;;;; Centaur-Tabs source code ;;;;;;;;;;;;;;;;;;;;;;;
 
 (defgroup centaur-tabs nil
@@ -65,12 +69,6 @@
   :group 'convenience)
 
 (defvar centaur-tabs--buffer-show-groups nil)
-
-;;
-;;; Externals
-
-(declare-function undo-tree-undo-1 "ext:undo-tree.el")
-(declare-function undo-tree-redo-1 "ext:undo-tree.el")
 
 ;;
 ;;; Minor modes
