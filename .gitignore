@@ -1,1 +1,4 @@
-/centaur-tabs.elc
+*.elc
+
+/.eask
+/dist
