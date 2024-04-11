@@ -636,10 +636,10 @@ remain visible.  The active window will the the EVT source."
   "This is a nasty trick to make the current tab visible, since
 `centaur-tabs--track-selected' or `centaur-tabs-auto-scroll-flag' seems not
 to work.  EVT is used to change the active window."
-  ;;; This works if the tab has not reached the last position
+  ;; This works if the tab has not reached the last position
   (centaur-tabs-forward--button evt)
   (centaur-tabs-backward--button evt)
-  ;;; Just in case the tab has the tab reached the last position
+  ;; Just in case the tab has the tab reached the last position
   (centaur-tabs-backward--button evt)
   (centaur-tabs-forward--button evt))
 
@@ -906,8 +906,9 @@ Inhibit display of the tab bar in current window where
 (defconst centaur-tabs-header-line-format '(:eval (centaur-tabs-line))
   "The tab bar header line format.")
 
-;;; Cyclic navigation through tabs
 ;;
+;;; Cyclic navigation through tabs
+
 (defun centaur-tabs-cycle (&optional backward)
   "Cycle to the next available tab.
 The scope of the cyclic navigation through tabs is specified by the
@@ -1044,8 +1045,9 @@ visiting a file.  The current buffer is always included."
 	(setq mode (get mode 'derived-mode-parent))))
     derived))
 
-;;; Group buffers in tab sets.
 ;;
+;;; Group buffers in tab sets.
+
 (defvar centaur-tabs--buffers nil)
 
 (defun centaur-tabs-buffer-update-groups ()
@@ -1097,8 +1099,8 @@ Return the the first group where the current buffer is."
   ;; Return the first group the current buffer belongs to.
   (car (nth 2 (assq (current-buffer) centaur-tabs--buffers))))
 
-;;; Tab bar callbacks
 ;;
+;;; Tab bar callbacks
 
 (defsubst centaur-tabs-buffer-show-groups (flag)
   "Set display of tabs for groups of buffers to FLAG."
@@ -1282,8 +1284,9 @@ buffer changed."
   (setq centaur-tabs-adjust-buffer-order-function 'centaur-tabs-adjust-buffer-order-alphabetically)
   (add-hook 'post-command-hook centaur-tabs-adjust-buffer-order-function))
 
-;;; Buffer grouping and tab hiding
 ;;
+;;; Buffer grouping and tab hiding
+
 (defun centaur-tabs-project-name ()
   "Get project name for tabs."
   (let* ((project-current (project-current))

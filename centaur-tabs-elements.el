@@ -407,8 +407,9 @@ Taken from `doom-modeline'."
 			  2
 			  centaur-tabs-bar-height))
 
-;;; Navigation buttons
 ;;
+;;; Navigation buttons
+
 (defcustom centaur-tabs-show-navigation-buttons nil
   "When non-nil, show the buttons for backward/forward tabs."
   :group 'centaur-tabs
@@ -434,8 +435,9 @@ Taken from `doom-modeline'."
   :group 'centaur-tabs
   :type 'boolean)
 
-;;; New tab button
 ;;
+;;; New tab button
+
 (defcustom centaur-tabs-show-new-tab-button t
   "When non-nil, show the button to create a new tab."
   :group 'centaur-tabs
@@ -446,8 +448,9 @@ Taken from `doom-modeline'."
   :group 'centaur-tabs
   :type 'string)
 
-;;; Separators
 ;;
+;;; Separators
+
 (defvar centaur-tabs-style-left nil)
 (defvar centaur-tabs-style-right nil)
 
