@@ -1,11 +1,9 @@
 ;;; centaur-tabs-elements.el --- centaur-tabs visual components and customizations -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2019-2020 Emmanuel Bustos
-;; Package-Requires: ((emacs "24.4") (powerline "2.4")  (cl-lib "0.5"))
 
 ;; This file is not part of GNU Emacs.
 
-;;
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
 ;; published by the Free Software Foundation; either version 2, or
@@ -26,15 +24,20 @@
 
 ;;; Code:
 
-;;
-;;; Requires
-;;
-
 (require 'color)
 (require 'powerline)
 
-;;; Faces
+;; Compiler pacifier
+(declare-function all-the-icons-auto-mode-match? "ext:all-the-icons.el" t t)
+(declare-function all-the-icons-icon-for-file "ext:all-the-icons.el" t t)
+(declare-function all-the-icons-icon-for-mode "ext:all-the-icons.el" t t)
+(declare-function nerd-icons-auto-mode-match? "ext:nerd-icons.el")
+(declare-function nerd-icons-icon-for-file "ext:nerd-icons.el" t t)
+(declare-function nerd-icons-icon-for-mode "ext:nerd-icons.el" t t)
+
 ;;
+;;; Faces
+
 (defface centaur-tabs-default
   '((t
      (:background "black" :foreground "black")))
@@ -113,8 +116,9 @@
   '((t (:foreground "gray40")))
   "Face for the buffer when centaur-tabs-ace-jump is invoked.")
 
-;;; Tabs' display line
 ;;
+;;; Tabs' display line
+
 (defvar centaur-tabs-display-line
   (if (boundp 'tab-line-format)
       'tab-line
@@ -125,8 +129,9 @@
       'tab-line-format
     'header-line-format))
 
-;;; Tabs' characteristics
 ;;
+;;; Tabs' characteristics
+
 (defcustom centaur-tabs-style "bar"
   "The style of tab."
   :group 'centaur-tabs
@@ -158,7 +163,7 @@ background color of the `default' face otherwise."
 
 (defcustom centaur-tabs-mouse-pointer 'hand
   "Cursor to display when hovering the tabs.
-Default is 'hand.  The following scopes are possible:
+Default is `'hand'.  The following scopes are possible:
 - arrow
 - hand
 - vdrag
@@ -168,10 +173,24 @@ Default is 'hand.  The following scopes are possible:
   :group 'centaur-tabs
   :type 'variable)
 
-;;; Icons
+(defcustom centaur-tabs-set-bar nil
+  "When non nil, display a bar to show the currently selected tab.
+There are three options:
+- `'left': displays the bar at the left of the currently selected tab.
+- `'under': displays the bar under the currently selected tab.
+- `'over': displays the bar over the currently selected tab."
+  :group 'centaur-tabs
+  :type '(choice :tag "Display bar at..."
+		 (const :tag "Put bar on the left" left)
+		 (const :tag "Put bar as an underline" under)
+		 (const :tag "Put bar as an overline" over)))
+
 ;;
+;;; Icons
+
 (defcustom centaur-tabs-set-icons nil
-  "When non nil, display an icon based on `centaur-tabs-icon-type' alongside the tab name."
+  "When non nil, display an icon based on `centaur-tabs-icon-type' alongside
+the tab name."
   :group 'centaur-tabs
   :type 'boolean)
 
@@ -186,14 +205,14 @@ Default is 'hand.  The following scopes are possible:
     (pcase v
       ('all-the-icons
        (unless (require 'all-the-icons nil t)
-         (setq v nil)))
+	 (setq v nil)))
       ('nerd-icons
        (unless (require 'nerd-icons nil t)
-         (setq v nil)))
-      (type
+	 (setq v nil)))
+      ('type
        (if (require 'all-the-icons nil t)
 	   (setq v 'all-the-icons)
-         (setq v nil))))
+	 (setq v nil))))
     (set k v)))
 
 (defvar centaur-tabs-icon-scale-factor
@@ -274,14 +293,15 @@ If icon gray out option enabled, gray out icon if not SELECTED."
 	    "")))
     ""))
 
-;;; Ace-window style tab switching
 ;;
+;;; Ace-window style tab switching
+
 (defcustom centaur-tabs-show-jump-identifier 'prompted
   "Whether to show the tab identifier for centaur-tabs-ace-jump.
 It has 3 options:
-- 'nil, never show the jump identifier.
-- 'prompted, only show it when using centaur-tabs-ace-jump.
-- 'always, always show it regardless of the status."
+- `'nil', never show the jump identifier.
+- `'prompted', only show it when using centaur-tabs-ace-jump.
+- `'always', always show it regardless of the status."
   :group 'centaur-tabs
   :type '(choice :tag "show identifier when..."
 		 (const :tag "Never" nil)
@@ -289,7 +309,9 @@ It has 3 options:
 		 (const :tag "Always" always)))
 
 (defcustom centaur-tabs-ace-jump-dim-buffer t
-  "Whether to dim the current buffer when centaur-ace-jump is activated.")
+  "Whether to dim the current buffer when centaur-ace-jump is activated."
+  :type 'boolean
+  :group 'centaur-tabs)
 
 (defvar centaur-tabs-ace-jump-keys
   '(?1 ?2 ?3 ?4 ?5 ?6 ?7 ?8 ?9)
@@ -310,8 +332,9 @@ The value of each element must be in the form:
 \(exit, jump-to-tab, close-tab, swap-tab, backward-group,
 forward-group, show-help).")
 
-;;; Close buttons, modified marker and edges' margins
 ;;
+;;; Close buttons, modified marker and edges' margins
+
 (defcustom centaur-tabs-set-close-button t
   "When non nil, display a clickable close button on the right side of the tabs."
   :group 'centaur-tabs
@@ -347,19 +370,8 @@ forward-group, show-help).")
   :group 'centaur-tabs
   :type 'string)
 
-;;; Selected tab bar
 ;;
-(defcustom centaur-tabs-set-bar nil
-  "When non nil, display a bar to show the currently selected tab.
-There are three options:
-- 'left: displays the bar at the left of the currently selected tab.
-- 'under: displays the bar under the currently selected tab.
-- 'over: displays the bar over the currently selected tab."
-  :group 'centaur-tabs
-  :type '(choice :tag "Display bar at..."
-		 (const :tag "Put bar on the left" left)
-		 (const :tag "Put bar as an underline" under)
-		 (const :tag "Put bar as an overline" over)))
+;;; Selected tab bar
 
 (defun centaur-tabs--make-xpm (face width height)
   "Create an XPM bitmap via FACE WIDTH and HEIGHT.
@@ -501,7 +513,8 @@ RED, GREEN and BLUE should be between 0.0 and 1.0, inclusive."
   (cl-mapcar 'reverse pattern))
 
 (defun centaur-tabs-separator-row-pattern (fill total &optional fade)
-  "Make a list that has FILL 0s out of TOTAL 1s with FADE 2s to the right of the fill."
+  "Make a list that has FILL 0s out of TOTAL 1s with FADE 2s to the right of
+the fill."
   (unless fade
     (setq fade 0))
   (let ((fill (min fill total))

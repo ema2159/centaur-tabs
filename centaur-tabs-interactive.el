@@ -25,9 +25,41 @@
 
 ;;; Code:
 
-;;; Requires
+(require 'cl-lib)
 (require 'centaur-tabs-elements)
-(require 'centaur-tabs-functions)
+
+;; Compiler pacifier
+(declare-function ivy-read "ext:ivy.el" t t)
+(declare-function helm-build-sync-source "ext:helm-source.el" t t)
+(defvar helm-source-centaur-tabs-group)
+(declare-function projectile-project-root "ext:projectile.el" t t)
+(declare-function projectile-project-name "ext:projectile.el" t t)
+
+(declare-function centaur-tabs-do-select "centaur-tabs-functions.el")
+(declare-function centaur-tabs-get-tab-from-event "centaur-tabs-functions.el")
+(declare-function centaur-tabs-tab-value "centaur-tabs-functions.el")
+(declare-function centaur-tabs-get-tabset "centaur-tabs-functions.el")
+(declare-function centaur-tabs-buffer-show-groups "centaur-tabs-functions.el")
+(declare-function centaur-tabs-buffer-close-tab "centaur-tabs-functions.el")
+(declare-function centaur-tabs-view "centaur-tabs-functions.el")
+(declare-function centaur-tabs-get-extensions "centaur-tabs-functions.el")
+(declare-function centaur-tabs-selected-tab "centaur-tabs-functions.el")
+(declare-function centaur-tabs-display-update "centaur-tabs-functions.el")
+(declare-function centaur-tabs-set-template "centaur-tabs-functions.el")
+(declare-function centaur-tabs-buffer-select-tab "centaur-tabs-functions.el")
+(declare-function centaur-tabs-tabs "centaur-tabs-functions.el")
+(declare-function centaur-tabs-tab-tabset "centaur-tabs-functions.el")
+(declare-function centaur-tabs-get-tabsets-tabset "centaur-tabs-functions.el")
+(declare-function centaur-tabs-current-tabset "centaur-tabs-functions.el")
+(declare-function centaur-tabs-completing-read "centaur-tabs-functions.el")
+(declare-function centaur-tabs-get-groups "centaur-tabs-functions.el")
+
+(defvar centaur-tabs-cycle-scope)
+(defvar centaur-tabs-current-tabset)
+(defvar centaur-tabs-last-focused-buffer-group)
+(defvar centaur-tabs-buffer-list-function)
+(defvar centaur-tabs-buffer-groups-function)
+(defvar centaur-tabs--buffer-show-groups)
 
 ;;;;;;;;;;;;;;;;;;;;;;; Interactive functions ;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -74,7 +106,8 @@ TYPE is default option."
 
 (defun centaur-tabs-backward-tab-other-window (&optional reversed)
   "Move to left tab in other window.
-Optional argument REVERSED default is move backward, if reversed is non-nil move forward."
+Optional argument REVERSED default is move backward, if reversed is non-nil
+move forward."
   (interactive)
   (other-window 1)
   (if reversed
@@ -161,8 +194,7 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
     (centaur-tabs-kill-buffer-match-rule
      (lambda (_buffer) t))
     ;; Switch to next group.
-    (centaur-tabs-forward-group)
-    ))
+    (centaur-tabs-forward-group)))
 
 (defun centaur-tabs-kill-other-buffers-in-current-group ()
   "Kill all buffers except current buffer in current group."
@@ -171,8 +203,7 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
 	 (currentbuffer (current-buffer)))
     ;; Kill all buffers in current group.
     (centaur-tabs-kill-buffer-match-rule
-     (lambda (buffer) (not (equal buffer currentbuffer))))
-    ))
+     (lambda (buffer) (not (equal buffer currentbuffer))))))
 
 (defun centaur-tabs-kill-unmodified-buffers-in-current-group ()
   "Kill all unmodified buffer in current group."
@@ -181,8 +212,7 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
 	 (currentbuffer (current-buffer)))
     ;; Kill all buffers in current group.
     (centaur-tabs-kill-buffer-match-rule
-     (lambda (buffer) (not (buffer-modified-p buffer))))
-    ))
+     (lambda (buffer) (not (buffer-modified-p buffer))))))
 
 
 (defun centaur-tabs-kill-match-buffers-in-current-group ()
@@ -201,8 +231,7 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
 	 )))
     ;; Switch to next group if last file killed.
     (when (equal (length extension-names) 1)
-      (centaur-tabs-forward-group))
-    ))
+      (centaur-tabs-forward-group))))
 
 (defun centaur-tabs-keep-match-buffers-in-current-group ()
   "Keep all buffers match extension in current group."
@@ -216,12 +245,10 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
     (centaur-tabs-kill-buffer-match-rule
      (lambda (buffer)
        (let ((filename (buffer-file-name buffer)))
-	 (and filename (not (string-equal (file-name-extension filename) match-extension)))
-	 )))
+	 (and filename (not (string-equal (file-name-extension filename) match-extension))))))
     ;; Switch to next group if last file killed.
     (when (equal (length extension-names) 1)
-      (centaur-tabs-forward-group))
-    ))
+      (centaur-tabs-forward-group))))
 
 (defun centaur-tabs-select-visible-nth-tab (tab-index)
   "Select visible tab with TAB-INDEX'.
@@ -338,8 +365,8 @@ ACTION has to be one of value in `centuar-tabs-ace-dispatch-alist'"
 		    ((eq action-cache 'show-help)      ; help menu
 		     (message "%s" (mapconcat
 				    (lambda (elem) (format "%s: %s"
-						           (key-description (vector (car elem)))
-						           (caddr elem)))
+							   (key-description (vector (car elem)))
+							   (caddr elem)))
 				    centuar-tabs-ace-dispatch-alist
 				    "\n")))
 		    (t (setq action action-cache)      ; other actions
@@ -450,7 +477,8 @@ Should be buffer local and speed up calculation of buffer groups.")
 
 
 (defun centaur-tabs-extract-window-to-new-frame()
-  "Kill the current window in the current frame, and open the current buffer in a new frame."
+  "Kill the current window in the current frame, and open the current buffer
+in a new frame."
   (interactive)
   (unless (centaur-tabs--one-window-p)
     (let ((buffer (current-buffer)))
@@ -462,8 +490,8 @@ Should be buffer local and speed up calculation of buffer groups.")
   ;;; From https://emacsredux.com/blog/2013/03/27/copy-filename-to-the-clipboard/
   (interactive)
   (let* ((filename (if (equal major-mode 'dired-mode)
-                       default-directory
-                     (buffer-file-name)))
+		       default-directory
+		     (buffer-file-name)))
 	 (filename (expand-file-name filename)))
     (when filename
       (kill-new filename)
@@ -497,7 +525,6 @@ Modified copy of `treemacs-visit-node-in-external-application`."
 	 (start-process "" nil "xdg-open" path)))
       (_ (message "Don't know how to open files on %s." (symbol-name system-type))))))
 
-
 (defun centaur-tabs--copy-directory-name-to-clipboard ()
   "Copy the current directory name to the clipboard."
   (interactive)
@@ -514,16 +541,12 @@ Modified copy of `treemacs-visit-node-in-external-application`."
   "Menu definition with a list of tabs for the current group."
   (let* ((tabset (centaur-tabs-get-tabset centaur-tabs-last-focused-buffer-group))
 	 (tabs-in-group (centaur-tabs-tabs tabset))
-         (buffers (mapcar #'centaur-tabs-tab-value tabs-in-group))
+	 (buffers (mapcar #'centaur-tabs-tab-value tabs-in-group))
 	 (sorted-tabnames (sort (mapcar #'buffer-name buffers) #'string<)))
     (mapcar (lambda (s) `[,s  ,s]) sorted-tabnames)))
 
-
-
 (defvar centaur-tabs--groups-submenu-key "Tab groups")
 (defvar centaur-tabs--tabs-submenu-key "Go to tab of group")
-
-
 
 (defun centaur-tabs--kill-this-buffer-dont-ask()
   "Kill the current buffer without confirmation."
@@ -531,7 +554,6 @@ Modified copy of `treemacs-visit-node-in-external-application`."
   (kill-buffer (current-buffer))
   (centaur-tabs-display-update)
   (redisplay t))
-
 
 (defun centaur-tabs--tab-menu-definition ()
   "Definition of the context menu of a tab."
@@ -560,8 +582,7 @@ Modified copy of `treemacs-visit-node-in-external-application`."
      :active default-directory]
     "----"
     ,( append (list centaur-tabs--groups-submenu-key) (centaur-tabs--tab-submenu-groups-definition))
-    ,( append (list centaur-tabs--tabs-submenu-key) (centaur-tabs--tab-submenu-tabs-definition))
-    ))
+    ,( append (list centaur-tabs--tabs-submenu-key) (centaur-tabs--tab-submenu-tabs-definition))))
 
 (defun centaur-tabs--one-window-p ()
   "Like `one-window-p`, but taking into account side windows like treemacs."
@@ -576,20 +597,16 @@ Modified copy of `treemacs-visit-node-in-external-application`."
      (lambda (tab) (string= tabname (buffer-name (centaur-tabs-tab-value tab))))
      seq)))
 
-
 (defun centaur-tabs--tab-menu (event)
-  "Show a context menu for the clicked tab or button.  The clicked tab, identified by EVENT, is selected."
+  "Show a context menu for the clicked tab or button.
+The clicked tab, identified by EVENT, is selected."
   (interactive "e" )
-
   (let ((click-on-tab-p (ignore-errors (centaur-tabs-get-tab-from-event event))))
-
     (when (not click-on-tab-p)
       (centaur-tabs--groups-menu))
-
     (when click-on-tab-p
       (centaur-tabs-do-select event)
       (redisplay t)
-
       (let*
 	  ((menu (easy-menu-create-menu nil (centaur-tabs--tab-menu-definition)))
 	   (choice (x-popup-menu t menu))
@@ -598,7 +615,7 @@ Modified copy of `treemacs-visit-node-in-external-application`."
 	(when action-is-command-p
 	  (call-interactively action))
 	(when (not action-is-command-p)
-	  (let* ((menu-key (first choice))
+	  (let* ((menu-key (cl-first choice))
 		 (choice-is-group-p (string= centaur-tabs--groups-submenu-key (symbol-name menu-key)))
 		 (name (car (last choice)))
 		 (name-as-string (symbol-name name)))
@@ -606,11 +623,9 @@ Modified copy of `treemacs-visit-node-in-external-application`."
 		(centaur-tabs-switch-group name-as-string)
 	      (switch-to-buffer name-as-string))))))))
 
-
 (defun centaur-tabs--groups-menu ()
   "Show a popup menu with the centaur tabs groups."
   (interactive)
-
   (let*
       ((sorted-groups (centaur-tabs--tab-submenu-groups-definition))
        (menu (easy-menu-create-menu "Tab groups" (centaur-tabs--tab-submenu-groups-definition)))
@@ -622,7 +637,6 @@ Modified copy of `treemacs-visit-node-in-external-application`."
     (when (not action-is-command-p)
       (let ((group (car (last choice))))
 	(centaur-tabs-switch-group (format "%s" group))))))
-
 
 (provide 'centaur-tabs-interactive)
 ;;; centaur-tabs-interactive.el ends here

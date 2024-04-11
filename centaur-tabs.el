@@ -54,7 +54,6 @@
 
 ;;; Code:
 
-;;; Requires
 (require 'centaur-tabs-elements)
 (require 'centaur-tabs-functions)
 (require 'centaur-tabs-interactive)
@@ -67,15 +66,23 @@
 
 (defvar centaur-tabs--buffer-show-groups nil)
 
-;;; Minor modes
 ;;
+;;; Externals
+
+(declare-function undo-tree-undo-1 "ext:undo-tree.el")
+(declare-function undo-tree-redo-1 "ext:undo-tree.el")
+
+;;
+;;; Minor modes
+
 (defsubst centaur-tabs-mode-on-p ()
   "Return non-nil if Centaur-Tabs mode is on."
   (eq (default-value centaur-tabs-display-line-format)
       centaur-tabs-header-line-format))
 
-;;; Centaur-Tabs-Local mode
 ;;
+;;; Centaur-Tabs-Local mode
+
 (defvar centaur-tabs--local-hlf nil)
 
 ;;;###autoload
@@ -149,19 +156,20 @@ Returns non-nil if the new state is enabled.
 	    (buffer-list))
       ;; Restore previous `centaur-tabs-display-line-format'.
       (set-default centaur-tabs-display-line-format centaur-tabs--global-hlf)
-      (centaur-tabs-free-tabsets-store))
-    ))
+      (centaur-tabs-free-tabsets-store)))
+  ;; Make sure it refresh every windows!
+  (force-window-update))
 
-;;; Tab bar buffer setup
 ;;
+;;; Tab bar buffer setup
+
 (defun centaur-tabs-buffer-init ()
   "Initialize tab bar buffer data.
 Run as `centaur-tabs-init-hook'."
   (setq centaur-tabs--buffers nil
 	centaur-tabs-current-tabset-function 'centaur-tabs-buffer-tabs
 	centaur-tabs-tab-label-function 'centaur-tabs-buffer-tab-label
-	centaur-tabs-select-tab-function 'centaur-tabs-buffer-select-tab
-	)
+	centaur-tabs-select-tab-function 'centaur-tabs-buffer-select-tab)
   ;; If set, initialize selected overline
   (when (eq centaur-tabs-set-bar 'under)
     (set-face-attribute 'centaur-tabs-selected nil
@@ -202,8 +210,7 @@ Run as `centaur-tabs-quit-hook'."
   (setq centaur-tabs--buffers nil
 	centaur-tabs-current-tabset-function nil
 	centaur-tabs-tab-label-function nil
-	centaur-tabs-select-tab-function nil
-	)
+	centaur-tabs-select-tab-function nil)
   (remove-hook 'after-save-hook 'centaur-tabs-after-modifying-buffer)
   (remove-hook 'first-change-hook 'centaur-tabs-on-modifying-buffer)
   (remove-hook 'kill-buffer-hook 'centaur-tabs-buffer-track-killed)

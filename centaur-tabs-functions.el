@@ -4,7 +4,6 @@
 
 ;; This file is not part of GNU Emacs.
 
-;;
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
 ;; published by the Free Software Foundation; either version 2, or
@@ -25,14 +24,11 @@
 
 ;;; Code:
 
-;;; Require
 (require 'cl-lib)
 (require 'seq)
 (require 'centaur-tabs-elements)
 
 ;; Compiler pacifier
-(declare-function ivy-read "ext:ivy.el" t t)
-(declare-function helm-build-sync-source "ext:helm-source.el" t t)
 (declare-function all-the-icons-match? "ext:all-the-icons.el" t t)
 (declare-function all-the-icons-auto-mode-match? "ext:all-the-icons.el" t t)
 (declare-function all-the-icons-icon-for-file "ext:all-the-icons.el" t t)
@@ -41,12 +37,18 @@
 (declare-function nerd-icons-auto-mode-match? "ext:nerd-icons.el" t t)
 (declare-function nerd-icons-icon-for-file "ext:nerd-icons.el" t t)
 (declare-function nerd-icons-icon-for-mode "ext:nerd-icons.el" t t)
-(declare-function projectile-project-root "ext:projectile.el" t t)
-(declare-function projectile-project-name "ext:projectile.el" t t)
-(defvar helm-source-centaur-tabs-group)
 
-;;; Customs
+(declare-function vterm "ext:vterm.el")
+
+(declare-function centaur-tabs-move-current-tab-to-right "nerd-icons.el")
+(declare-function centaur-tabs-move-current-tab-to-left "nerd-icons.el")
+
+(defvar centaur-tabs--buffer-show-groups)
+(defvar centaur-tabs-ace-jump-active)
+
 ;;
+;;; Customs
+
 (defcustom centaur-tabs-cycle-scope nil
   "*Specify the scope of cyclic navigation through tabs.
 The following scopes are possible:
@@ -72,7 +74,8 @@ visible."
   :type 'boolean)
 
 (defcustom centaur-tabs-common-group-name "Common"
-  "If the current buffer does not belong to any project the group name uses the name of this variable."
+  "If the current buffer does not belong to any project the group name uses the
+name of this variable."
   :group 'centaur-tabs
   :type 'string)
 
@@ -295,87 +298,9 @@ When not specified, ELLIPSIS defaults to ‘...’."
     map)
   "Keymap used for setting mouse events for new tab button.")
 
-;;; Events and event functions
 ;;
-(defun centaur-tabs-buffer-close-tab (tab)
-  "Function for closing TAB."
-  (let ((buffer (centaur-tabs-tab-value tab)))
-    (with-current-buffer buffer
-      (kill-buffer buffer))
-    (centaur-tabs-display-update)))
-
-(defun centaur-tabs-get-tab-from-event (event)
-  "Given a mouse EVENT, extract the tab at the mouse point."
-  (let ((pos (posn-string (event-start event))))
-    (get-text-property (cdr pos) 'centaur-tabs-tab (car pos))))
-
-(defun centaur-tabs-do-select (event)
-  "Given a mouse EVENT, select the tab at the mouse point."
-  (interactive "e")
-  (select-window (posn-window (event-start event)))
-  (centaur-tabs-buffer-select-tab `,(centaur-tabs-get-tab-from-event event)))
-
-(defun centaur-tabs-do-close (event)
-  "Given a mouse EVENT, close the tab at the mouse point."
-  (interactive "e")
-  (let ((window (posn-window (event-start event))))
-    (with-selected-window window
-      (select-window window)
-      (let ((foreground-buffer-name (buffer-name)))
-	(centaur-tabs-buffer-select-tab `,(centaur-tabs-get-tab-from-event event))
-
-	(let* ((buffer             (window-buffer window))
-	       (target-buffer-name (buffer-name))
-	       (same-target-check  (string-equal foreground-buffer-name target-buffer-name))
-	       (window-num         (- (length (get-buffer-window-list buffer))
-				      (if same-target-check 0 1))))
-          (if (> window-num 1)
-              (delete-window window)
-            (centaur-tabs-buffer-close-tab `,(centaur-tabs-get-tab-from-event event))))))))
-
-(defun centaur-tabs-backward--button (event)
-  "Same as centaur-tabs-backward, but changing window to EVENT source."
-  (interactive "e")
-  (select-window (posn-window (event-start event)))
-  (centaur-tabs-backward))
-
-(defun centaur-tabs-forward--button (event)
-  "Same as centaur-tabs-forward, but changing window to EVENT source."
-  (interactive "e")
-  (select-window (posn-window (event-start event)))
-  (centaur-tabs-forward))
-
-(defun centaur-tabs-new-tab--button (event)
-  "Same as centaur-tabs--create-new-tab, but changing window to EVENT source."
-  (interactive "e")
-  (select-window (posn-window (event-start event)))
-  (centaur-tabs--create-new-tab))
-
-(defun centaur-tabs-move-current-tab-to-left--button (evt)
-  "Same as centaur-tabs-move-current-tab-to-left, but ensuring the tab will remain visible.  The active window will the the EVT source."
-  (interactive "e")
-  (centaur-tabs-move-current-tab-to-left)
-  (centaur-tabs--button-ensure-selected-tab-is-visible evt))
-
-
-(defun centaur-tabs-move-current-tab-to-right--button (evt)
-  "Same as centaur-tabs-move-current-tab-to-right, but ensuring the tab will remain visible.  The active window will the the EVT source."
-  (interactive "e")
-  (centaur-tabs-move-current-tab-to-right)
-  (centaur-tabs--button-ensure-selected-tab-is-visible evt))
-
-(defun centaur-tabs--button-ensure-selected-tab-is-visible (evt)
-  "This is a nasty trick to make the current tab visible, since centaur-tabs--track-selected or centaur-tabs-auto-scroll-flag seems not to work.  EVT is used to change the active window."
-  ;;; This works if the tab has not reached the last position
-  (centaur-tabs-forward--button evt)
-  (centaur-tabs-backward--button evt)
-  ;;; Just in case the tab has the tab reached the last position
-  (centaur-tabs-backward--button evt)
-  (centaur-tabs-forward--button evt))
-
-
 ;;; Tab and tab sets
-;;
+
 (defsubst centaur-tabs-make-tab (object tabset)
   "Return a new tab with value OBJECT.
 TABSET is the tab set the tab belongs to."
@@ -635,8 +560,92 @@ hooked functions"
   (centaur-tabs-set-template centaur-tabs-current-tabset nil)
   (centaur-tabs-display-update))
 
-;;; Tabs display
 ;;
+;;; Events and event functions
+
+(defun centaur-tabs-buffer-close-tab (tab)
+  "Function for closing TAB."
+  (let ((buffer (centaur-tabs-tab-value tab)))
+    (with-current-buffer buffer
+      (kill-buffer buffer))
+    (centaur-tabs-display-update)))
+
+(defun centaur-tabs-get-tab-from-event (event)
+  "Given a mouse EVENT, extract the tab at the mouse point."
+  (let ((pos (posn-string (event-start event))))
+    (get-text-property (cdr pos) 'centaur-tabs-tab (car pos))))
+
+(defun centaur-tabs-do-select (event)
+  "Given a mouse EVENT, select the tab at the mouse point."
+  (interactive "e")
+  (select-window (posn-window (event-start event)))
+  (centaur-tabs-buffer-select-tab `,(centaur-tabs-get-tab-from-event event)))
+
+(defun centaur-tabs-do-close (event)
+  "Given a mouse EVENT, close the tab at the mouse point."
+  (interactive "e")
+  (let ((window (posn-window (event-start event))))
+    (with-selected-window window
+      (select-window window)
+      (let ((foreground-buffer-name (buffer-name)))
+	(centaur-tabs-buffer-select-tab `,(centaur-tabs-get-tab-from-event event))
+
+	(let* ((buffer             (window-buffer window))
+	       (target-buffer-name (buffer-name))
+	       (same-target-check  (string-equal foreground-buffer-name target-buffer-name))
+	       (window-num         (- (length (get-buffer-window-list buffer))
+				      (if same-target-check 0 1))))
+	  (if (> window-num 1)
+	      (delete-window window)
+	    (centaur-tabs-buffer-close-tab `,(centaur-tabs-get-tab-from-event event))))))))
+
+(defun centaur-tabs-backward--button (event)
+  "Same as centaur-tabs-backward, but changing window to EVENT source."
+  (interactive "e")
+  (select-window (posn-window (event-start event)))
+  (centaur-tabs-backward))
+
+(defun centaur-tabs-forward--button (event)
+  "Same as centaur-tabs-forward, but changing window to EVENT source."
+  (interactive "e")
+  (select-window (posn-window (event-start event)))
+  (centaur-tabs-forward))
+
+(defun centaur-tabs-new-tab--button (event)
+  "Same as centaur-tabs--create-new-tab, but changing window to EVENT source."
+  (interactive "e")
+  (select-window (posn-window (event-start event)))
+  (centaur-tabs--create-new-tab))
+
+(defun centaur-tabs-move-current-tab-to-left--button (evt)
+  "Same as centaur-tabs-move-current-tab-to-left, but ensuring the tab will
+remain visible.  The active window will the the EVT source."
+  (interactive "e")
+  (centaur-tabs-move-current-tab-to-left)
+  (centaur-tabs--button-ensure-selected-tab-is-visible evt))
+
+
+(defun centaur-tabs-move-current-tab-to-right--button (evt)
+  "Same as centaur-tabs-move-current-tab-to-right, but ensuring the tab will
+remain visible.  The active window will the the EVT source."
+  (interactive "e")
+  (centaur-tabs-move-current-tab-to-right)
+  (centaur-tabs--button-ensure-selected-tab-is-visible evt))
+
+(defun centaur-tabs--button-ensure-selected-tab-is-visible (evt)
+  "This is a nasty trick to make the current tab visible, since
+`centaur-tabs--track-selected' or `centaur-tabs-auto-scroll-flag' seems not
+to work.  EVT is used to change the active window."
+  ;;; This works if the tab has not reached the last position
+  (centaur-tabs-forward--button evt)
+  (centaur-tabs-backward--button evt)
+  ;;; Just in case the tab has the tab reached the last position
+  (centaur-tabs-backward--button evt)
+  (centaur-tabs-forward--button evt))
+
+;;
+;;; Tabs display
+
 (defsubst centaur-tabs-line-tab (tab)
   "Return the display representation of tab TAB.
 That is, a propertized string used as an `centaur-tabs-display-line-format'
@@ -797,7 +806,7 @@ template element."
 	 (padcolor centaur-tabs-background-color)
 	 (all-tabs (centaur-tabs-tabs tabset))
 	 (total-tabs (length all-tabs))
-         (sel-index (+ (cl-position (car sel) (cl-mapcar 'car all-tabs)) 1))
+	 (sel-index (+ (cl-position (car sel) (cl-mapcar 'car all-tabs)) 1))
 	 atsel elts)
     ;; Track the selected tab to ensure it is always visible.
     (when centaur-tabs--track-selected
@@ -844,13 +853,14 @@ template element."
       (centaur-tabs-line-format--buttons)
       (nreverse elts)
       (propertize "% "
-                  'face (list :background padcolor)
-                  'pointer 'arrow)
+		  'face (list :background padcolor)
+		  'pointer 'arrow)
       (centaur-tabs-line-format--new-button)))
     ))
 
 (defun centaur-tabs-count (index count)
-  "Return a centaur-tabs-button-tab with the current tab INDEX and the total tabs COUNT."
+  "Return a centaur-tabs-button-tab with the current tab INDEX and the total
+tabs COUNT."
   (if centaur-tabs-show-count
       (propertize (centaur-tabs-button-tab (format " [%d/%d] " index count))
 		  'help-echo "Tabs count")
@@ -861,14 +871,14 @@ template element."
   (if (and centaur-tabs-show-navigation-buttons (display-graphic-p))
       (list
        (propertize (centaur-tabs-button-tab centaur-tabs-down-tab-text)
-                   'local-map centaur-tabs-down-tab-map
-                   'help-echo "Change tab group")
+		   'local-map centaur-tabs-down-tab-map
+		   'help-echo "Change tab group")
        (propertize (centaur-tabs-button-tab centaur-tabs-backward-tab-text)
-                   'local-map centaur-tabs-backward-tab-map
-                   'help-echo "Previous tab")
+		   'local-map centaur-tabs-backward-tab-map
+		   'help-echo "Previous tab")
        (propertize (centaur-tabs-button-tab centaur-tabs-forward-tab-text)
-                   'local-map centaur-tabs-forward-tab-map
-                   'help-echo "Next tab"))
+		   'local-map centaur-tabs-forward-tab-map
+		   'help-echo "Next tab"))
     ""))
 
 (defun centaur-tabs-line-format--new-button ()
@@ -876,8 +886,8 @@ template element."
   (if centaur-tabs-show-new-tab-button
       (concat
        (propertize (centaur-tabs-button-tab centaur-tabs-new-tab-text)
-                   'local-map centaur-tabs-new-tab-map
-                   'help-echo "Create new tab")
+		   'local-map centaur-tabs-new-tab-map
+		   'help-echo "Create new tab")
        "")))
 
 (defun centaur-tabs-line ()
@@ -1141,8 +1151,7 @@ That is, a string used to represent it on the tab bar."
     (setq centaur-tabs-last-focused-buffer buffer)
     (setq centaur-tabs-last-focused-buffer-group group)
     ;; (centaur-tabs-buffer-show-groups nil)
-    (centaur-tabs-display-update)
-    ))
+    (centaur-tabs-display-update)))
 
 (defun centaur-tabs-buffer-track-killed ()
   "Hook run just before actually killing a buffer.
@@ -1186,7 +1195,8 @@ first."
   (nreverse (centaur-tabs-insert-after (nreverse list) bef-el el)))
 
 (defun centaur-tabs-adjust-buffer-order ()
-  "Put the two buffers switched to the adjacent position after current buffer changed."
+  "Put the two buffers switched to the adjacent position after current
+buffer changed."
   ;; Don't trigger by centaur-tabs command, it's annoying.
   ;; This feature should be trigger by search plugins, such as ibuffer, helm or ivy.
   (unless (or (string-prefix-p "centaur-tabs" (format "%s" this-command))
@@ -1254,10 +1264,10 @@ first."
 	;; Just continue if two buffers are in the same group.
 	(when (string= current-group centaur-tabs-last-focused-buffer-group)
 	  (let* ((bufset (centaur-tabs-get-tabset current-group))
-		 (current-group-tabs (centaur-tabs-tabs bufset)))
-	    (setq new-group-tabs (sort current-group-tabs
+		 (current-group-tabs (centaur-tabs-tabs bufset))
+		 (new-group-tabs (sort current-group-tabs
 				       (lambda (x y)
-					 (string< (buffer-name (car x)) (buffer-name (car y))))))
+					 (string< (buffer-name (car x)) (buffer-name (car y)))))))
 	    (set bufset new-group-tabs)
 	    (centaur-tabs-set-template bufset nil)
 	    (centaur-tabs-display-update)))
@@ -1369,8 +1379,7 @@ Other buffer group by `centaur-tabs-get-group-name' with project name."
 
      ;; Is not magit buffer.
      (and (string-prefix-p "magit" name)
-	  (not (file-name-extension name)))
-     )))
+	  (not (file-name-extension name))))))
 
 (defun centaur-tabs-hide-tab-cached (buf)
   "Cached vesion of `centaur-tabs-hide-tab' to improve performance.
@@ -1403,7 +1412,8 @@ Operates over buffer BUF"
     extension-names))
 
 (defcustom centaur-tabs-enable-ido-completion t
-  "Non-nil means use `ido-completing-read' for completing reads else `completing-read'."
+  "Non-nil means use `ido-completing-read' for completing reads
+else `completing-read'."
   :group 'centaur-tabs
   :type 'boolean)
 
