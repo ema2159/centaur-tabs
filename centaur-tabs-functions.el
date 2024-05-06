@@ -689,107 +689,103 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
     (when (or (not centaur-tabs-style-left)
 	      (not centaur-tabs-style-right))
       (centaur-tabs-select-separator-style centaur-tabs-style))
-    (concat
-     (centaur-tabs-separator-render centaur-tabs-style-left face)
-     bar
+    (concat (centaur-tabs-separator-render centaur-tabs-style-left face)
+	    bar
 
-     ;; left margin
-     (if centaur-tabs-left-edge-margin
-	 (propertize
-	  centaur-tabs-left-edge-margin
-	  'face face
-	  'centaur-tabs-tab tab
-	  'pointer centaur-tabs-mouse-pointer
-	  'local-map centaur-tabs-default-map))
+	    ;; left margin
+	    (when centaur-tabs-left-edge-margin
+	      (propertize centaur-tabs-left-edge-margin
+			  'face face
+			  'centaur-tabs-tab tab
+			  'pointer centaur-tabs-mouse-pointer
+			  'local-map centaur-tabs-default-map))
 
-     ;; left close button
-     (if centaur-tabs-set-left-close-button
-	 (propertize
-	  centaur-tabs-close-button
-	  'face (if selected-p
-		    'centaur-tabs-close-selected
-		  'centaur-tabs-close-unselected)
-	  'pointer centaur-tabs-mouse-pointer
-	  'help-echo "Close buffer"
-	  'centaur-tabs-tab tab
-	  'mouse-face 'centaur-tabs-close-mouse-face
-	  'local-map centaur-tabs-close-map))
+	    ;; left close button
+	    (when centaur-tabs-set-left-close-button
+	      (propertize centaur-tabs-close-button
+			  'face (if selected-p
+				    'centaur-tabs-close-selected
+				  'centaur-tabs-close-unselected)
+			  'pointer centaur-tabs-mouse-pointer
+			  'help-echo "Close buffer"
+			  'centaur-tabs-tab tab
+			  'mouse-face 'centaur-tabs-close-mouse-face
+			  'local-map centaur-tabs-close-map))
 
-     ;; icon
-     (if (= (length icon) 0) ""
-       (concat
-	(propertize
-	 " "
-	 'face face
-	 'centaur-tabs-tab tab
-	 'pointer centaur-tabs-mouse-pointer
-	 'local-map centaur-tabs-default-map)
-	icon))
+	    ;; icon
+	    (if (= (length icon) 0) ""
+	      (concat (propertize " "
+				  'face face
+				  'centaur-tabs-tab tab
+				  'pointer centaur-tabs-mouse-pointer
+				  'local-map centaur-tabs-default-map)
+		      icon))
 
-     ;; tab name
-     (propertize
-      (concat
-       (if centaur-tabs-tab-label-function
-	   (funcall centaur-tabs-tab-label-function tab)
-	 (buffer-name buf))
-       " ")
-      'centaur-tabs-tab tab
-      'face face
-      'mouse-face 'centaur-tabs-name-mouse-face
-      'pointer centaur-tabs-mouse-pointer
-      'help-echo buf-file-name
-      'local-map centaur-tabs-default-map)
+	    ;; tab name
+	    (propertize (concat
+			 (if centaur-tabs-tab-label-function
+			     (funcall centaur-tabs-tab-label-function tab)
+			   (buffer-name buf))
+			 " ")
+			'centaur-tabs-tab tab
+			'face face
+			'mouse-face 'centaur-tabs-name-mouse-face
+			'pointer centaur-tabs-mouse-pointer
+			'help-echo buf-file-name
+			'local-map centaur-tabs-default-map)
 
-     ;; tab identifier
-     (when centaur-tabs-show-jump-identifier
-       (when (or (eq centaur-tabs-show-jump-identifier 'always) centaur-tabs-ace-jump-active)
-	 (propertize
-	  (format "%c" (nth (cl-position tab (centaur-tabs-view (centaur-tabs-current-tabset t))) centaur-tabs-ace-jump-keys))
-	  'centaur-tabs-tab tab
-	  'face (if selected-p
-		    'centaur-tabs-jump-identifier-selected
-		  'centaur-tabs-jump-identifier-unselected)
-	  'pointer centaur-tabs-mouse-pointer
-	  'help-echo buf-file-name
-	  'local-map centaur-tabs-default-map)))
+	    ;; tab identifier
+	    (when centaur-tabs-show-jump-identifier
+	      (when (or (eq centaur-tabs-show-jump-identifier 'always)
+			centaur-tabs-ace-jump-active)
+		(propertize
+		 (format "%c" (nth (cl-position tab
+						(centaur-tabs-view (centaur-tabs-current-tabset t)))
+				   centaur-tabs-ace-jump-keys))
+		 'centaur-tabs-tab tab
+		 'face (if selected-p
+			   'centaur-tabs-jump-identifier-selected
+			 'centaur-tabs-jump-identifier-unselected)
+		 'pointer centaur-tabs-mouse-pointer
+		 'help-echo buf-file-name
+		 'local-map centaur-tabs-default-map)))
 
-     ;; close button and/or modified marker
-     (unless centaur-tabs-ace-jump-active
-       (if centaur-tabs-set-close-button
-	   (propertize
-	    (if use-mod-mark-p
-		centaur-tabs-modified-marker
-	      centaur-tabs-close-button)
-	    'face (if use-mod-mark-p
-		      mod-mark-face
-		    (if selected-p
-			'centaur-tabs-close-selected
-		      'centaur-tabs-close-unselected))
-	    'pointer centaur-tabs-mouse-pointer
-	    'help-echo "Close buffer"
-	    'centaur-tabs-tab tab
-	    'mouse-face 'centaur-tabs-close-mouse-face
-	    'local-map centaur-tabs-close-map)
-	 (if (and centaur-tabs-set-modified-marker modified-p)
-	     (propertize
-	      centaur-tabs-modified-marker
-	      'face mod-mark-face
-	      'pointer centaur-tabs-mouse-pointer
-	      'centaur-tabs-tab tab
-	      'help-echo buf-file-name
-	      'local-map centaur-tabs-default-map)
-	   "" )))
+	    ;; close button and/or modified marker
+	    (unless centaur-tabs-ace-jump-active
+	      (if centaur-tabs-set-close-button
+		  (propertize
+		   (if use-mod-mark-p
+		       centaur-tabs-modified-marker
+		     centaur-tabs-close-button)
+		   'face (if use-mod-mark-p
+			     mod-mark-face
+			   (if selected-p
+			       'centaur-tabs-close-selected
+			     'centaur-tabs-close-unselected))
+		   'pointer centaur-tabs-mouse-pointer
+		   'help-echo "Close buffer"
+		   'centaur-tabs-tab tab
+		   'mouse-face 'centaur-tabs-close-mouse-face
+		   'local-map centaur-tabs-close-map)
+		(if (and centaur-tabs-set-modified-marker modified-p)
+		    (propertize
+		     centaur-tabs-modified-marker
+		     'face mod-mark-face
+		     'pointer centaur-tabs-mouse-pointer
+		     'centaur-tabs-tab tab
+		     'help-echo buf-file-name
+		     'local-map centaur-tabs-default-map)
+		  "" )))
 
-     ;; right margin
-     (if centaur-tabs-right-edge-margin
-	 (propertize
-	  centaur-tabs-right-edge-margin
-	  'face face
-	  'centaur-tabs-tab tab
-	  'pointer centaur-tabs-mouse-pointer
-	  'local-map centaur-tabs-default-map))
+	    ;; right margin
+	    (when centaur-tabs-right-edge-margin
+	      (propertize centaur-tabs-right-edge-margin
+			  'face face
+			  'centaur-tabs-tab tab
+			  'pointer centaur-tabs-mouse-pointer
+			  'local-map centaur-tabs-default-map))
 
-     (centaur-tabs-separator-render centaur-tabs-style-right face))))
+	    (centaur-tabs-separator-render centaur-tabs-style-right face))))
 
 (defsubst centaur-tabs-button-tab (button)
   "Return the display representation of button BUTTON.

@@ -521,8 +521,7 @@ RED, GREEN and BLUE should be between 0.0 and 1.0, inclusive."
 (defun centaur-tabs-separator-row-pattern (fill total &optional fade)
   "Make a list that has FILL 0s out of TOTAL 1s with FADE 2s to the right of
 the fill."
-  (unless fade
-    (setq fade 0))
+  (unless fade (setq fade 0))
   (let ((fill (min fill total))
 	(fade (min fade (max (- total fill) 0))))
     (append (make-list fill 0)
@@ -842,9 +841,8 @@ The memoization cache is frame-local."
        (let* ((cache (centaur-tabs-separator-create-or-get-cache))
 	      (key (cons ',funcid args))
 	      (val (gethash key cache)))
-	 (if val
-	     val
-	   (puthash key (apply ,func args) cache))))))
+	 (or val
+	     (puthash key (apply ,func args) cache))))))
 
 (defun centaur-tabs-separator-create-or-get-cache ()
   "Return a frame-local hash table that acts as a memoization cache.
