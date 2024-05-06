@@ -184,9 +184,9 @@ There are three options:
 - `'over': displays the bar over the currently selected tab."
   :group 'centaur-tabs
   :type '(choice :tag "Display bar at..."
-		 (const :tag "Put bar on the left" left)
-		 (const :tag "Put bar as an underline" under)
-		 (const :tag "Put bar as an overline" over)))
+                 (const :tag "Put bar on the left" left)
+                 (const :tag "Put bar as an underline" under)
+                 (const :tag "Put bar as an overline" over)))
 
 ;;
 ;;; Icons
@@ -198,8 +198,8 @@ the tab name."
   :type 'boolean)
 
 (defcustom centaur-tabs-icon-type (and centaur-tabs-set-icons
-				       (or (require 'all-the-icons nil t)
-					   (require 'nerd-icons nil t)))
+                                       (or (require 'all-the-icons nil t)
+                                           (require 'nerd-icons nil t)))
   "Icon type. It should be one of `all-the-icons' and `nerd-icons'."
   :group 'centaur-tabs
   :type 'symbol
@@ -208,14 +208,14 @@ the tab name."
     (pcase v
       ('all-the-icons
        (unless (require 'all-the-icons nil t)
-	 (setq v nil)))
+         (setq v nil)))
       ('nerd-icons
        (unless (require 'nerd-icons nil t)
-	 (setq v nil)))
+         (setq v nil)))
       ('type
        (if (require 'all-the-icons nil t)
-	   (setq v 'all-the-icons)
-	 (setq v nil))))
+           (setq v 'all-the-icons)
+         (setq v nil))))
     (set k v)))
 
 (defvar centaur-tabs-icon-scale-factor
@@ -230,7 +230,7 @@ the tab name."
   "When non nil, enable gray icons for unselected buffer."
   :group 'centaur-tabs
   :type '(choice :tag "Gray out icons for unselected..."
-		 (const :tag "Buffer" buffer)))
+                 (const :tag "Buffer" buffer)))
 
 (defcustom centaur-tabs-plain-icons nil
   "When non nil, tab icons' color will be the same as tabs' foreground color."
@@ -264,36 +264,36 @@ inserting functions."
 If icon gray out option enabled, gray out icon if not SELECTED."
   (if centaur-tabs-icon-type
       (with-current-buffer (car tab)
-	(let* ((icon
-		(if (and (buffer-file-name)
-			 (centaur-tabs--auto-mode-match?))
-		    (centaur-tabs--icon-for-file
-		     (file-name-nondirectory (buffer-file-name))
-		     :v-adjust centaur-tabs-icon-v-adjust
-		     :height centaur-tabs-icon-scale-factor)
-		  (centaur-tabs--icon-for-mode
-		   major-mode
-		   :v-adjust centaur-tabs-icon-v-adjust
-		   :height centaur-tabs-icon-scale-factor)))
-	       (background (face-background face nil 'default))
-	       (inactive (cond ((and (not selected)
-				     (eq centaur-tabs-gray-out-icons 'buffer))
-				(face-foreground 'mode-line-inactive nil 'default))
-			       (centaur-tabs-plain-icons
-				(face-foreground 'centaur-tabs-selected nil 'default))
-			       (t 'unspecified)))
-	       (underline (and (eq (if (display-graphic-p) centaur-tabs-set-bar) 'under)
-			       (face-attribute face :underline)))
-	       (overline (and (eq (if (display-graphic-p) centaur-tabs-set-bar) 'over)
-			      (face-attribute face :overline))))
-	  (if (stringp icon)
-	      (progn
-		(propertize icon 'face `(:inherit ,(get-text-property 0 'face icon)
-						  :foreground ,inactive
-						  :background ,background
-						  :underline ,underline
-						  :overline ,overline)))
-	    "")))
+        (let* ((icon
+                (if (and (buffer-file-name)
+                         (centaur-tabs--auto-mode-match?))
+                    (centaur-tabs--icon-for-file
+                     (file-name-nondirectory (buffer-file-name))
+                     :v-adjust centaur-tabs-icon-v-adjust
+                     :height centaur-tabs-icon-scale-factor)
+                  (centaur-tabs--icon-for-mode
+                   major-mode
+                   :v-adjust centaur-tabs-icon-v-adjust
+                   :height centaur-tabs-icon-scale-factor)))
+               (background (face-background face nil 'default))
+               (inactive (cond ((and (not selected)
+                                     (eq centaur-tabs-gray-out-icons 'buffer))
+                                (face-foreground 'mode-line-inactive nil 'default))
+                               (centaur-tabs-plain-icons
+                                (face-foreground 'centaur-tabs-selected nil 'default))
+                               (t 'unspecified)))
+               (underline (and (eq (if (display-graphic-p) centaur-tabs-set-bar) 'under)
+                               (face-attribute face :underline)))
+               (overline (and (eq (if (display-graphic-p) centaur-tabs-set-bar) 'over)
+                              (face-attribute face :overline))))
+          (if (stringp icon)
+              (progn
+                (propertize icon 'face `(:inherit ,(get-text-property 0 'face icon)
+                                                  :foreground ,inactive
+                                                  :background ,background
+                                                  :underline ,underline
+                                                  :overline ,overline)))
+            "")))
     ""))
 
 ;;
@@ -307,9 +307,9 @@ It has 3 options:
 - `'always', always show it regardless of the status."
   :group 'centaur-tabs
   :type '(choice :tag "show identifier when..."
-		 (const :tag "Never" nil)
-		 (const :tag "Only when prompted" prompted)
-		 (const :tag "Always" always)))
+                 (const :tag "Never" nil)
+                 (const :tag "Only when prompted" prompted)
+                 (const :tag "Always" always)))
 
 (defcustom centaur-tabs-ace-jump-dim-buffer t
   "Whether to dim the current buffer when centaur-ace-jump is activated."
@@ -380,35 +380,35 @@ forward-group, show-help).")
   "Create an XPM bitmap via FACE WIDTH and HEIGHT.
 Taken from `doom-modeline'."
   (when (and (display-graphic-p)
-	     (image-type-available-p 'xpm))
+             (image-type-available-p 'xpm))
     (propertize
      " " 'display
      (let ((data (make-list height (make-list width 1)))
-	   (color (or (face-background face nil t) "None")))
+           (color (or (face-background face nil t) "None")))
        (ignore-errors
-	 (create-image
-	  (concat
-	   (format
-	    "/* XPM */\nstatic char * percent[] = {\n\"%i %i 2 1\",\n\". c %s\",\n\"  c %s\","
-	    (length (car data)) (length data) color color)
-	   (apply #'concat
-		  (cl-loop with idx = 0
-			   with len = (length data)
-			   for dl in data
-			   do (cl-incf idx)
-			   collect
-			   (concat
-			    "\""
-			    (cl-loop for d in dl
-				     if (= d 0) collect (string-to-char " ")
-				     else collect (string-to-char "."))
-			    (if (eq idx len) "\"};" "\",\n")))))
-	  'xpm t :ascent 'center))))))
+         (create-image
+          (concat
+           (format
+            "/* XPM */\nstatic char * percent[] = {\n\"%i %i 2 1\",\n\". c %s\",\n\"  c %s\","
+            (length (car data)) (length data) color color)
+           (apply #'concat
+                  (cl-loop with idx = 0
+                           with len = (length data)
+                           for dl in data
+                           do (cl-incf idx)
+                           collect
+                           (concat
+                            "\""
+                            (cl-loop for d in dl
+                                     if (= d 0) collect (string-to-char " ")
+                                     else collect (string-to-char "."))
+                            (if (eq idx len) "\"};" "\",\n")))))
+          'xpm t :ascent 'center))))))
 
 (defvar centaur-tabs-active-bar
   (centaur-tabs--make-xpm 'centaur-tabs-active-bar-face
-			  2
-			  centaur-tabs-bar-height))
+                          2
+                          centaur-tabs-bar-height))
 
 ;;
 ;;; Navigation buttons
@@ -463,9 +463,9 @@ Taken from `doom-modeline'."
   (and (eq (window-system) 'ns)
        ns-use-srgb-colorspace
        (< 11
-	  (string-to-number
-	   (and (string-match "darwin\\([0-9]+\\)" system-configuration)
-		(match-string-no-properties 1 system-configuration)))))
+          (string-to-number
+           (and (string-match "darwin\\([0-9]+\\)" system-configuration)
+                (match-string-no-properties 1 system-configuration)))))
   "Boolean variable to determine whether to use Apple RGB colorspace.
 used to render images.
 
@@ -478,17 +478,17 @@ This variable is automatically set, there's no need to modify it.")
 
 COLOR1 and COLOR2 must be supplied as hex strings with a leading #."
   (let* ((c1 (color-name-to-rgb color1))
-	 (c2 (color-name-to-rgb color2))
-	 (red (/ (+ (nth 0 c1) (nth 0 c2)) 2))
-	 (green (/ (+ (nth 1 c1) (nth 1 c2)) 2))
-	 (blue (/ (+ (nth 2 c1) (nth 2 c2)) 2)))
+         (c2 (color-name-to-rgb color2))
+         (red (/ (+ (nth 0 c1) (nth 0 c2)) 2))
+         (green (/ (+ (nth 1 c1) (nth 1 c2)) 2))
+         (blue (/ (+ (nth 2 c1) (nth 2 c2)) 2)))
     (color-rgb-to-hex red green blue)))
 
 (defun centaur-tabs-separator-color-xyz-to-apple-rgb (X Y Z)
   "Convert CIE X Y Z colors to Apple RGB color space."
   (let ((r (+ (* 3.2404542 X) (* -1.5371385 Y) (* -0.4985314 Z)))
-	(g (+ (* -0.9692660 X) (* 1.8760108 Y) (* 0.0415560 Z)))
-	(b (+ (* 0.0556434 X) (* -0.2040259 Y) (* 1.0572252 Z))))
+        (g (+ (* -0.9692660 X) (* 1.8760108 Y) (* 0.0415560 Z)))
+        (b (+ (* 0.0556434 X) (* -0.2040259 Y) (* 1.0572252 Z))))
     (list (expt r (/ 1.8)) (expt g (/ 1.8)) (expt b (/ 1.8)))))
 
 (defun centaur-tabs-separator-color-srgb-to-apple-rgb (red green blue)
@@ -501,8 +501,8 @@ RED, GREEN and BLUE should be between 0.0 and 1.0, inclusive."
   (when color
     (let ((srgb-color (color-name-to-rgb color)))
       (if centaur-tabs-image-apple-rgb
-	  (apply #'color-rgb-to-hex (apply #'centaur-tabs-separator-color-srgb-to-apple-rgb srgb-color))
-	(apply #'color-rgb-to-hex srgb-color)))))
+          (apply #'color-rgb-to-hex (apply #'centaur-tabs-separator-color-srgb-to-apple-rgb srgb-color))
+        (apply #'color-rgb-to-hex srgb-color)))))
 
 (defun centaur-tabs-separator-pattern (lst)
   "Turn LST into an infinite pattern."
@@ -523,13 +523,13 @@ RED, GREEN and BLUE should be between 0.0 and 1.0, inclusive."
 the fill."
   (unless fade (setq fade 0))
   (let ((fill (min fill total))
-	(fade (min fade (max (- total fill) 0))))
+        (fade (min fade (max (- total fill) 0))))
     (append (make-list fill 0)
-	    (make-list fade 2)
-	    (make-list (- total fill fade) 1))))
+            (make-list fade 2)
+            (make-list (- total fill fade) 1))))
 
 (defun centaur-tabs-separator-pattern-bindings-body (patterns height-exp pattern-height-sym
-							      second-pattern-height-sym)
+                                                              second-pattern-height-sym)
   "Create let-var bindings and a function body from PATTERNS.
 The `car' and `cdr' parts of the result can be passed to the
 function `centaur-tabs-separator-wrap-defun' as its `let-vars'
@@ -538,24 +538,24 @@ and `body' arguments,respectively.  HEIGHT-EXP is an expression
 PATTERN-HEIGHT-SYM and SECOND-PATTERN-HEIGHT-SYM are symbols used
 for let-var binding variables."
   (let* ((pattern (centaur-tabs-separator-pattern (cl-mapcar 'centaur-tabs-separator-pattern-to-string (car patterns))))
-	 (header (cl-mapcar 'centaur-tabs-separator-pattern-to-string (nth 1 patterns)))
-	 (footer (cl-mapcar 'centaur-tabs-separator-pattern-to-string (nth 2 patterns)))
-	 (second-pattern (centaur-tabs-separator-pattern (cl-mapcar 'centaur-tabs-separator-pattern-to-string (nth 3 patterns))))
-	 (center (cl-mapcar 'centaur-tabs-separator-pattern-to-string (nth 4 patterns)))
-	 (reserve (+ (length header) (length footer) (length center))))
+         (header (cl-mapcar 'centaur-tabs-separator-pattern-to-string (nth 1 patterns)))
+         (footer (cl-mapcar 'centaur-tabs-separator-pattern-to-string (nth 2 patterns)))
+         (second-pattern (centaur-tabs-separator-pattern (cl-mapcar 'centaur-tabs-separator-pattern-to-string (nth 3 patterns))))
+         (center (cl-mapcar 'centaur-tabs-separator-pattern-to-string (nth 4 patterns)))
+         (reserve (+ (length header) (length footer) (length center))))
     (when pattern
       (cons `((,pattern-height-sym (max (- ,height-exp ,reserve) 0))
-	      (,second-pattern-height-sym (/ ,pattern-height-sym 2))
-	      (,pattern-height-sym ,(if second-pattern `(ceiling ,pattern-height-sym 2) `,pattern-height-sym)))
-	    (list (when header `(mapconcat 'identity ',header ""))
-		  `(mapconcat 'identity
-			      (cl-subseq ',pattern 0 ,pattern-height-sym) "")
-		  (when center `(mapconcat 'identity ',center ""))
-		  (when second-pattern
-		    `(mapconcat 'identity
-				(cl-subseq ',second-pattern
-					   0 ,second-pattern-height-sym) ""))
-		  (when footer `(mapconcat 'identity ',footer "")))))))
+              (,second-pattern-height-sym (/ ,pattern-height-sym 2))
+              (,pattern-height-sym ,(if second-pattern `(ceiling ,pattern-height-sym 2) `,pattern-height-sym)))
+            (list (when header `(mapconcat 'identity ',header ""))
+                  `(mapconcat 'identity
+                              (cl-subseq ',pattern 0 ,pattern-height-sym) "")
+                  (when center `(mapconcat 'identity ',center ""))
+                  (when second-pattern
+                    `(mapconcat 'identity
+                                (cl-subseq ',second-pattern
+                                           0 ,second-pattern-height-sym) ""))
+                  (when footer `(mapconcat 'identity ',footer "")))))))
 
 (defun centaur-tabs-separator-pattern-defun (name dir width &rest patterns)
   "Create a powerline function of NAME in DIR with WIDTH for PATTERNS.
@@ -588,241 +588,241 @@ destination color, and 2 is the interpolated color between 0 and 1."
   (when (eq dir 'right)
     (setq patterns (cl-mapcar 'centaur-tabs-separator-reverse-pattern patterns)))
   (let ((bindings-body (centaur-tabs-separator-pattern-bindings-body patterns
-								     'height
-								     'pattern-height
-								     'second-pattern-height))
-	(bindings-body-2x (centaur-tabs-separator-pattern-bindings-body (nthcdr 5 patterns)
-									'(* height 2)
-									'pattern-height-2x
-									'second-pattern-height-2x)))
+                                                                     'height
+                                                                     'pattern-height
+                                                                     'second-pattern-height))
+        (bindings-body-2x (centaur-tabs-separator-pattern-bindings-body (nthcdr 5 patterns)
+                                                                        '(* height 2)
+                                                                        'pattern-height-2x
+                                                                        'second-pattern-height-2x)))
     (centaur-tabs-separator-wrap-defun name dir width
-				       (append (car bindings-body) (car bindings-body-2x))
-				       (cdr bindings-body) (cdr bindings-body-2x))))
+                                       (append (car bindings-body) (car bindings-body-2x))
+                                       (cdr bindings-body) (cdr bindings-body-2x))))
 
 (defun centaur-tabs-separator-background-color (face)
   "Set the separator background color using FACE."
   (face-attribute face
-		  (if (face-attribute face :inverse-video nil 'default)
-		      :foreground
-		    :background)
-		  nil
-		  'default))
+                  (if (face-attribute face :inverse-video nil 'default)
+                      :foreground
+                    :background)
+                  nil
+                  'default))
 
 (defun centaur-tabs-separator-wrap-defun (name dir width let-vars body &optional body-2x)
   "Generate a powerline function of name NAME in dir DIR.
 This is made with WIDTH using LET-VARS and BODY.
 BODY-2X is an optional argument."
   (let* ((src-face (if (eq dir 'left) 'face1 'face2))
-	 (dst-face (if (eq dir 'left) 'face2 'face1)))
+         (dst-face (if (eq dir 'left) 'face2 'face1)))
     `(defun ,(intern (format "powerline-%s-%s" name (symbol-name dir)))
-	 (face1 face2 &optional height)
+         (face1 face2 &optional height)
        (when window-system
-	 (unless height (setq height centaur-tabs-height))
-	 (let* ,(append `((color1 (when ,src-face
-				    (centaur-tabs-separator-hex-color (centaur-tabs-separator-background-color ,src-face))))
-			  (color2 (when ,dst-face
-				    (centaur-tabs-separator-hex-color (centaur-tabs-separator-background-color ,dst-face))))
-			  (colori (when (and color1 color2) (centaur-tabs-separator-interpolate color1 color2)))
-			  (color1 (or color1 "None"))
-			  (color2 (or color2 "None"))
-			  (colori (or colori "None")))
-			let-vars)
-	   (apply #'create-image
-		  ,(append `(concat (format "/* XPM */ static char * %s_%s[] = { \"%s %s 3 1\", \"0 c %s\", \"1 c %s\", \"2 c %s\","
-					    ,(replace-regexp-in-string "-" "_" name)
-					    (symbol-name ',dir)
-					    ,width
-					    height
-					    color1
-					    color2
-					    colori))
-			   body
-			   '("};"))
-		  'xpm t
-		  :ascent 'center
-		  :face (when (and face1 face2)
-			  ,dst-face)
-		  ,(and body-2x
-			`(and (featurep 'mac)
-			      (list :data-2x
-				    ,(append `(concat (format "/* XPM */ static char * %s_%s_2x[] = { \"%s %s 3 1\", \"0 c %s\", \"1 c %s\", \"2 c %s\","
-							      ,(replace-regexp-in-string "-" "_" name)
-							      (symbol-name ',dir)
-							      (* ,width 2)
-							      (* height 2)
-							      color1
-							      color2
-							      colori))
-					     body-2x
-					     '("};")))))))))))
+         (unless height (setq height centaur-tabs-height))
+         (let* ,(append `((color1 (when ,src-face
+                                    (centaur-tabs-separator-hex-color (centaur-tabs-separator-background-color ,src-face))))
+                          (color2 (when ,dst-face
+                                    (centaur-tabs-separator-hex-color (centaur-tabs-separator-background-color ,dst-face))))
+                          (colori (when (and color1 color2) (centaur-tabs-separator-interpolate color1 color2)))
+                          (color1 (or color1 "None"))
+                          (color2 (or color2 "None"))
+                          (colori (or colori "None")))
+                        let-vars)
+           (apply #'create-image
+                  ,(append `(concat (format "/* XPM */ static char * %s_%s[] = { \"%s %s 3 1\", \"0 c %s\", \"1 c %s\", \"2 c %s\","
+                                            ,(replace-regexp-in-string "-" "_" name)
+                                            (symbol-name ',dir)
+                                            ,width
+                                            height
+                                            color1
+                                            color2
+                                            colori))
+                           body
+                           '("};"))
+                  'xpm t
+                  :ascent 'center
+                  :face (when (and face1 face2)
+                          ,dst-face)
+                  ,(and body-2x
+                        `(and (featurep 'mac)
+                              (list :data-2x
+                                    ,(append `(concat (format "/* XPM */ static char * %s_%s_2x[] = { \"%s %s 3 1\", \"0 c %s\", \"1 c %s\", \"2 c %s\","
+                                                              ,(replace-regexp-in-string "-" "_" name)
+                                                              (symbol-name ',dir)
+                                                              (* ,width 2)
+                                                              (* height 2)
+                                                              color1
+                                                              color2
+                                                              colori))
+                                             body-2x
+                                             '("};")))))))))))
 
 (defun centaur-tabs-separator-alternate (dir)
   "Generate an alternating pattern XPM function for DIR."
   (centaur-tabs-separator-pattern-defun "alternate" dir 4
-					'((2 2 1 1)
-					  (0 0 2 2))
-					nil nil nil nil
-					;; 2x
-					'((2 2 2 2 1 1 1 1)
-					  (2 2 2 2 1 1 1 1)
-					  (0 0 0 0 2 2 2 2)
-					  (0 0 0 0 2 2 2 2))))
+                                        '((2 2 1 1)
+                                          (0 0 2 2))
+                                        nil nil nil nil
+                                        ;; 2x
+                                        '((2 2 2 2 1 1 1 1)
+                                          (2 2 2 2 1 1 1 1)
+                                          (0 0 0 0 2 2 2 2)
+                                          (0 0 0 0 2 2 2 2))))
 
 (defun centaur-tabs-separator-bar (dir)
   "Generate a bar XPM function for DIR."
   (centaur-tabs-separator-pattern-defun "bar" dir 2
-					'((2 2))))
+                                        '((2 2))))
 
 (defun centaur-tabs-separator-box (dir)
   "Generate a box XPM function for DIR."
   (centaur-tabs-separator-pattern-defun "box" dir 2
-					'((0 0)
-					  (0 0)
-					  (1 1)
-					  (1 1))
-					nil nil nil nil
-					;; 2x
-					'((0 0 0 0)
-					  (0 0 0 0)
-					  (0 0 0 0)
-					  (0 0 0 0)
-					  (1 1 1 1)
-					  (1 1 1 1)
-					  (1 1 1 1)
-					  (1 1 1 1))))
+                                        '((0 0)
+                                          (0 0)
+                                          (1 1)
+                                          (1 1))
+                                        nil nil nil nil
+                                        ;; 2x
+                                        '((0 0 0 0)
+                                          (0 0 0 0)
+                                          (0 0 0 0)
+                                          (0 0 0 0)
+                                          (1 1 1 1)
+                                          (1 1 1 1)
+                                          (1 1 1 1)
+                                          (1 1 1 1))))
 
 (defun centaur-tabs-separator-chamfer (dir)
   "Generate a chamfer XPM function for DIR."
   (centaur-tabs-separator-pattern-defun "chamfer" dir 3
-					'((0 0 0))
-					'((1 1 1)
-					  (0 1 1)
-					  (0 0 1))
-					nil nil nil
-					;; 2x
-					'((0 0 0 0 0 0))
-					'((1 1 1 1 1 1)
-					  (0 1 1 1 1 1)
-					  (0 0 1 1 1 1)
-					  (0 0 0 1 1 1)
-					  (0 0 0 0 1 1)
-					  (0 0 0 0 0 1))))
+                                        '((0 0 0))
+                                        '((1 1 1)
+                                          (0 1 1)
+                                          (0 0 1))
+                                        nil nil nil
+                                        ;; 2x
+                                        '((0 0 0 0 0 0))
+                                        '((1 1 1 1 1 1)
+                                          (0 1 1 1 1 1)
+                                          (0 0 1 1 1 1)
+                                          (0 0 0 1 1 1)
+                                          (0 0 0 0 1 1)
+                                          (0 0 0 0 0 1))))
 
 (defun centaur-tabs-separator-rounded (dir)
   "Generate a rounded XPM function for DIR."
   (centaur-tabs-separator-pattern-defun "rounded" dir 6
-					'((0 0 0 0 0 0))
-					'((2 1 1 1 1 1)
-					  (0 0 2 1 1 1)
-					  (0 0 0 0 1 1)
-					  (0 0 0 0 2 1)
-					  (0 0 0 0 0 1)
-					  (0 0 0 0 0 2))
-					nil nil nil
-					;; 2x
-					'((0 0 0 0 0 0 0 0 0 0 0 0))
-					'((1 1 1 1 1 1 1 1 1 1 1 1)
-					  (0 0 2 1 1 1 1 1 1 1 1 1)
-					  (0 0 0 0 1 1 1 1 1 1 1 1)
-					  (0 0 0 0 0 0 1 1 1 1 1 1)
-					  (0 0 0 0 0 0 0 2 1 1 1 1)
-					  (0 0 0 0 0 0 0 0 1 1 1 1)
-					  (0 0 0 0 0 0 0 0 0 1 1 1)
-					  (0 0 0 0 0 0 0 0 0 0 1 1)
-					  (0 0 0 0 0 0 0 0 0 0 1 1)
-					  (0 0 0 0 0 0 0 0 0 0 2 1)
-					  (0 0 0 0 0 0 0 0 0 0 0 1)
-					  (0 0 0 0 0 0 0 0 0 0 0 1))))
+                                        '((0 0 0 0 0 0))
+                                        '((2 1 1 1 1 1)
+                                          (0 0 2 1 1 1)
+                                          (0 0 0 0 1 1)
+                                          (0 0 0 0 2 1)
+                                          (0 0 0 0 0 1)
+                                          (0 0 0 0 0 2))
+                                        nil nil nil
+                                        ;; 2x
+                                        '((0 0 0 0 0 0 0 0 0 0 0 0))
+                                        '((1 1 1 1 1 1 1 1 1 1 1 1)
+                                          (0 0 2 1 1 1 1 1 1 1 1 1)
+                                          (0 0 0 0 1 1 1 1 1 1 1 1)
+                                          (0 0 0 0 0 0 1 1 1 1 1 1)
+                                          (0 0 0 0 0 0 0 2 1 1 1 1)
+                                          (0 0 0 0 0 0 0 0 1 1 1 1)
+                                          (0 0 0 0 0 0 0 0 0 1 1 1)
+                                          (0 0 0 0 0 0 0 0 0 0 1 1)
+                                          (0 0 0 0 0 0 0 0 0 0 1 1)
+                                          (0 0 0 0 0 0 0 0 0 0 2 1)
+                                          (0 0 0 0 0 0 0 0 0 0 0 1)
+                                          (0 0 0 0 0 0 0 0 0 0 0 1))))
 
 (defun centaur-tabs-separator-slant (dir)
   "Generate a slant XPM function for DIR."
   (let* ((row-modifier (if (eq dir 'left) 'identity 'reverse)))
     (centaur-tabs-separator-wrap-defun "slant" dir 'width
-				       '((width (1- (ceiling height 2))))
-				       `((cl-loop for i from 0 to (1- height)
-						  concat (centaur-tabs-separator-pattern-to-string (,row-modifier (centaur-tabs-separator-row-pattern (/ i 2) width)))))
-				       `((cl-loop for i from 0 to (1- (* height 2))
-						  concat (centaur-tabs-separator-pattern-to-string (,row-modifier (centaur-tabs-separator-row-pattern (/ i 2) (* width 2)))))))))
+                                       '((width (1- (ceiling height 2))))
+                                       `((cl-loop for i from 0 to (1- height)
+                                                  concat (centaur-tabs-separator-pattern-to-string (,row-modifier (centaur-tabs-separator-row-pattern (/ i 2) width)))))
+                                       `((cl-loop for i from 0 to (1- (* height 2))
+                                                  concat (centaur-tabs-separator-pattern-to-string (,row-modifier (centaur-tabs-separator-row-pattern (/ i 2) (* width 2)))))))))
 
 (defun centaur-tabs-separator-wave (dir)
   "Generate a wave XPM function for DIR."
   (centaur-tabs-separator-pattern-defun "wave" dir 11
-					'((0 0 0 0 0 0 1 1 1 1 1))
-					'((2 1 1 1 1 1 1 1 1 1 1)
-					  (0 0 1 1 1 1 1 1 1 1 1)
-					  (0 0 0 1 1 1 1 1 1 1 1)
-					  (0 0 0 2 1 1 1 1 1 1 1)
-					  (0 0 0 0 1 1 1 1 1 1 1)
-					  (0 0 0 0 2 1 1 1 1 1 1)
-					  (0 0 0 0 0 1 1 1 1 1 1)
-					  (0 0 0 0 0 1 1 1 1 1 1)
-					  (0 0 0 0 0 2 1 1 1 1 1))
-					'((0 0 0 0 0 0 2 1 1 1 1)
-					  (0 0 0 0 0 0 0 1 1 1 1)
-					  (0 0 0 0 0 0 0 1 1 1 1)
-					  (0 0 0 0 0 0 0 2 1 1 1)
-					  (0 0 0 0 0 0 0 0 1 1 1)
-					  (0 0 0 0 0 0 0 0 2 1 1)
-					  (0 0 0 0 0 0 0 0 0 0 2))
-					nil nil
-					;; 2x
-					'((0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1))
-					'((1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1)
-					  (0 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1)
-					  (0 0 0 2 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1)
-					  (0 0 0 0 2 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1)
-					  (0 0 0 0 0 2 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1)
-					  (0 0 0 0 0 0 2 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1)
-					  (0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1)
-					  (0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1)
-					  (0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1)
-					  (0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1)
-					  (0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1)
-					  (0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1)
-					  (0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1)
-					  (0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1)
-					  (0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1)
-					  (0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1)
-					  (0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1)
-					  (0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1))
-					'((0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1)
-					  (0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1)
-					  (0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1)
-					  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1)
-					  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1)
-					  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1)
-					  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1)
-					  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1)
-					  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1)
-					  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1)
-					  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 2 1 1 1 1 1)
-					  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 2 1 1 1 1)
-					  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1)
-					  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0))))
+                                        '((0 0 0 0 0 0 1 1 1 1 1))
+                                        '((2 1 1 1 1 1 1 1 1 1 1)
+                                          (0 0 1 1 1 1 1 1 1 1 1)
+                                          (0 0 0 1 1 1 1 1 1 1 1)
+                                          (0 0 0 2 1 1 1 1 1 1 1)
+                                          (0 0 0 0 1 1 1 1 1 1 1)
+                                          (0 0 0 0 2 1 1 1 1 1 1)
+                                          (0 0 0 0 0 1 1 1 1 1 1)
+                                          (0 0 0 0 0 1 1 1 1 1 1)
+                                          (0 0 0 0 0 2 1 1 1 1 1))
+                                        '((0 0 0 0 0 0 2 1 1 1 1)
+                                          (0 0 0 0 0 0 0 1 1 1 1)
+                                          (0 0 0 0 0 0 0 1 1 1 1)
+                                          (0 0 0 0 0 0 0 2 1 1 1)
+                                          (0 0 0 0 0 0 0 0 1 1 1)
+                                          (0 0 0 0 0 0 0 0 2 1 1)
+                                          (0 0 0 0 0 0 0 0 0 0 2))
+                                        nil nil
+                                        ;; 2x
+                                        '((0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1))
+                                        '((1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1)
+                                          (0 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1)
+                                          (0 0 0 2 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1)
+                                          (0 0 0 0 2 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1)
+                                          (0 0 0 0 0 2 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1)
+                                          (0 0 0 0 0 0 2 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1)
+                                          (0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1)
+                                          (0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1)
+                                          (0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1)
+                                          (0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1)
+                                          (0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1)
+                                          (0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1)
+                                          (0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1)
+                                          (0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1)
+                                          (0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1)
+                                          (0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1)
+                                          (0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1)
+                                          (0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1))
+                                        '((0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1)
+                                          (0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1)
+                                          (0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1)
+                                          (0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1)
+                                          (0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1)
+                                          (0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1)
+                                          (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1)
+                                          (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1)
+                                          (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1)
+                                          (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1)
+                                          (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 2 1 1 1 1 1)
+                                          (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 2 1 1 1 1)
+                                          (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1)
+                                          (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0))))
 
 (defun centaur-tabs-separator-zigzag (dir)
   "Generate a zigzag pattern XPM function for DIR."
   (centaur-tabs-separator-pattern-defun "zigzag" dir 3
-					'((1 1 1)
-					  (0 1 1)
-					  (0 0 1)
-					  (0 0 0)
-					  (0 0 1)
-					  (0 1 1))
-					nil nil nil nil
-					;; 2x
-					'((1 1 1 1 1 1)
-					  (0 1 1 1 1 1)
-					  (0 0 1 1 1 1)
-					  (0 0 0 1 1 1)
-					  (0 0 0 0 1 1)
-					  (0 0 0 0 0 1)
-					  (0 0 0 0 0 0)
-					  (0 0 0 0 0 1)
-					  (0 0 0 0 1 1)
-					  (0 0 0 1 1 1)
-					  (0 0 1 1 1 1)
-					  (0 1 1 1 1 1))))
+                                        '((1 1 1)
+                                          (0 1 1)
+                                          (0 0 1)
+                                          (0 0 0)
+                                          (0 0 1)
+                                          (0 1 1))
+                                        nil nil nil nil
+                                        ;; 2x
+                                        '((1 1 1 1 1 1)
+                                          (0 1 1 1 1 1)
+                                          (0 0 1 1 1 1)
+                                          (0 0 0 1 1 1)
+                                          (0 0 0 0 1 1)
+                                          (0 0 0 0 0 1)
+                                          (0 0 0 0 0 0)
+                                          (0 0 0 0 0 1)
+                                          (0 0 0 0 1 1)
+                                          (0 0 0 1 1 1)
+                                          (0 0 1 1 1 1)
+                                          (0 1 1 1 1 1))))
 
 (defun centaur-tabs-separator-memoize (func)
   "Memoize FUNC.
@@ -839,10 +839,10 @@ The memoization cache is frame-local."
     `(lambda (&rest args)
        ,(concat (documentation func) (format "\n(memoized function %s)" funcid))
        (let* ((cache (centaur-tabs-separator-create-or-get-cache))
-	      (key (cons ',funcid args))
-	      (val (gethash key cache)))
-	 (or val
-	     (puthash key (apply ,func args) cache))))))
+              (key (cons ',funcid args))
+              (val (gethash key cache)))
+         (or val
+             (puthash key (apply ,func args) cache))))))
 
 (defun centaur-tabs-separator-create-or-get-cache ()
   "Return a frame-local hash table that acts as a memoization cache.

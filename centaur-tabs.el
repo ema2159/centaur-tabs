@@ -100,24 +100,24 @@ hidden, it is shown again.  Signal an error if Centaur-Tabs mode is off."
 ;;; ON
   (if centaur-tabs-local-mode
       (if (and (local-variable-p centaur-tabs-display-line-format)
-	       (eval centaur-tabs-display-line-format))
-	  ;; A local header line exists, hide it to show the tab bar.
-	  (progn
-	    ;; Fail in case of an inconsistency because another local
-	    ;; header line is already hidden.
-	    (when (local-variable-p 'centaur-tabs--local-hlf)
-	      (error "Another local header line is already hidden"))
-	    (set (make-local-variable 'centaur-tabs--local-hlf)
-		 (eval centaur-tabs-display-line-format))
-	    (kill-local-variable centaur-tabs-display-line-format))
-	;; Otherwise hide the tab bar in this buffer.
-	(set centaur-tabs-display-line-format nil))
+               (eval centaur-tabs-display-line-format))
+          ;; A local header line exists, hide it to show the tab bar.
+          (progn
+            ;; Fail in case of an inconsistency because another local
+            ;; header line is already hidden.
+            (when (local-variable-p 'centaur-tabs--local-hlf)
+              (error "Another local header line is already hidden"))
+            (set (make-local-variable 'centaur-tabs--local-hlf)
+                 (eval centaur-tabs-display-line-format))
+            (kill-local-variable centaur-tabs-display-line-format))
+        ;; Otherwise hide the tab bar in this buffer.
+        (set centaur-tabs-display-line-format nil))
 ;;; OFF
     (if (local-variable-p 'centaur-tabs--local-hlf)
-	;; A local header line is hidden, show it again.
-	(progn
-	  (set centaur-tabs-display-line-format centaur-tabs--local-hlf)
-	  (kill-local-variable 'centaur-tabs--local-hlf))
+        ;; A local header line is hidden, show it again.
+        (progn
+          (set centaur-tabs-display-line-format centaur-tabs--local-hlf)
+          (kill-local-variable 'centaur-tabs--local-hlf))
       ;; The tab bar is locally hidden, show it again.
       (kill-local-variable centaur-tabs-display-line-format))))
 
@@ -139,20 +139,20 @@ Returns non-nil if the new state is enabled.
   (if centaur-tabs-mode
 ;;; ON
       (unless (centaur-tabs-mode-on-p)
-	;; Save current default value of `centaur-tabs-display-line-format'.
-	(setq centaur-tabs--global-hlf (default-value centaur-tabs-display-line-format))
-	(centaur-tabs-init-tabsets-store)
-	(set-default centaur-tabs-display-line-format centaur-tabs-header-line-format))
+        ;; Save current default value of `centaur-tabs-display-line-format'.
+        (setq centaur-tabs--global-hlf (default-value centaur-tabs-display-line-format))
+        (centaur-tabs-init-tabsets-store)
+        (set-default centaur-tabs-display-line-format centaur-tabs-header-line-format))
 ;;; OFF
     (when (centaur-tabs-mode-on-p)
       ;; Turn off Centaur-Tabs-Local mode globally.
       (mapc #'(lambda (b)
-		(condition-case nil
-		    (with-current-buffer b
-		      (and centaur-tabs-local-mode
-			   (centaur-tabs-local-mode -1)))
-		  (error nil)))
-	    (buffer-list))
+                (condition-case nil
+                    (with-current-buffer b
+                      (and centaur-tabs-local-mode
+                           (centaur-tabs-local-mode -1)))
+                  (error nil)))
+            (buffer-list))
       ;; Restore previous `centaur-tabs-display-line-format'.
       (set-default centaur-tabs-display-line-format centaur-tabs--global-hlf)
       (centaur-tabs-free-tabsets-store)))
@@ -166,36 +166,36 @@ Returns non-nil if the new state is enabled.
   "Initialize tab bar buffer data.
 Run as `centaur-tabs-init-hook'."
   (setq centaur-tabs--buffers nil
-	centaur-tabs-current-tabset-function 'centaur-tabs-buffer-tabs
-	centaur-tabs-tab-label-function 'centaur-tabs-buffer-tab-label
-	centaur-tabs-select-tab-function 'centaur-tabs-buffer-select-tab)
+        centaur-tabs-current-tabset-function 'centaur-tabs-buffer-tabs
+        centaur-tabs-tab-label-function 'centaur-tabs-buffer-tab-label
+        centaur-tabs-select-tab-function 'centaur-tabs-buffer-select-tab)
   ;; If set, initialize selected overline
   (when (eq centaur-tabs-set-bar 'under)
     (set-face-attribute 'centaur-tabs-selected nil
-			:underline (face-background 'centaur-tabs-active-bar-face nil 'default)
-			:overline nil)
+                        :underline (face-background 'centaur-tabs-active-bar-face nil 'default)
+                        :overline nil)
     (set-face-attribute 'centaur-tabs-selected-modified nil
-			:underline (face-background 'centaur-tabs-active-bar-face nil 'default)
-			:overline nil)
+                        :underline (face-background 'centaur-tabs-active-bar-face nil 'default)
+                        :overline nil)
     (set-face-attribute 'centaur-tabs-unselected nil
-			:underline nil
-			:overline nil)
+                        :underline nil
+                        :overline nil)
     (set-face-attribute 'centaur-tabs-unselected-modified nil
-			:underline nil
-			:overline nil))
+                        :underline nil
+                        :overline nil))
   (when (eq centaur-tabs-set-bar 'over)
     (set-face-attribute 'centaur-tabs-selected nil
-			:overline (face-background 'centaur-tabs-active-bar-face nil 'default)
-			:underline nil)
+                        :overline (face-background 'centaur-tabs-active-bar-face nil 'default)
+                        :underline nil)
     (set-face-attribute 'centaur-tabs-selected-modified nil
-			:overline (face-background 'centaur-tabs-active-bar-face nil 'default)
-			:underline nil)
+                        :overline (face-background 'centaur-tabs-active-bar-face nil 'default)
+                        :underline nil)
     (set-face-attribute 'centaur-tabs-unselected nil
-			:overline nil
-			:underline nil)
+                        :overline nil
+                        :underline nil)
     (set-face-attribute 'centaur-tabs-unselected-modified nil
-			:overline nil
-			:underline nil))
+                        :overline nil
+                        :underline nil))
   (add-hook 'after-save-hook #'centaur-tabs-on-saving-buffer)
   (add-hook 'first-change-hook #'centaur-tabs-on-modifying-buffer)
   (add-hook 'kill-buffer-hook #'centaur-tabs-buffer-track-killed)
@@ -207,9 +207,9 @@ Run as `centaur-tabs-init-hook'."
   "Quit tab bar buffer.
 Run as `centaur-tabs-quit-hook'."
   (setq centaur-tabs--buffers nil
-	centaur-tabs-current-tabset-function nil
-	centaur-tabs-tab-label-function nil
-	centaur-tabs-select-tab-function nil)
+        centaur-tabs-current-tabset-function nil
+        centaur-tabs-tab-label-function nil
+        centaur-tabs-select-tab-function nil)
   (remove-hook 'after-save-hook 'centaur-tabs-after-modifying-buffer)
   (remove-hook 'first-change-hook 'centaur-tabs-on-modifying-buffer)
   (remove-hook 'kill-buffer-hook 'centaur-tabs-buffer-track-killed)
