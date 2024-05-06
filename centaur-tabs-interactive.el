@@ -69,19 +69,19 @@
   "Switch tab groups using ido.  GROUPNAME can optionaly be provided."
   (interactive)
   (let* ((tab-buffer-list (cl-mapcar
-			   #'(lambda (b)
-			       (with-current-buffer b
-				 (list (current-buffer)
-				       (buffer-name)
-				       (funcall centaur-tabs-buffer-groups-function) )))
-			   (funcall centaur-tabs-buffer-list-function)))
-	 (groups (centaur-tabs-get-groups))
-	 (group-name (or groupname (centaur-tabs-completing-read "Groups: " groups))) )
+                           #'(lambda (b)
+                               (with-current-buffer b
+                                 (list (current-buffer)
+                                       (buffer-name)
+                                       (funcall centaur-tabs-buffer-groups-function) )))
+                           (funcall centaur-tabs-buffer-list-function)))
+         (groups (centaur-tabs-get-groups))
+         (group-name (or groupname (centaur-tabs-completing-read "Groups: " groups))) )
     (catch 'done
       (mapc
        #'(lambda (group)
-	   (when (equal group-name (car (car (cdr (cdr group)))))
-	     (throw 'done (switch-to-buffer (car (cdr group))))))
+           (when (equal group-name (car (car (cdr (cdr group)))))
+             (throw 'done (switch-to-buffer (car (cdr group))))))
        tab-buffer-list) )))
 
 (defun centaur-tabs-select-end-tab ()
@@ -95,15 +95,15 @@ If BACKWARD is non-nil, move backward, otherwise move forward.
 TYPE is default option."
   (interactive)
   (let* ((tabset (centaur-tabs-current-tabset t))
-	 (ttabset (centaur-tabs-get-tabsets-tabset))
-	 (_cycle (if (and (eq centaur-tabs-cycle-scope 'groups)
-			  (not (cdr (centaur-tabs-tabs ttabset))))
-		     'tabs
-		   centaur-tabs-cycle-scope))
-	 _selected tab)
+         (ttabset (centaur-tabs-get-tabsets-tabset))
+         (_cycle (if (and (eq centaur-tabs-cycle-scope 'groups)
+                          (not (cdr (centaur-tabs-tabs ttabset))))
+                     'tabs
+                   centaur-tabs-cycle-scope))
+         _selected tab)
     (when tabset
       (setq tabset (centaur-tabs-tabs tabset)
-	    tab (car (if backward (last tabset) tabset)))
+            tab (car (if backward (last tabset) tabset)))
       (centaur-tabs-buffer-select-tab tab))))
 
 (defun centaur-tabs-backward-tab-other-window (&optional reversed)
@@ -126,21 +126,21 @@ move forward."
   "Move current tab one place right, unless it's already the rightmost."
   (interactive)
   (let* ((bufset (centaur-tabs-current-tabset t))
-	 (old-bufs (centaur-tabs-tabs bufset))
-	 (new-bufs (list))
-	 the-buffer)
+         (old-bufs (centaur-tabs-tabs bufset))
+         (new-bufs (list))
+         the-buffer)
     (while (and
-	    old-bufs
-	    (not (string= (buffer-name) (format "%s" (car (car old-bufs))))))
+            old-bufs
+            (not (string= (buffer-name) (format "%s" (car (car old-bufs))))))
       (push (car old-bufs) new-bufs)
       (setq old-bufs (cdr old-bufs)))
     (if old-bufs ; if this is false, then the current tab's buffer name is mysteriously missing
-	(progn
-	  (setq the-buffer (car old-bufs))
-	  (setq old-bufs (cdr old-bufs))
-	  (if old-bufs ; if this is false, then the current tab is the rightmost
-	      (push (car old-bufs) new-bufs))
-	  (push the-buffer new-bufs)) ; this is the tab that was to be moved
+        (progn
+          (setq the-buffer (car old-bufs))
+          (setq old-bufs (cdr old-bufs))
+          (if old-bufs ; if this is false, then the current tab is the rightmost
+              (push (car old-bufs) new-bufs))
+          (push the-buffer new-bufs)) ; this is the tab that was to be moved
       (error "Error: current buffer's name was not found in Centaur-Tabs's buffer list"))
     (setq new-bufs (reverse new-bufs))
     (setq new-bufs (append new-bufs (cdr old-bufs)))
@@ -152,27 +152,27 @@ move forward."
   "Move current tab one place left, unless it's already the leftmost."
   (interactive)
   (let* ((bufset (centaur-tabs-current-tabset t))
-	 (old-bufs (centaur-tabs-tabs bufset))
-	 (first-buf (car old-bufs))
-	 (new-bufs (list))
-	 not-yet-this-buf)
+         (old-bufs (centaur-tabs-tabs bufset))
+         (first-buf (car old-bufs))
+         (new-bufs (list))
+         not-yet-this-buf)
     (if (string= (buffer-name) (format "%s" (car first-buf)))
-	old-bufs                     ; the current tab is the leftmost
+        old-bufs                     ; the current tab is the leftmost
       (setq not-yet-this-buf first-buf)
       (setq old-bufs (cdr old-bufs))
       (while (and
-	      old-bufs
-	      (not (string= (buffer-name) (format "%s" (car (car old-bufs))))))
-	(push not-yet-this-buf new-bufs)
-	(setq not-yet-this-buf (car old-bufs))
-	(setq old-bufs (cdr old-bufs)))
+              old-bufs
+              (not (string= (buffer-name) (format "%s" (car (car old-bufs))))))
+        (push not-yet-this-buf new-bufs)
+        (setq not-yet-this-buf (car old-bufs))
+        (setq old-bufs (cdr old-bufs)))
       (if old-bufs ; if this is false, then the current tab's buffer name is mysteriously missing
-	  (progn
-	    (push (car old-bufs) new-bufs) ; this is the tab that was to be moved
-	    (push not-yet-this-buf new-bufs)
-	    (setq new-bufs (reverse new-bufs))
-	    (setq new-bufs (append new-bufs (cdr old-bufs))))
-	(error "Error: current buffer's name was not found in Centaur-Tabs's buffer list"))
+          (progn
+            (push (car old-bufs) new-bufs) ; this is the tab that was to be moved
+            (push not-yet-this-buf new-bufs)
+            (setq new-bufs (reverse new-bufs))
+            (setq new-bufs (append new-bufs (cdr old-bufs))))
+        (error "Error: current buffer's name was not found in Centaur-Tabs's buffer list"))
       (set bufset new-bufs)
       (centaur-tabs-set-template bufset nil)
       (centaur-tabs-display-update))))
@@ -181,12 +181,12 @@ move forward."
   "If buffer match MATCH-RULE,  kill it."
   `(save-excursion
      (mapc #'(lambda (buffer)
-	       (with-current-buffer buffer
-		 (when (string-equal current-group-name (cdr (centaur-tabs-selected-tab (centaur-tabs-current-tabset t))))
-		   (when (funcall ,match-rule buffer)
-		     (kill-buffer buffer))
-		   )))
-	   (buffer-list))))
+               (with-current-buffer buffer
+                 (when (string-equal current-group-name (cdr (centaur-tabs-selected-tab (centaur-tabs-current-tabset t))))
+                   (when (funcall ,match-rule buffer)
+                     (kill-buffer buffer))
+                   )))
+           (buffer-list))))
 
 (defun centaur-tabs-kill-all-buffers-in-current-group ()
   "Kill all buffers in current group."
@@ -202,7 +202,7 @@ move forward."
   "Kill all buffers except current buffer in current group."
   (interactive)
   (let* ((current-group-name (cdr (centaur-tabs-selected-tab (centaur-tabs-current-tabset t))))
-	 (currentbuffer (current-buffer)))
+         (currentbuffer (current-buffer)))
     ;; Kill all buffers in current group.
     (centaur-tabs-kill-buffer-match-rule
      (lambda (buffer) (not (equal buffer currentbuffer))))))
@@ -211,7 +211,7 @@ move forward."
   "Kill all unmodified buffer in current group."
   (interactive)
   (let* ((current-group-name (cdr (centaur-tabs-selected-tab (centaur-tabs-current-tabset t))))
-	 (currentbuffer (current-buffer)))
+         (currentbuffer (current-buffer)))
     ;; Kill all buffers in current group.
     (centaur-tabs-kill-buffer-match-rule
      (lambda (buffer) (not (buffer-modified-p buffer))))))
@@ -221,16 +221,16 @@ move forward."
   "Kill all buffers match extension in current group."
   (interactive)
   (let* ((current-group-name (cdr (centaur-tabs-selected-tab (centaur-tabs-current-tabset t))))
-	 (extension-names (centaur-tabs-get-extensions))
-	 match-extension)
+         (extension-names (centaur-tabs-get-extensions))
+         match-extension)
     ;; Read extension need to kill.
     (setq match-extension (centaur-tabs-completing-read "Kill buffers suffix with: " extension-names))
     ;; Kill all buffers match extension in current group.
     (centaur-tabs-kill-buffer-match-rule
      (lambda (buffer)
        (let ((filename (buffer-file-name buffer)))
-	 (and filename (string-equal (file-name-extension filename) match-extension))
-	 )))
+         (and filename (string-equal (file-name-extension filename) match-extension))
+         )))
     ;; Switch to next group if last file killed.
     (when (equal (length extension-names) 1)
       (centaur-tabs-forward-group))))
@@ -239,15 +239,15 @@ move forward."
   "Keep all buffers match extension in current group."
   (interactive)
   (let* ((current-group-name (cdr (centaur-tabs-selected-tab (centaur-tabs-current-tabset t))))
-	 (extension-names (centaur-tabs-get-extensions))
-	 match-extension)
+         (extension-names (centaur-tabs-get-extensions))
+         match-extension)
     ;; Read extension need to kill.
     (setq match-extension (centaur-tabs-completing-read "Just keep buffers suffix with: " extension-names))
     ;; Kill all buffers match extension in current group.
     (centaur-tabs-kill-buffer-match-rule
      (lambda (buffer)
        (let ((filename (buffer-file-name buffer)))
-	 (and filename (not (string-equal (file-name-extension filename) match-extension))))))
+         (and filename (not (string-equal (file-name-extension filename) match-extension))))))
     ;; Switch to next group if last file killed.
     (when (equal (length extension-names) 1)
       (centaur-tabs-forward-group))))
@@ -263,9 +263,9 @@ If `tab-index' is 0, select last tab."
     (switch-to-buffer
      (car
       (if (or (equal tab-index 0)
-	      (> tab-index (length visible-tabs)))
-	  (car (last visible-tabs))
-	(nth (- tab-index 1) visible-tabs))))))
+              (> tab-index (length visible-tabs)))
+          (car (last visible-tabs))
+        (nth (- tab-index 1) visible-tabs))))))
 
 (defun centaur-tabs-select-visible-tab ()
   "Bind this function with number keystroke, such as s-1, s-2, s-3 ... etc.
@@ -277,8 +277,8 @@ Note that this function switches to the visible range,
 not the actual logical index position of the current group."
   (interactive)
   (let* ((event last-command-event)
-	 (key (make-vector 1 event))
-	 (key-desc (key-description key)))
+         (key (make-vector 1 event))
+         (key-desc (key-description key)))
     (centaur-tabs-select-visible-nth-tab
      (string-to-number (car (last (split-string key-desc "-")))))))
 
@@ -296,26 +296,26 @@ not the actual logical index position of the current group."
     (when centaur-tabs-dim-overlay
       (delete-overlay centaur-tabs-dim-overlay))
     (setq centaur-tabs-dim-overlay
-	  (let ((ol (make-overlay (window-start) (window-end))))
-	    (overlay-put ol 'face 'centaur-tabs-dim-buffer-face)
-	    ol))))
+          (let ((ol (make-overlay (window-start) (window-end))))
+            (overlay-put ol 'face 'centaur-tabs-dim-buffer-face)
+            ol))))
 
 (defun centaur-tabs-swap-tab (tab)
   "Swap the position of current tab with TAB.
 TAB has to be in the same group as the current tab."
   (if (eq (centaur-tabs-tab-tabset tab) (centaur-tabs-current-tabset t))
       (let* ((group (centaur-tabs-current-tabset t))
-	     (tabs (cl-copy-list (centaur-tabs-tabs group)))
-	     (current (centaur-tabs-selected-tab group))
-	     (current-index (cl-position current tabs))
-	     (target-index (cl-position tab tabs)))
-	(if (eq tab current)
-	    (message "Can't swap with current tab itself.")
-	  (setcar (nthcdr current-index tabs) tab)
-	  (setcar (nthcdr target-index tabs) current)
-	  (set group tabs)
-	  (centaur-tabs-set-template (centaur-tabs-current-tabset t) nil)
-	  (centaur-tabs-display-update)))
+             (tabs (cl-copy-list (centaur-tabs-tabs group)))
+             (current (centaur-tabs-selected-tab group))
+             (current-index (cl-position current tabs))
+             (target-index (cl-position tab tabs)))
+        (if (eq tab current)
+            (message "Can't swap with current tab itself.")
+          (setcar (nthcdr current-index tabs) tab)
+          (setcar (nthcdr target-index tabs) current)
+          (set group tabs)
+          (centaur-tabs-set-template (centaur-tabs-current-tabset t) nil)
+          (centaur-tabs-display-update)))
     (message "Error: %s is not in the same group as the current tab." tab)))
 
 (defun centaur-tabs-ace-action (action)
@@ -325,62 +325,62 @@ ACTION has to be one of value in `centuar-tabs-ace-dispatch-alist'"
     (when centaur-tabs-ace-jump-dim-buffer
       (centaur-tabs--dim-window))
     (cond ((eq action 'jump-to-tab)
-	   (message "Jump to tab: "))
-	  ((eq action 'close-tab)
-	   (message "Close tab: "))
-	  ((eq action 'swap-tab)
-	   (message "Swap current tab with: ")))
+           (message "Jump to tab: "))
+          ((eq action 'close-tab)
+           (message "Close tab: "))
+          ((eq action 'swap-tab)
+           (message "Swap current tab with: ")))
 
     (let ((centaur-tabs-ace-jump-active t))
       (catch 'done
-	(while t
-	  (centaur-tabs-set-template (centaur-tabs-current-tabset t) nil)
-	  (centaur-tabs-display-update)
-	  (let ((char (read-key)) (action-cache))
-	    (cond
-	     ;; tab keys
-	     ((memq char centaur-tabs-ace-jump-keys)
-	      (let ((sel (nth (cl-position char centaur-tabs-ace-jump-keys) (centaur-tabs-view (centaur-tabs-current-tabset t)))))
-		(cond ((eq sel nil)
-		       (message "Tab %s does not exist" (key-description (vector char))))
-		      ((eq action 'jump-to-tab)
-		       (centaur-tabs-buffer-select-tab sel))
-		      ((eq action 'close-tab)
-		       (centaur-tabs-buffer-close-tab sel))
-		      ((eq action 'swap-tab)
-		       (centaur-tabs-swap-tab sel))))
-	      (throw 'done nil))
-	     ;; actions
-	     ((setq action-cache (assoc char centuar-tabs-ace-dispatch-alist))
-	      (setq action-cache (cadr action-cache))
-	      (cond ((eq action-cache 'exit)           ; exit
-		     (message "Quit")
-		     (throw 'done nil))
-		    ((eq action-cache 'forward-group)  ; forward group
-		     (message "Forward group")
-		     (centaur-tabs-forward-group)
-		     (centaur-tabs--dim-window))
-		    ((eq action-cache 'backward-group) ; backward group
-		     (message "Backward group")
-		     (centaur-tabs-backward-group)
-		     (centaur-tabs--dim-window))
-		    ((eq action-cache 'show-help)      ; help menu
-		     (message "%s" (mapconcat
-				    (lambda (elem) (format "%s: %s"
-							   (key-description (vector (car elem)))
-							   (caddr elem)))
-				    centuar-tabs-ace-dispatch-alist
-				    "\n")))
-		    (t (setq action action-cache)      ; other actions
-		       (cond ((eq action-cache 'jump-to-tab)
-			      (message "Jump to tab: "))
-			     ((eq action-cache 'close-tab)
-			      (message "Close tab: "))
-			     ((eq action-cache 'swap-tab)
-			      (message "Swap current tab with: "))))))
-	     ;; no match, repeat
-	     (t
-	      (message "No such candidate: %s, hit ? for help." (key-description (vector char)))))))))
+        (while t
+          (centaur-tabs-set-template (centaur-tabs-current-tabset t) nil)
+          (centaur-tabs-display-update)
+          (let ((char (read-key)) (action-cache))
+            (cond
+             ;; tab keys
+             ((memq char centaur-tabs-ace-jump-keys)
+              (let ((sel (nth (cl-position char centaur-tabs-ace-jump-keys) (centaur-tabs-view (centaur-tabs-current-tabset t)))))
+                (cond ((eq sel nil)
+                       (message "Tab %s does not exist" (key-description (vector char))))
+                      ((eq action 'jump-to-tab)
+                       (centaur-tabs-buffer-select-tab sel))
+                      ((eq action 'close-tab)
+                       (centaur-tabs-buffer-close-tab sel))
+                      ((eq action 'swap-tab)
+                       (centaur-tabs-swap-tab sel))))
+              (throw 'done nil))
+             ;; actions
+             ((setq action-cache (assoc char centuar-tabs-ace-dispatch-alist))
+              (setq action-cache (cadr action-cache))
+              (cond ((eq action-cache 'exit)           ; exit
+                     (message "Quit")
+                     (throw 'done nil))
+                    ((eq action-cache 'forward-group)  ; forward group
+                     (message "Forward group")
+                     (centaur-tabs-forward-group)
+                     (centaur-tabs--dim-window))
+                    ((eq action-cache 'backward-group) ; backward group
+                     (message "Backward group")
+                     (centaur-tabs-backward-group)
+                     (centaur-tabs--dim-window))
+                    ((eq action-cache 'show-help)      ; help menu
+                     (message "%s" (mapconcat
+                                    (lambda (elem) (format "%s: %s"
+                                                           (key-description (vector (car elem)))
+                                                           (caddr elem)))
+                                    centuar-tabs-ace-dispatch-alist
+                                    "\n")))
+                    (t (setq action action-cache)      ; other actions
+                       (cond ((eq action-cache 'jump-to-tab)
+                              (message "Jump to tab: "))
+                             ((eq action-cache 'close-tab)
+                              (message "Close tab: "))
+                             ((eq action-cache 'swap-tab)
+                              (message "Swap current tab with: "))))))
+             ;; no match, repeat
+             (t
+              (message "No such candidate: %s, hit ? for help." (key-description (vector char)))))))))
     (centaur-tabs-set-template (centaur-tabs-current-tabset t) nil)
     (when centaur-tabs-ace-jump-dim-buffer
       (delete-overlay centaur-tabs-dim-overlay)
@@ -396,13 +396,13 @@ If prefixed with two `universal-argument's, close
 selected tab."
   (interactive "p")
   (cond ((eq arg 1)
-	 (centaur-tabs-ace-action 'jump-to-tab))
-	((eq arg 4)
-	 (centaur-tabs-ace-action 'swap-tab))
-	((eq arg 16)
-	 (centaur-tabs-ace-action 'close-tab))
-	(t
-	 (centaur-tabs-ace-action 'jump-to-tab))))
+         (centaur-tabs-ace-action 'jump-to-tab))
+        ((eq arg 4)
+         (centaur-tabs-ace-action 'swap-tab))
+        ((eq arg 16)
+         (centaur-tabs-ace-action 'close-tab))
+        (t
+         (centaur-tabs-ace-action 'jump-to-tab))))
 
 (defun centaur-tabs-group-buffer-groups ()
   "Use centaur-tabs's own buffer grouping function."
@@ -421,21 +421,21 @@ Should be buffer local and speed up calculation of buffer groups.")
       (symbol-value 'centaur-tabs-projectile-buffer-group-calc)
     (set (make-local-variable 'centaur-tabs-projectile-buffer-group-calc)
 
-	 (cond
-	  ((or (get-buffer-process (current-buffer)) (memq major-mode '(comint-mode compilation-mode))) '("Term"))
-	  ((string-equal "*" (substring (buffer-name) 0 1)) '("Misc"))
-	  ((condition-case _err
-	       (projectile-project-root)
-	     (error nil)) (list (projectile-project-name)))
-	  ((memq major-mode '(emacs-lisp-mode python-mode emacs-lisp-mode c-mode
-					      c++-mode javascript-mode js-mode
-					      js2-mode makefile-mode
-					      lua-mode vala-mode)) '("Coding"))
-	  ((memq major-mode '(nxhtml-mode html-mode
-					  mhtml-mode css-mode)) '("HTML"))
-	  ((memq major-mode '(org-mode calendar-mode diary-mode)) '("Org"))
-	  ((memq major-mode '(dired-mode)) '("Dir"))
-	  (t '("Other"))))
+         (cond
+          ((or (get-buffer-process (current-buffer)) (memq major-mode '(comint-mode compilation-mode))) '("Term"))
+          ((string-equal "*" (substring (buffer-name) 0 1)) '("Misc"))
+          ((condition-case _err
+               (projectile-project-root)
+             (error nil)) (list (projectile-project-name)))
+          ((memq major-mode '(emacs-lisp-mode python-mode emacs-lisp-mode c-mode
+                                              c++-mode javascript-mode js-mode
+                                              js2-mode makefile-mode
+                                              lua-mode vala-mode)) '("Coding"))
+          ((memq major-mode '(nxhtml-mode html-mode
+                                          mhtml-mode css-mode)) '("HTML"))
+          ((memq major-mode '(org-mode calendar-mode diary-mode)) '("Org"))
+          ((memq major-mode '(dired-mode)) '("Dir"))
+          (t '("Other"))))
     (symbol-value 'centaur-tabs-projectile-buffer-group-calc)))
 
 (defun centaur-tabs-group-by-projectile-project()
@@ -457,11 +457,11 @@ Should be buffer local and speed up calculation of buffer groups.")
   "Display a list of current buffer groups in Helm."
   (interactive)
   (setq helm-source-centaur-tabs-group
-	(when (featurep 'helm)
-	  (require 'helm)
-	  (helm-build-sync-source "Centaur-Tabs Group"
-				  :candidates #'centaur-tabs-get-groups
-				  :action '(("Switch to group" . centaur-tabs-switch-group))))))
+        (when (featurep 'helm)
+          (require 'helm)
+          (helm-build-sync-source "Centaur-Tabs Group"
+                                  :candidates #'centaur-tabs-get-groups
+                                  :action '(("Switch to group" . centaur-tabs-switch-group))))))
 
 ;; Ivy source for switching group in ivy.
 
@@ -492,9 +492,9 @@ in a new frame."
   ;;; From https://emacsredux.com/blog/2013/03/27/copy-filename-to-the-clipboard/
   (interactive)
   (let* ((filename (if (equal major-mode 'dired-mode)
-		       default-directory
-		     (buffer-file-name)))
-	 (filename (expand-file-name filename)))
+                       default-directory
+                     (buffer-file-name)))
+         (filename (expand-file-name filename)))
     (when filename
       (kill-new filename)
       (message "Copied buffer file name '%s' to the kill ring." filename))))
@@ -524,7 +524,7 @@ Modified copy of `treemacs-visit-node-in-external-application`."
        (shell-command (format "open \"%s\"" path)))
       ('gnu/linux
        (let ((process-connection-type nil))
-	 (start-process "" nil "xdg-open" path)))
+         (start-process "" nil "xdg-open" path)))
       (_ (message "Don't know how to open files on %s." (symbol-name system-type))))))
 
 (defun centaur-tabs--copy-directory-name-to-clipboard ()
@@ -542,9 +542,9 @@ Modified copy of `treemacs-visit-node-in-external-application`."
 (defun centaur-tabs--tab-submenu-tabs-definition ()
   "Menu definition with a list of tabs for the current group."
   (let* ((tabset (centaur-tabs-get-tabset centaur-tabs-last-focused-buffer-group))
-	 (tabs-in-group (centaur-tabs-tabs tabset))
-	 (buffers (mapcar #'centaur-tabs-tab-value tabs-in-group))
-	 (sorted-tabnames (sort (mapcar #'buffer-name buffers) #'string<)))
+         (tabs-in-group (centaur-tabs-tabs tabset))
+         (buffers (mapcar #'centaur-tabs-tab-value tabs-in-group))
+         (sorted-tabnames (sort (mapcar #'buffer-name buffers) #'string<)))
     (mapcar (lambda (s) `[,s  ,s]) sorted-tabnames)))
 
 (defvar centaur-tabs--groups-submenu-key "Tab groups")
@@ -589,7 +589,7 @@ Modified copy of `treemacs-visit-node-in-external-application`."
 (defun centaur-tabs--one-window-p ()
   "Like `one-window-p`, but taking into account side windows like treemacs."
   (let* ((mainwindow (window-main-window))
-	 (child-count (window-child-count mainwindow)))
+         (child-count (window-child-count mainwindow)))
     (= 0 child-count)))
 
 (defun centaur-tabs--get-tab-from-name (tabname)
@@ -610,20 +610,20 @@ The clicked tab, identified by EVENT, is selected."
       (centaur-tabs-do-select event)
       (redisplay t)
       (let*
-	  ((menu (easy-menu-create-menu nil (centaur-tabs--tab-menu-definition)))
-	   (choice (x-popup-menu t menu))
-	   (action (lookup-key menu (apply 'vector choice)))
-	   (action-is-command-p  (and (commandp action) (functionp action))))
-	(when action-is-command-p
-	  (call-interactively action))
-	(when (not action-is-command-p)
-	  (let* ((menu-key (cl-first choice))
-		 (choice-is-group-p (string= centaur-tabs--groups-submenu-key (symbol-name menu-key)))
-		 (name (car (last choice)))
-		 (name-as-string (symbol-name name)))
-	    (if choice-is-group-p
-		(centaur-tabs-switch-group name-as-string)
-	      (switch-to-buffer name-as-string))))))))
+          ((menu (easy-menu-create-menu nil (centaur-tabs--tab-menu-definition)))
+           (choice (x-popup-menu t menu))
+           (action (lookup-key menu (apply 'vector choice)))
+           (action-is-command-p  (and (commandp action) (functionp action))))
+        (when action-is-command-p
+          (call-interactively action))
+        (when (not action-is-command-p)
+          (let* ((menu-key (cl-first choice))
+                 (choice-is-group-p (string= centaur-tabs--groups-submenu-key (symbol-name menu-key)))
+                 (name (car (last choice)))
+                 (name-as-string (symbol-name name)))
+            (if choice-is-group-p
+                (centaur-tabs-switch-group name-as-string)
+              (switch-to-buffer name-as-string))))))))
 
 (defun centaur-tabs--groups-menu ()
   "Show a popup menu with the centaur tabs groups."
@@ -638,7 +638,7 @@ The clicked tab, identified by EVENT, is selected."
       (call-interactively action))
     (when (not action-is-command-p)
       (let ((group (car (last choice))))
-	(centaur-tabs-switch-group (format "%s" group))))))
+        (centaur-tabs-switch-group (format "%s" group))))))
 
 (provide 'centaur-tabs-interactive)
 ;;; centaur-tabs-interactive.el ends here
