@@ -252,9 +252,6 @@ When not specified, ELLIPSIS defaults to ‘...’."
     ;;; Use right click to show the rest of groups
     (define-key map (vector centaur-tabs-display-line 'mouse-3) 'centaur-tabs--tab-menu )
 
-    ;;; Use double click to maximize window
-    (define-key map (vector centaur-tabs-display-line 'double-mouse-1) 'delete-other-windows)
-
     map)
   "Keymap to use in  Centaur-Tabs mode.")
 
