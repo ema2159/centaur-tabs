@@ -31,10 +31,8 @@
 (require 'powerline)
 
 ;; Compiler pacifier
-(declare-function all-the-icons-auto-mode-match? "ext:all-the-icons.el" t t)
 (declare-function all-the-icons-icon-for-file "ext:all-the-icons.el" t t)
 (declare-function all-the-icons-icon-for-mode "ext:all-the-icons.el" t t)
-(declare-function nerd-icons-auto-mode-match? "ext:nerd-icons.el")
 (declare-function nerd-icons-icon-for-file "ext:nerd-icons.el" t t)
 (declare-function nerd-icons-icon-for-mode "ext:nerd-icons.el" t t)
 
@@ -253,28 +251,22 @@ inserting functions."
     ('all-the-icons (apply #'all-the-icons-icon-for-mode mode args))
     ('nerd-icons (apply #'nerd-icons-icon-for-mode mode args))))
 
-(defun centaur-tabs--auto-mode-match? (&optional file)
-  "Whether or not FILE's `major-mode' match against its `auto-mode-alist'."
-  (pcase centaur-tabs-icon-type
-    ('all-the-icons (apply #'all-the-icons-auto-mode-match? file))
-    ('nerd-icons (apply #'nerd-icons-auto-mode-match? file))))
-
 (defun centaur-tabs-icon (tab face selected)
   "Generate icon for TAB using FACE's background.
 If icon gray out option enabled, gray out icon if not SELECTED."
   (if centaur-tabs-icon-type
       (with-current-buffer (car tab)
         (let* ((icon
-                (if (and (buffer-file-name)
-                         (centaur-tabs--auto-mode-match?))
-                    (centaur-tabs--icon-for-file
-                     (file-name-nondirectory (buffer-file-name))
-                     :v-adjust centaur-tabs-icon-v-adjust
-                     :height centaur-tabs-icon-scale-factor)
-                  (centaur-tabs--icon-for-mode
-                   major-mode
-                   :v-adjust centaur-tabs-icon-v-adjust
-                   :height centaur-tabs-icon-scale-factor)))
+                (or (ignore-errors
+                      (centaur-tabs--icon-for-file
+                       (file-name-nondirectory (buffer-file-name))
+                       :v-adjust centaur-tabs-icon-v-adjust
+                       :height centaur-tabs-icon-scale-factor))
+                    (ignore-errors
+                      (centaur-tabs--icon-for-mode
+                       major-mode
+                       :v-adjust centaur-tabs-icon-v-adjust
+                       :height centaur-tabs-icon-scale-factor))))
                (background (face-background face nil 'default))
                (inactive (cond ((and (not selected)
                                      (eq centaur-tabs-gray-out-icons 'buffer))

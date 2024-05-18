@@ -32,15 +32,6 @@
 (require 'centaur-tabs-elements)
 
 ;; Compiler pacifier
-(declare-function all-the-icons-match? "ext:all-the-icons.el" t t)
-(declare-function all-the-icons-auto-mode-match? "ext:all-the-icons.el" t t)
-(declare-function all-the-icons-icon-for-file "ext:all-the-icons.el" t t)
-(declare-function all-the-icons-icon-for-mode "ext:all-the-icons.el" t t)
-(declare-function nerd-icons-match? "ext:nerd-icons.el" t t)
-(declare-function nerd-icons-auto-mode-match? "ext:nerd-icons.el" t t)
-(declare-function nerd-icons-icon-for-file "ext:nerd-icons.el" t t)
-(declare-function nerd-icons-icon-for-mode "ext:nerd-icons.el" t t)
-
 (declare-function vterm "ext:vterm.el")
 
 (declare-function centaur-tabs-move-current-tab-to-right "nerd-icons.el")
