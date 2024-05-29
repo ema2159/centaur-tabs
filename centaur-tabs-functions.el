@@ -386,16 +386,14 @@ That is, remove it from the tab sets store."
 
 (defun centaur-tabs-get-cache (cache key)
   "Return the per-frame cached value of KEY in CACHE."
-  (let
-      ((cached-hash (frame-parameter nil cache)))
-    (if (hash-table-p cached-hash)
-        (gethash key cached-hash nil))))
+  (when-let* ((cached-hash (frame-parameter nil cache))
+              ((hash-table-p cached-hash)))
+    (gethash key cached-hash nil)))
 
 (defun centaur-tabs-put-cache (cache key value)
   "Set the per-frame cached value of KEY in CACHE to VALUE."
-  (let*
-      ((cached-hash (frame-parameter nil cache))
-       (hash (if (hash-table-p cached-hash) cached-hash (make-hash-table))))
+  (let* ((cached-hash (frame-parameter nil cache))
+         (hash (if (hash-table-p cached-hash) cached-hash (make-hash-table))))
     (puthash key value hash)
     (set-frame-parameter nil cache hash))
   value)
@@ -616,7 +614,6 @@ remain visible.  The active window will the the EVT source."
   (centaur-tabs-move-current-tab-to-left)
   (centaur-tabs--button-ensure-selected-tab-is-visible evt))
 
-
 (defun centaur-tabs-move-current-tab-to-right--button (evt)
   "Same as centaur-tabs-move-current-tab-to-right, but ensuring the tab will
 remain visible.  The active window will the the EVT source."
@@ -779,11 +776,9 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
 That is, a propertized string used as an `centaur-tabs-display-line-format'
 template element."
   (let* ((face 'centaur-tabs-unselected))
-    (concat
-     (propertize
-      button
-      'face face
-      'mouse-face 'highlight))))
+    (concat (propertize button
+                        'face face
+                        'mouse-face 'highlight))))
 
 (defun centaur-tabs-line-format (tabset)
   "Return the `centaur-tabs-display-line-format' value to display TABSET."
@@ -841,8 +836,7 @@ template element."
       (propertize "% "
                   'face (list :background padcolor)
                   'pointer 'arrow)
-      (centaur-tabs-line-format--new-button)))
-    ))
+      (centaur-tabs-line-format--new-button)))))
 
 (defun centaur-tabs-count (index count)
   "Return a centaur-tabs-button-tab with the current tab INDEX and the total
@@ -920,8 +914,7 @@ instead."
         ;; to the first/last visible tab.
         (unless tab
           (setq tabset (centaur-tabs-tabs tabset)
-                tab (car (if backward (last tabset) tabset))))
-        )
+                tab (car (if backward (last tabset) tabset)))))
        ;; Cycle through tab groups only.
        ((eq cycle 'groups)
         (setq tab (centaur-tabs-tab-next ttabset selected backward))
@@ -929,8 +922,7 @@ instead."
         ;; to the first/last available group.
         (unless tab
           (setq tabset (centaur-tabs-tabs ttabset)
-                tab (car (if backward (last tabset) tabset))))
-        )
+                tab (car (if backward (last tabset) tabset)))))
        (t
         ;; Cycle through visible tabs then tab groups.
         (setq tab (centaur-tabs-tab-next tabset selected backward))
@@ -945,8 +937,7 @@ instead."
                   tab (car (if backward (last tabset) tabset))))
           ;; Select the first/last visible tab of the new group.
           (setq tabset (centaur-tabs-tabs (centaur-tabs-tab-tabset tab))
-                tab (car (if backward (last tabset) tabset))))
-        ))
+                tab (car (if backward (last tabset) tabset))))))
       (centaur-tabs-buffer-select-tab tab))))
 
 ;;;###autoload
@@ -1229,8 +1220,7 @@ buffer changed."
                     (setq new-group-tabs (centaur-tabs-insert-before  base-group-tabs previous-tab current-tab)))))
                 (set bufset new-group-tabs)
                 (centaur-tabs-set-template bufset nil)
-                (centaur-tabs-display-update)
-                ))))
+                (centaur-tabs-display-update)))))
 
         ;; Update the group name of the last accessed tab.
         (setq centaur-tabs-last-focused-buffer-group current-group)))))

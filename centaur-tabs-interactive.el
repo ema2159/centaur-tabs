@@ -216,7 +216,6 @@ move forward."
     (centaur-tabs-kill-buffer-match-rule
      (lambda (buffer) (not (buffer-modified-p buffer))))))
 
-
 (defun centaur-tabs-kill-match-buffers-in-current-group ()
   "Kill all buffers match extension in current group."
   (interactive)
@@ -229,8 +228,7 @@ move forward."
     (centaur-tabs-kill-buffer-match-rule
      (lambda (buffer)
        (let ((filename (buffer-file-name buffer)))
-         (and filename (string-equal (file-name-extension filename) match-extension))
-         )))
+         (and filename (string-equal (file-name-extension filename) match-extension)))))
     ;; Switch to next group if last file killed.
     (when (equal (length extension-names) 1)
       (centaur-tabs-forward-group))))
@@ -426,13 +424,16 @@ Should be buffer local and speed up calculation of buffer groups.")
           ((string-equal "*" (substring (buffer-name) 0 1)) '("Misc"))
           ((condition-case _err
                (projectile-project-root)
-             (error nil)) (list (projectile-project-name)))
+             (error nil))
+           (list (projectile-project-name)))
           ((memq major-mode '(emacs-lisp-mode python-mode emacs-lisp-mode c-mode
                                               c++-mode javascript-mode js-mode
                                               js2-mode makefile-mode
-                                              lua-mode vala-mode)) '("Coding"))
-          ((memq major-mode '(nxhtml-mode html-mode
-                                          mhtml-mode css-mode)) '("HTML"))
+                                              lua-mode vala-mode))
+           '("Coding"))
+          ((memq major-mode '( nxhtml-mode html-mode
+                               mhtml-mode css-mode))
+           '("HTML"))
           ((memq major-mode '(org-mode calendar-mode diary-mode)) '("Org"))
           ((memq major-mode '(dired-mode)) '("Dir"))
           (t '("Other"))))
@@ -628,12 +629,12 @@ The clicked tab, identified by EVENT, is selected."
 (defun centaur-tabs--groups-menu ()
   "Show a popup menu with the centaur tabs groups."
   (interactive)
-  (let*
-      ((sorted-groups (centaur-tabs--tab-submenu-groups-definition))
-       (menu (easy-menu-create-menu "Tab groups" (centaur-tabs--tab-submenu-groups-definition)))
-       (choice (x-popup-menu t menu))
-       (action (lookup-key menu (apply 'vector choice)))
-       (action-is-command-p  (and (commandp action) (functionp action))))
+  (let* ((sorted-groups (centaur-tabs--tab-submenu-groups-definition))
+         (menu (easy-menu-create-menu "Tab groups"
+                                      (centaur-tabs--tab-submenu-groups-definition)))
+         (choice (x-popup-menu t menu))
+         (action (lookup-key menu (apply 'vector choice)))
+         (action-is-command-p  (and (commandp action) (functionp action))))
     (when action-is-command-p
       (call-interactively action))
     (when (not action-is-command-p)

@@ -840,8 +840,10 @@ The memoization cache is frame-local."
   "Return a frame-local hash table that acts as a memoization cache.
 The cache is for the powerline.
 Create one if the frame doesn't have one yet."
-  (let ((table (frame-parameter nil 'powerline-cache)))
-    (if (hash-table-p table) table (centaur-tabs-separator-reset-cache))))
+  (if-let* ((table (frame-parameter nil 'powerline-cache))
+            ((hash-table-p table)))
+      table
+    (centaur-tabs-separator-reset-cache)))
 
 (defun centaur-tabs-separator-reset-cache ()
   "Reset and return the frame-local hash table used for a memoization cache."
