@@ -1265,13 +1265,11 @@ buffer changed."
 
 (defun centaur-tabs-project-name ()
   "Get project name for tabs."
-  (let* ((project-current (project-current))
-         (project-name (if (proper-list-p project-current)
-                           (car (last project-current))
-                         (cdr project-current))))
-    (if project-name
-        (format "Project: %s" (expand-file-name project-name))
-      centaur-tabs-common-group-name)))
+  (when-let* ((project-current (project-current))
+              (project-name (if (proper-list-p project-current)
+                                (car (last project-current))
+                              (cdr project-current))))
+    (format "Project: %s" (expand-file-name project-name))))
 
 ;; Rules to control buffer's group rules.
 (defvar centaur-tabs-groups-hash (make-hash-table :test 'equal))
@@ -1281,14 +1279,8 @@ buffer changed."
   "Get group name of buffer BUF."
   (let ((group-name (gethash buf centaur-tabs-groups-hash)))
     ;; Return group name cache if it exists for improve performance.
-    (if group-name
-        group-name
-      ;; Otherwise try get group name with `project-current'.
-      ;; `project-current' is very slow, it will slow down Emacs if you call it when switch buffer.
-      (with-current-buffer buf
-        (let ((project-name (centaur-tabs-project-name)))
-          (puthash buf project-name centaur-tabs-groups-hash)
-          project-name)))))
+    (or group-name
+        centaur-tabs-common-group-name)))
 
 (defun centaur-tabs-buffer-groups ()
   "`centaur-tabs-buffer-groups' control buffers' group rules.
@@ -1299,6 +1291,8 @@ All buffer name start with * will group to \"Emacs\".
 Other buffer group by `centaur-tabs-get-group-name' with project name."
   (list
    (cond
+    ((when-let ((project-name (centaur-tabs-project-name)))
+       project-name))
     ((or (string-equal "*" (substring (buffer-name) 0 1))
          (memq major-mode '( magit-process-mode
                              magit-status-mode
