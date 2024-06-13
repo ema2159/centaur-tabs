@@ -1265,7 +1265,8 @@ buffer changed."
 
 (defun centaur-tabs-project-name ()
   "Get project name for tabs."
-  (when-let* ((project-current (project-current))
+  (when-let* (((buffer-file-name))
+              (project-current (project-current))
               (project-name (if (proper-list-p project-current)
                                 (car (last project-current))
                               (cdr project-current))))
