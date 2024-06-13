@@ -55,6 +55,10 @@
 (declare-function centaur-tabs-current-tabset "centaur-tabs-functions.el")
 (declare-function centaur-tabs-completing-read "centaur-tabs-functions.el")
 (declare-function centaur-tabs-get-groups "centaur-tabs-functions.el")
+(declare-function centaur-tabs-forward-group "centaur-tabs-functions.el")
+(declare-function centaur-tabs-backward-group "centaur-tabs-functions.el")
+(declare-function centaur-tabs-forward-tab "centaur-tabs-functions.el")
+(declare-function centaur-tabs-backward-tab "centaur-tabs-functions.el")
 
 (defvar centaur-tabs-cycle-scope)
 (defvar centaur-tabs-current-tabset)
