@@ -4,6 +4,7 @@
 
   [[https://melpa.org/#/centaur-tabs][file:https://melpa.org/packages/centaur-tabs-badge.svg]]
   [[https://stable.melpa.org/#/centaur-tabs][file:https://stable.melpa.org/packages/centaur-tabs-badge.svg]]
+  [[https://jcs-emacs.github.io/jcs-elpa/#/centaur-tabs][https://raw.githubusercontent.com/jcs-emacs/badges/master/elpa/v/centaur-tabs.svg]]
   [[http://www.gnu.org/licenses/gpl-3.0][file:https://img.shields.io/badge/License-GPL%20v3-blue.svg]]
   [[https://github.com/ema2159/centaur-tabs/actions/workflows/test.yml][https://github.com/ema2159/centaur-tabs/actions/workflows/test.yml/badge.svg]]
 
