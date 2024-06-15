@@ -508,7 +508,7 @@ RED, GREEN and BLUE should be between 0.0 and 1.0, inclusive."
 
 (defun centaur-tabs-separator-reverse-pattern (pattern)
   "Reverse each line in PATTERN."
-  (cl-mapcar 'reverse pattern))
+  (mapcar 'reverse pattern))
 
 (defun centaur-tabs-separator-row-pattern (fill total &optional fade)
   "Make a list that has FILL 0s out of TOTAL 1s with FADE 2s to the right of
@@ -529,11 +529,11 @@ and `body' arguments,respectively.  HEIGHT-EXP is an expression
  calculating the image height and it should contain a free variable `height'.
 PATTERN-HEIGHT-SYM and SECOND-PATTERN-HEIGHT-SYM are symbols used
 for let-var binding variables."
-  (let* ((pattern (centaur-tabs-separator-pattern (cl-mapcar 'centaur-tabs-separator-pattern-to-string (car patterns))))
-         (header (cl-mapcar 'centaur-tabs-separator-pattern-to-string (nth 1 patterns)))
-         (footer (cl-mapcar 'centaur-tabs-separator-pattern-to-string (nth 2 patterns)))
-         (second-pattern (centaur-tabs-separator-pattern (cl-mapcar 'centaur-tabs-separator-pattern-to-string (nth 3 patterns))))
-         (center (cl-mapcar 'centaur-tabs-separator-pattern-to-string (nth 4 patterns)))
+  (let* ((pattern (centaur-tabs-separator-pattern (mapcar 'centaur-tabs-separator-pattern-to-string (car patterns))))
+         (header (mapcar 'centaur-tabs-separator-pattern-to-string (nth 1 patterns)))
+         (footer (mapcar 'centaur-tabs-separator-pattern-to-string (nth 2 patterns)))
+         (second-pattern (centaur-tabs-separator-pattern (mapcar 'centaur-tabs-separator-pattern-to-string (nth 3 patterns))))
+         (center (mapcar 'centaur-tabs-separator-pattern-to-string (nth 4 patterns)))
          (reserve (+ (length header) (length footer) (length center))))
     (when pattern
       (cons `((,pattern-height-sym (max (- ,height-exp ,reserve) 0))
@@ -578,7 +578,7 @@ PATTERN, HEADER, FOOTER, SECOND-PATTERN, CENTER are of the form
 COLOR can be one of 0, 1, or 2, where 0 is the source color, 1 is the
 destination color, and 2 is the interpolated color between 0 and 1."
   (when (eq dir 'right)
-    (setq patterns (cl-mapcar 'centaur-tabs-separator-reverse-pattern patterns)))
+    (setq patterns (mapcar 'centaur-tabs-separator-reverse-pattern patterns)))
   (let ((bindings-body (centaur-tabs-separator-pattern-bindings-body patterns
                                                                      'height
                                                                      'pattern-height

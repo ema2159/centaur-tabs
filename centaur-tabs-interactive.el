@@ -72,7 +72,7 @@
 (defun centaur-tabs-switch-group (&optional groupname)
   "Switch tab groups using ido.  GROUPNAME can optionaly be provided."
   (interactive)
-  (let* ((tab-buffer-list (cl-mapcar
+  (let* ((tab-buffer-list (mapcar
                            #'(lambda (b)
                                (with-current-buffer b
                                  (list (current-buffer)

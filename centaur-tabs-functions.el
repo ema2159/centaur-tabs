@@ -358,9 +358,9 @@ The result is a list just as long as the number of existing tab sets."
   "Make a new tab set whose name is the string NAME.
 It is initialized with tabs build from the list of OBJECTS."
   (let* ((tabset (intern name centaur-tabs-tabsets))
-         (tabs (cl-mapcar #'(lambda (object)
-                              (centaur-tabs-make-tab object tabset))
-                          objects)))
+         (tabs (mapcar #'(lambda (object)
+                           (centaur-tabs-make-tab object tabset))
+                       objects)))
     (set tabset tabs)
     (centaur-tabs-put-cache tabset 'select (car tabs))
     (put tabset 'start 0)
@@ -382,7 +382,7 @@ That is, remove it from the tab sets store."
 
 (defsubst centaur-tabs-tab-values (tabset)
   "Return the list of tab values in TABSET."
-  (cl-mapcar 'centaur-tabs-tab-value (centaur-tabs-tabs tabset)))
+  (mapcar 'centaur-tabs-tab-value (centaur-tabs-tabs tabset)))
 
 (defun centaur-tabs-get-cache (cache key)
   "Return the per-frame cached value of KEY in CACHE."
@@ -467,7 +467,7 @@ Otherwise insert it."
         tabs
       (let* ((tab (centaur-tabs-make-tab object tabset))
              (selected (centaur-tabs-selected-tab tabset))
-             (selected-index (cl-position (car selected) (cl-mapcar 'car tabs))))
+             (selected-index (cl-position (car selected) (mapcar 'car tabs))))
         (centaur-tabs-set-template tabset nil)
         (set tabset (centaur-tabs-insert-at tabs selected-index tab))))))
 
@@ -787,7 +787,7 @@ template element."
          (padcolor centaur-tabs-background-color)
          (all-tabs (centaur-tabs-tabs tabset))
          (total-tabs (length all-tabs))
-         (sel-index (+ (cl-position (car sel) (cl-mapcar 'car all-tabs)) 1))
+         (sel-index (+ (cl-position (car sel) (mapcar 'car all-tabs)) 1))
          atsel elts)
     ;; Track the selected tab to ensure it is always visible.
     (when centaur-tabs--track-selected
@@ -995,7 +995,7 @@ Depend on the setting of the option `centaur-tabs-cycle-scope'."
 (defun centaur-tabs-filter-out (condp lst)
   "Filter list LST with using CONDP as the filtering condition."
   (delq nil
-        (cl-mapcar (lambda (x) (if (funcall condp x) nil x)) lst)))
+        (mapcar (lambda (x) (if (funcall condp x) nil x)) lst)))
 
 (defun centaur-tabs-buffer-list ()
   "Return the list of buffers to show in tabs.
@@ -1004,14 +1004,14 @@ visiting a file.  The current buffer is always included."
   (centaur-tabs-filter-out
    'centaur-tabs-hide-tab-cached
    (delq nil
-         (cl-mapcar #'(lambda (b)
-                        (cond
-                         ;; Always include the current buffer.
-                         ((eq (current-buffer) b) b)
-                         ((buffer-file-name b) b)
-                         ((char-equal ?\  (aref (buffer-name b) 0)) nil)
-                         ((buffer-live-p b) b)))
-                    (buffer-list)))))
+         (mapcar #'(lambda (b)
+                     (cond
+                      ;; Always include the current buffer.
+                      ((eq (current-buffer) b) b)
+                      ((buffer-file-name b) b)
+                      ((char-equal ?\  (aref (buffer-name b) 0)) nil)
+                      ((buffer-live-p b) b)))
+                 (buffer-list)))))
 
 (defun centaur-tabs-buffer-mode-derived-p (mode parents)
   "Return non-nil if MODE derives from a mode in PARENTS."
@@ -1031,7 +1031,7 @@ visiting a file.  The current buffer is always included."
   "Update tabsets from groups of existing buffers.
 Return the the first group where the current buffer is."
   (let ((bl (sort
-             (cl-mapcar
+             (mapcar
               #'(lambda (b)
                   (with-current-buffer b
                     (list (current-buffer)
@@ -1065,8 +1065,8 @@ Return the the first group where the current buffer is."
                  (dolist (tab (centaur-tabs-tabs tabset))
                    (let ((e (assq (centaur-tabs-tab-value tab) bl)))
                      (or (and e (memq tabset
-                                      (cl-mapcar 'centaur-tabs-get-tabset
-                                                 (nth 2 e))))
+                                      (mapcar 'centaur-tabs-get-tabset
+                                              (nth 2 e))))
                          (centaur-tabs-delete-tab tab))))
                  ;; Return empty tab sets
                  (unless (centaur-tabs-tabs tabset)
@@ -1196,7 +1196,7 @@ buffer changed."
         (when (string= current-group centaur-tabs-last-focused-buffer-group)
           (let* ((bufset (centaur-tabs-get-tabset current-group))
                  (current-group-tabs (centaur-tabs-tabs bufset))
-                 (current-group-buffers (cl-mapcar 'car current-group-tabs))
+                 (current-group-buffers (mapcar 'car current-group-tabs))
                  (current-buffer-index (cl-position current current-group-buffers))
                  (previous-buffer-index (cl-position previous current-group-buffers)))
 
@@ -1364,9 +1364,9 @@ Operates over buffer BUF"
 (defun centaur-tabs-get-groups ()
   "Refresh tabs groups."
   (set centaur-tabs-tabsets-tabset (centaur-tabs-map-tabsets 'centaur-tabs-selected-tab))
-  (cl-mapcar #'(lambda (group)
-                 (format "%s" (cdr group)))
-             (centaur-tabs-tabs centaur-tabs-tabsets-tabset)))
+  (mapcar #'(lambda (group)
+              (format "%s" (cdr group)))
+          (centaur-tabs-tabs centaur-tabs-tabsets-tabset)))
 
 (defun centaur-tabs-get-extensions ()
   "Get file extension of tabs."
