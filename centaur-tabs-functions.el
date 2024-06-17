@@ -357,14 +357,15 @@ The result is a list just as long as the number of existing tab sets."
 (defun centaur-tabs-make-tabset (name &rest objects)
   "Make a new tab set whose name is the string NAME.
 It is initialized with tabs build from the list of OBJECTS."
-  (let* ((tabset (intern name centaur-tabs-tabsets))
-         (tabs (mapcar #'(lambda (object)
-                           (centaur-tabs-make-tab object tabset))
-                       objects)))
-    (set tabset tabs)
-    (centaur-tabs-put-cache tabset 'select (car tabs))
-    (put tabset 'start 0)
-    tabset))
+  (when name ; some buffers don't have a tabset (e.g. org-agenda)
+    (let* ((tabset (intern name centaur-tabs-tabsets))
+           (tabs (mapcar #'(lambda (object)
+                             (centaur-tabs-make-tab object tabset))
+                         objects)))
+      (set tabset tabs)
+      (centaur-tabs-put-cache tabset 'select (car tabs))
+      (put tabset 'start 0)
+      tabset)))
 
 (defsubst centaur-tabs-get-tabset (name)
   "Return the tab set whose name is the string NAME.
