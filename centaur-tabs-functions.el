@@ -843,7 +843,8 @@ template element."
   "Return a centaur-tabs-button-tab with the current tab INDEX and the total
 tabs COUNT."
   (if centaur-tabs-show-count
-      (propertize (centaur-tabs-button-tab (format " [%d/%d] " index count))
+      (propertize (centaur-tabs-button-tab (format centaur-tabs-count-format
+                                                   index count))
                   'help-echo "Tabs count")
     ""))
 

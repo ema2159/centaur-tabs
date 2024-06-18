@@ -430,6 +430,11 @@ Taken from `doom-modeline'."
   :group 'centaur-tabs
   :type 'boolean)
 
+(defcustom centaur-tabs-count-format " [%d/%d] "
+  "Format text to display count."
+  :group 'centaur-tabs
+  :type 'string)
+
 ;;
 ;;; New tab button
 
