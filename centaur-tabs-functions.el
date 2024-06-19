@@ -633,18 +633,10 @@ to work.  EVT is used to change the active window."
   (centaur-tabs-backward--button evt)
   (centaur-tabs-forward--button evt))
 
-(defmacro centaur-tabs-save-window-prev-buffers (&rest body)
-  "Run BODY and leave window preb buffers the same."
-  (declare (indent 0) (debug t))
-  `(let ((buffers (window-prev-buffers)))
-     ,@body
-     (set-window-prev-buffers nil buffers)))
-
 (defun centaur-tabs-refill-tabs ()
   "Refill current tab line."
-  (centaur-tabs-save-window-prev-buffers
-    (force-window-update (selected-window))
-    (centaur-tabs--button-ensure-selected-tab-is-visible nil)))
+  (force-window-update (selected-window))
+  (centaur-tabs--button-ensure-selected-tab-is-visible nil))
 
 ;;
 ;;; Tabs display
