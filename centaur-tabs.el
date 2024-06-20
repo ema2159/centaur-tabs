@@ -196,6 +196,7 @@ Run as `centaur-tabs-init-hook'."
     (set-face-attribute 'centaur-tabs-unselected-modified nil
                         :overline nil
                         :underline nil))
+  (add-hook 'window-buffer-change-functions #'centaur-tabs-on-window-buffer-change)
   (add-hook 'after-save-hook #'centaur-tabs-on-saving-buffer)
   (add-hook 'first-change-hook #'centaur-tabs-on-modifying-buffer)
   (add-hook 'kill-buffer-hook #'centaur-tabs-buffer-track-killed)

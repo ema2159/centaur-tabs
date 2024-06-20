@@ -533,16 +533,22 @@ current cached copy."
   (centaur-tabs-set-template centaur-tabs-tabsets-tabset nil)
   centaur-tabs-tabsets-tabset)
 
+(defun centaur-tabs-on-window-buffer-change (&rest _)
+  "Function to be run after window buffer is changed."
+  (centaur-tabs-buffer-update-groups))
+
 ;; Functions for modification hooks and advices
 (defun centaur-tabs-on-saving-buffer ()
   "Function to be run after the buffer is saved."
   (centaur-tabs-set-template centaur-tabs-current-tabset nil)
   (centaur-tabs-display-update))
+
 (defun centaur-tabs-on-modifying-buffer ()
   "Function to be run after the buffer is first changed."
   (set-buffer-modified-p (buffer-modified-p))
   (centaur-tabs-set-template centaur-tabs-current-tabset nil)
   (centaur-tabs-display-update))
+
 (defun centaur-tabs-after-modifying-buffer (&rest _)
   "Function to be run after the buffer is changed.
 BEGIN, END and LENGTH are just standard arguments for after-changes-function
@@ -1001,8 +1007,7 @@ Depend on the setting of the option `centaur-tabs-cycle-scope'."
 
 (defun centaur-tabs-filter-out (condp lst)
   "Filter list LST with using CONDP as the filtering condition."
-  (delq nil
-        (mapcar (lambda (x) (if (funcall condp x) nil x)) lst)))
+  (delq nil (mapcar (lambda (x) (if (funcall condp x) nil x)) lst)))
 
 (defun centaur-tabs-buffer-list ()
   "Return the list of buffers to show in tabs.
@@ -1083,6 +1088,12 @@ Return the the first group where the current buffer is."
   ;; Return the first group the current buffer belongs to.
   (car (nth 2 (assq (current-buffer) centaur-tabs--buffers))))
 
+(defun centaur-tabs-buffer-update-groups-cache ()
+  "Don't call function `centaur-tabs-buffer-update-groups' too often."
+  (if centaur-tabs--buffers
+      (car (nth 2 (assq (current-buffer) centaur-tabs--buffers)))
+    (centaur-tabs-buffer-update-groups)))
+
 ;;
 ;;; Tab bar callbacks
 
@@ -1092,7 +1103,7 @@ Return the the first group where the current buffer is."
 
 (defun centaur-tabs-buffer-tabs ()
   "Return the buffers to display on the tab bar, in a tab set."
-  (let ((tabset (centaur-tabs-get-tabset (centaur-tabs-buffer-update-groups))))
+  (let ((tabset (centaur-tabs-get-tabset (centaur-tabs-buffer-update-groups-cache))))
     (centaur-tabs-select-tab-value (current-buffer) tabset)
     (when centaur-tabs--buffer-show-groups
       (setq tabset (centaur-tabs-get-tabsets-tabset))
