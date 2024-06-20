@@ -1084,15 +1084,14 @@ Return the the first group where the current buffer is."
                  (unless (centaur-tabs-tabs tabset)
                    tabset))))
       ;; The new cache becomes the current one.
-      (setq centaur-tabs--buffers bl)))
-  ;; Return the first group the current buffer belongs to.
-  (car (nth 2 (assq (current-buffer) centaur-tabs--buffers))))
+      (setq centaur-tabs--buffers bl))))
 
 (defun centaur-tabs-buffer-update-groups-cache ()
   "Don't call function `centaur-tabs-buffer-update-groups' too often."
-  (if centaur-tabs--buffers
-      (car (nth 2 (assq (current-buffer) centaur-tabs--buffers)))
-    (centaur-tabs-buffer-update-groups)))
+  (unless centaur-tabs--buffers
+    (centaur-tabs-buffer-update-groups))
+  ;; Return the first group the current buffer belongs to.
+  (car (nth 2 (assq (current-buffer) centaur-tabs--buffers))))
 
 ;;
 ;;; Tab bar callbacks
