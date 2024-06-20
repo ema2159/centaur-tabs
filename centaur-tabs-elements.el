@@ -115,7 +115,8 @@
 
 (defface centaur-tabs-dim-buffer-face
   '((t (:foreground "gray40")))
-  "Face for the buffer when centaur-tabs-ace-jump is invoked.")
+  "Face for the buffer when centaur-tabs-ace-jump is invoked."
+  :group 'centaur-tabs)
 
 ;;
 ;;; Tabs' display line
