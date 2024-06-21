@@ -1040,6 +1040,10 @@ visiting a file.  The current buffer is always included."
 
 (defvar centaur-tabs--buffers nil)
 
+(defun centaur-tabs-buffer-groups-result ()
+  "Return the first group the current buffer belongs to."
+  (car (nth 2 (assq (current-buffer) centaur-tabs--buffers))))
+
 (defun centaur-tabs-buffer-update-groups ()
   "Update tabsets from groups of existing buffers.
 Return the the first group where the current buffer is."
@@ -1089,10 +1093,11 @@ Return the the first group where the current buffer is."
 
 (defun centaur-tabs-buffer-update-groups-cache ()
   "Don't call function `centaur-tabs-buffer-update-groups' too often."
-  (unless centaur-tabs--buffers
-    (centaur-tabs-buffer-update-groups))
-  ;; Return the first group the current buffer belongs to.
-  (car (nth 2 (assq (current-buffer) centaur-tabs--buffers))))
+  (let ((result (centaur-tabs-buffer-groups-result)))
+    (when (or (null result)
+              (null centaur-tabs--buffers))
+      (centaur-tabs-buffer-update-groups))
+    (centaur-tabs-buffer-groups-result)))
 
 ;;
 ;;; Tab bar callbacks
