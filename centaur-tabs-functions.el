@@ -641,6 +641,7 @@ to work.  EVT is used to change the active window."
 
 (defun centaur-tabs-refill-tabs ()
   "Refill current tab line."
+  (centaur-tabs-buffer-update-groups)
   (force-window-update (selected-window))
   (centaur-tabs--button-ensure-selected-tab-is-visible nil))
 
