@@ -482,7 +482,6 @@ Should be buffer local and speed up calculation of buffer groups.")
      :action #'centaur-tabs-switch-group
      :caller 'centaur-tabs-counsel-switch-group)))
 
-
 (defun centaur-tabs-extract-window-to-new-frame()
   "Kill the current window in the current frame, and open the current buffer
 in a new frame."
@@ -503,7 +502,6 @@ in a new frame."
     (when filename
       (kill-new filename)
       (message "Copied buffer file name '%s' to the kill ring." filename))))
-
 
 (defun centaur-tabs-open-directory-in-external-application ()
   "Open the current directory in a external application."

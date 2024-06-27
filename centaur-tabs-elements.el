@@ -877,8 +877,12 @@ Create one if the frame doesn't have one yet."
 
 (defun centaur-tabs-select-separator-style (tab-style)
   "Set the separator style to TAB-STYLE."
-  (setq centaur-tabs-style-left (funcall (intern (format "powerline-%s-right" tab-style)) 'centaur-tabs-default nil centaur-tabs-height))
-  (setq centaur-tabs-style-right (funcall (intern (format "powerline-%s-left" tab-style)) nil 'centaur-tabs-default centaur-tabs-height)))
+  (setq centaur-tabs-style-left
+        (funcall (intern (format "powerline-%s-right" tab-style))
+                 'centaur-tabs-default nil centaur-tabs-height))
+  (setq centaur-tabs-style-right
+        (funcall (intern (format "powerline-%s-left" tab-style)) nil
+                 'centaur-tabs-default centaur-tabs-height)))
 
 (provide 'centaur-tabs-elements)
 ;;; centaur-tabs-elements.el ends here
