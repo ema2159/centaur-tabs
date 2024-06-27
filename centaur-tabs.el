@@ -11,7 +11,7 @@
 ;; Created: 2019-21-19 22:14:34
 ;; Version: 3.3
 ;; Known Compatibility: GNU Emacs 26.2
-;; Package-Requires: ((emacs "26.1") (powerline "2.4")  (cl-lib "0.5"))
+;; Package-Requires: ((emacs "26.1") (powerline "2.4"))
 ;; Keywords: frames
 
 ;;; This file is NOT part of GNU Emacs
@@ -202,7 +202,8 @@ Run as `centaur-tabs-init-hook'."
   (add-hook 'kill-buffer-hook #'centaur-tabs-buffer-track-killed)
   (advice-add #'undo :after #'centaur-tabs-after-modifying-buffer)
   (advice-add #'undo-tree-undo-1 :after #'centaur-tabs-after-modifying-buffer)
-  (advice-add #'undo-tree-redo-1 :after #'centaur-tabs-after-modifying-buffer))
+  (advice-add #'undo-tree-redo-1 :after #'centaur-tabs-after-modifying-buffer)
+  (advice-add 'load-theme :after #'centaur-tabs--after-load-theme))
 
 (defun centaur-tabs-buffer-quit ()
   "Quit tab bar buffer.
@@ -217,7 +218,8 @@ Run as `centaur-tabs-quit-hook'."
   (remove-hook 'kill-buffer-hook 'centaur-tabs-buffer-track-killed)
   (advice-remove #'undo #'centaur-tabs-after-modifying-buffer)
   (advice-remove #'undo-tree-undo-1 #'centaur-tabs-after-modifying-buffer)
-  (advice-remove #'undo-tree-redo-1 #'centaur-tabs-after-modifying-buffer))
+  (advice-remove #'undo-tree-redo-1 #'centaur-tabs-after-modifying-buffer)
+  (advice-remove 'load-theme #'centaur-tabs--after-load-theme))
 
 (add-hook 'centaur-tabs-init-hook #'centaur-tabs-buffer-init)
 (add-hook 'centaur-tabs-quit-hook #'centaur-tabs-buffer-quit)

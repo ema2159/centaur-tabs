@@ -27,6 +27,7 @@
 
 ;;; Code:
 
+(require 'custom)
 (require 'color)
 (require 'powerline)
 
@@ -40,14 +41,12 @@
 ;;; Faces
 
 (defface centaur-tabs-default
-  '((t
-     (:background "black" :foreground "black")))
+  '((t (:background "black" :foreground "black")))
   "Default face used in the tab bar."
   :group 'centaur-tabs)
 
 (defface centaur-tabs-unselected
-  '((t
-     (:background "#3D3C3D" :foreground "grey50")))
+  '((t (:background "#3D3C3D" :foreground "grey50")))
   "Face used for unselected tabs."
   :group 'centaur-tabs)
 
@@ -57,8 +56,7 @@
   :group 'centaur-tabs)
 
 (defface centaur-tabs-unselected-modified
-  '((t
-     (:background "#3D3C3D" :foreground "grey50")))
+  '((t (:background "#3D3C3D" :foreground "grey50")))
   "Face used for unselected-modified tabs."
   :group 'centaur-tabs)
 
@@ -68,8 +66,7 @@
   :group 'centaur-tabs)
 
 (defface centaur-tabs-close-unselected
-  '((t
-     (:inherit centaur-tabs-unselected)))
+  '((t (:inherit centaur-tabs-unselected)))
   "Face used for unselected close button."
   :group 'centaur-tabs)
 
@@ -877,12 +874,15 @@ Create one if the frame doesn't have one yet."
 
 (defun centaur-tabs-select-separator-style (tab-style)
   "Set the separator style to TAB-STYLE."
-  (setq centaur-tabs-style-left
-        (funcall (intern (format "powerline-%s-right" tab-style))
-                 'centaur-tabs-default nil centaur-tabs-height))
-  (setq centaur-tabs-style-right
-        (funcall (intern (format "powerline-%s-left" tab-style)) nil
-                 'centaur-tabs-default centaur-tabs-height)))
+  (let* ((theme (or (car custom-enabled-themes) "default"))
+         (name (intern (format "centaur-tabs--%s-face" theme)))
+         (face (copy-face 'centaur-tabs-default name)))
+    (setq centaur-tabs-style-left
+          (funcall (intern (format "powerline-%s-right" tab-style))
+                   face nil centaur-tabs-height))
+    (setq centaur-tabs-style-right
+          (funcall (intern (format "powerline-%s-left" tab-style))
+                   nil face centaur-tabs-height))))
 
 (provide 'centaur-tabs-elements)
 ;;; centaur-tabs-elements.el ends here

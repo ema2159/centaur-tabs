@@ -1,5 +1,5 @@
 (package "centaur-tabs"
-         "5"
+         "3.3"
          "Aesthetic, modern looking customizable tabs plugin")
 
 (website-url "https://github.com/ema2159/centaur-tabs")
@@ -12,8 +12,7 @@
 (source 'gnu)
 (source 'melpa)
 
-(depends-on "emacs" "24.4")
+(depends-on "emacs" "26.1")
 (depends-on "powerline")
-(depends-on "cl-lib")
 
 (setq network-security-level 'low)  ; see https://github.com/jcs090218/setup-emacs-windows/issues/156#issuecomment-932956432
