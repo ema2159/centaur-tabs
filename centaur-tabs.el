@@ -11,7 +11,7 @@
 ;; Created: 2019-21-19 22:14:34
 ;; Version: 3.3
 ;; Known Compatibility: GNU Emacs 26.2
-;; Package-Requires: ((emacs "26.1") (powerline "2.4"))
+;; Package-Requires: ((emacs "27.1") (powerline "2.4"))
 ;; Keywords: frames
 
 ;;; This file is NOT part of GNU Emacs
