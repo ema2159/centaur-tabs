@@ -287,7 +287,7 @@ not the actual logical index position of the current group."
 ;; ace-jump style tab switching
 
 (defvar centaur-tabs-ace-jump-active nil
-  "t if centaur-tabs-ace-jump is invoked.")
+  "Set to t if `centaur-tabs-ace-jump' is invoked.")
 
 (defvar centaur-tabs-dim-overlay nil
   "Holds the overlay for dimming buffer when invoking centaur-tabs-ace-jump.")
@@ -321,7 +321,7 @@ TAB has to be in the same group as the current tab."
     (message "Error: %s is not in the same group as the current tab." tab)))
 
 (defun centaur-tabs-ace-action (action)
-  "Preform ACTION on a visible tab. Ace-jump style.
+  "Preform ACTION on a visible tab.  Ace-jump style.
 ACTION has to be one of value in `centuar-tabs-ace-dispatch-alist'"
   (when (centaur-tabs-current-tabset t)
     (when centaur-tabs-ace-jump-dim-buffer
@@ -390,12 +390,10 @@ ACTION has to be one of value in `centuar-tabs-ace-dispatch-alist'"
     (centaur-tabs-display-update)))
 
 (defun centaur-tabs-ace-jump (&optional arg)
-  "Select a tab and perform an action. Ace-jump style.
-If no ARG is provided, select that tab.
-If prefixed with one `universal-argument', swap the current
-tab with the selected tab.
-If prefixed with two `universal-argument's, close
-selected tab."
+  "Select a tab and perform an action.  Ace-jump style.
+If no ARG is provided, select that tab.  If prefixed with one
+`universal-argument', swap the current tab with the selected tab.
+If prefixed with two `universal-argument's, close selected tab."
   (interactive "p")
   (cond ((eq arg 1)
          (centaur-tabs-ace-action 'jump-to-tab))

@@ -196,7 +196,7 @@ the tab name."
 (defcustom centaur-tabs-icon-type (and centaur-tabs-set-icons
                                        (or (require 'all-the-icons nil t)
                                            (require 'nerd-icons nil t)))
-  "Icon type. It should be one of `all-the-icons' and `nerd-icons'."
+  "Icon type; it should be one of `all-the-icons' and `nerd-icons'."
   :group 'centaur-tabs
   :type 'symbol
   :set
@@ -242,9 +242,9 @@ ARGS should be a plist containing `:height', `:v-adjust', or `:face' properties.
 
 (defun centaur-tabs--icon-for-mode (mode &rest args)
   "Get the formatted icon for MODE.
-ARG-OVERRIDES should be a plist containining `:height',
-`:v-adjust' or `:face' properties like in the normal icon
-inserting functions."
+
+ARGS should be a plist containining `:height', `:v-adjust' or `:face' properties
+like in the normal icon inserting functions."
   (pcase centaur-tabs-icon-type
     ('all-the-icons (apply #'all-the-icons-icon-for-mode mode args))
     ('nerd-icons (apply #'nerd-icons-icon-for-mode mode args))))
