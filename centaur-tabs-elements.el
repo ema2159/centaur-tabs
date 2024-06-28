@@ -875,7 +875,7 @@ Create one if the frame doesn't have one yet."
 (defun centaur-tabs-select-separator-style (tab-style)
   "Set the separator style to TAB-STYLE."
   (let* ((theme (or (car custom-enabled-themes) "default"))
-         (name (intern (format "centaur-tabs--%s-face" theme)))
+         (name (intern (format "centaur-tabs--%s-%s-face" theme tab-style)))
          (face (copy-face 'centaur-tabs-default name)))
     (setq centaur-tabs-style-left
           (funcall (intern (format "powerline-%s-right" tab-style))

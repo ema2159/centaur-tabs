@@ -1430,8 +1430,7 @@ Refer to  the variable `centaur-tabs-enable-ido-completion'."
         (add-hook hook (lambda ()
                          (if (boundp 'tab-line-format)
                              (setq-local tab-line-format nil)
-                           (setq-local header-line-format nil))
-                         )))
+                           (setq-local header-line-format nil)))))
       centaur-tabs-hide-tabs-hooks)
 
 (provide 'centaur-tabs-functions)
