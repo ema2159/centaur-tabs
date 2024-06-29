@@ -840,7 +840,7 @@ template element."
                           (apply #'insert elts)
                           (goto-char (point-min))
                           (> (vertical-motion 1) 0)))
-              (centaur-tabs-scroll tabset 1)
+              (centaur-tabs-scroll tabset -1)
               (setq elts (cdr elts))))))
       (setq elts (nreverse elts))
       (setq centaur-tabs--track-selected nil))
