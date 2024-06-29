@@ -242,10 +242,8 @@ When not specified, ELLIPSIS defaults to ‘...’."
     (define-key map (vector centaur-tabs-display-line 'mouse-4   ) 'centaur-tabs-backward)
     (define-key map (vector centaur-tabs-display-line 'wheel-down) 'centaur-tabs-forward )
     (define-key map (vector centaur-tabs-display-line 'wheel-up  ) 'centaur-tabs-backward)
-
     ;;; Use right click to show the rest of groups
     (define-key map (vector centaur-tabs-display-line 'mouse-3) 'centaur-tabs--tab-menu )
-
     map)
   "Keymap to use in  Centaur-Tabs mode.")
 
@@ -413,14 +411,14 @@ Return the tab found, or nil if not found."
 
 (defsubst centaur-tabs-template (tabset)
   "Return the cached visual representation of TABSET.
-That is, a `centaur-tabs-display-line-format' template, or nil if the cache is
-empty."
+That is, a `centaur-tabs-display-line-format' template, or nil if
+the cache is empty."
   (centaur-tabs-get-cache tabset 'template))
 
 (defsubst centaur-tabs-set-template (tabset template)
   "Set the cached visual representation of TABSET to TEMPLATE.
-TEMPLATE must be a valid `centaur-tabs-display-line-format' template, or nil to
-cleanup the cache."
+TEMPLATE must be a valid `centaur-tabs-display-line-format' template,
+or nil to cleanup the cache."
   (centaur-tabs-put-cache tabset 'template template))
 
 (defsubst centaur-tabs-selected-tab (tabset)
