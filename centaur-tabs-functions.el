@@ -320,6 +320,9 @@ TABSET is the tab set the tab belongs to."
   "Hook run after tab bar data has been initialized.
 You should use this hook to initialize dependent data.")
 
+(defvar centaur-tabs-display-hash (make-hash-table :test 'equal)
+  "Display format cache.")
+
 (defsubst centaur-tabs-init-tabsets-store ()
   "Initialize the tab set store."
   (setq centaur-tabs-tabsets (make-vector 31 0)
@@ -387,16 +390,18 @@ That is, remove it from the tab sets store."
 
 (defun centaur-tabs-get-cache (cache key)
   "Return the per-frame cached value of KEY in CACHE."
-  (when-let* ((cached-hash (frame-parameter nil cache))
+  (when-let* ((cache (format "%s" cache))
+              (cached-hash (gethash cache centaur-tabs-display-hash))
               ((hash-table-p cached-hash)))
     (gethash key cached-hash nil)))
 
 (defun centaur-tabs-put-cache (cache key value)
   "Set the per-frame cached value of KEY in CACHE to VALUE."
-  (let* ((cached-hash (frame-parameter nil cache))
+  (let* ((cache (format "%s" cache))
+         (cached-hash (gethash cache centaur-tabs-display-hash))
          (hash (if (hash-table-p cached-hash) cached-hash (make-hash-table))))
     (puthash key value hash)
-    (set-frame-parameter nil cache hash))
+    (puthash cache hash centaur-tabs-display-hash))
   value)
 
 (defsubst centaur-tabs-get-tab (object tabset)
@@ -1298,7 +1303,7 @@ buffer changed."
 
 ;; Rules to control buffer's group rules.
 (defvar centaur-tabs-groups-hash (make-hash-table :test 'equal))
-(defvar centaur-tabs-hide-hash (make-hash-table :test 'equal))
+(defvar centaur-tabs-hide-hash   (make-hash-table :test 'equal))
 
 (defun centaur-tabs-get-group-name (buf)
   "Get group name of buffer BUF."
