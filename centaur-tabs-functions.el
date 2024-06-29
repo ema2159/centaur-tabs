@@ -719,7 +719,7 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
 
             ;; icon
             (if (= (length icon) 0) ""
-              (concat (propertize " "
+              (concat (propertize centaur-tabs-icons-prefix
                                   'face face
                                   'centaur-tabs-tab tab
                                   'pointer centaur-tabs-mouse-pointer
@@ -894,14 +894,13 @@ tabs COUNT."
   "Return the header line templates that represent the tab bar.
 Inhibit display of the tab bar in current window where
 `centaur-tabs-hide-tab-function' return t."
-  (cond
-   ((centaur-tabs-hide-tab-cached (current-buffer))
-    ;; Don't show the tab bar.
-    (set centaur-tabs-display-line-format nil))
-   ((centaur-tabs-current-tabset t)
-    ;; When available, use a cached tab bar value, else recompute it.
-    (or (centaur-tabs-template centaur-tabs-current-tabset)
-        (centaur-tabs-line-format centaur-tabs-current-tabset)))))
+  (cond ((centaur-tabs-hide-tab-cached (current-buffer))
+         ;; Don't show the tab bar.
+         (set centaur-tabs-display-line-format nil))
+        ((centaur-tabs-current-tabset t)
+         ;; When available, use a cached tab bar value, else recompute it.
+         (or (centaur-tabs-template centaur-tabs-current-tabset)
+             (centaur-tabs-line-format centaur-tabs-current-tabset)))))
 
 (defconst centaur-tabs-header-line-format '(:eval (centaur-tabs-line))
   "The tab bar header line format.")
@@ -1139,11 +1138,9 @@ That is, a string used to represent it on the tab bar."
 
 (defun centaur-tabs-separator-render (item face)
   "Render ITEM using FACE."
-  (cond
-   ((and (listp item) (eq 'image (car item)))
-    (propertize " " 'display item
-                'face face))
-   (t item)))
+  (cond ((and (listp item) (eq 'image (car item)))
+         (propertize " " 'display item 'face face))
+        (t item)))
 
 (defvar centaur-tabs-last-focused-buffer nil
   "The last focused buffer.")
@@ -1158,7 +1155,7 @@ That is, a string used to represent it on the tab bar."
     (switch-to-buffer buffer)
     (setq centaur-tabs-last-focused-buffer buffer)
     (setq centaur-tabs-last-focused-buffer-group group)
-    ;; (centaur-tabs-buffer-show-groups nil)
+    ;;(centaur-tabs-buffer-show-groups nil)
     (centaur-tabs-display-update)))
 
 (defun centaur-tabs-buffer-track-killed ()

@@ -509,7 +509,7 @@ in a new frame."
 (defun centaur-tabs-open-in-external-application ()
   "Open the file of the current buffer according to its mime type."
   (interactive)
-  (let ((path (if (buffer-file-name) (buffer-file-name) default-directory)))
+  (let ((path (or (buffer-file-name) default-directory)))
     (centaur-tabs--open-externally path)))
 
 (defun centaur-tabs--open-externally (file-or-path)
@@ -538,7 +538,6 @@ Modified copy of `treemacs-visit-node-in-external-application`."
 (defun centaur-tabs--tab-submenu-groups-definition ()
   "Menu definition with a list of tab groups."
   (mapcar (lambda (s) `[,s  ,s]) (sort (centaur-tabs-get-groups) #'string<)))
-
 
 (defun centaur-tabs--tab-submenu-tabs-definition ()
   "Menu definition with a list of tabs for the current group."

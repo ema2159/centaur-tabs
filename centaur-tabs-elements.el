@@ -214,12 +214,10 @@ the tab name."
          (setq v nil))))
     (set k v)))
 
-(defvar centaur-tabs-icon-scale-factor
-  1.0
+(defvar centaur-tabs-icon-scale-factor 1.0
   "The base scale factor for the `height' face property of tab icons.")
 
-(defvar centaur-tabs-icon-v-adjust
-  0.01
+(defvar centaur-tabs-icon-v-adjust 0.01
   "The vertical adjust for tab icons.")
 
 (defcustom centaur-tabs-gray-out-icons nil
@@ -232,6 +230,11 @@ the tab name."
   "When non nil, tab icons' color will be the same as tabs' foreground color."
   :group 'centaur-tabs
   :type 'boolean)
+
+(defcustom centaur-tabs-icons-prefix " "
+  "Prefix string before icons."
+  :group 'centaur-tabs
+  :type 'string)
 
 (defun centaur-tabs--icon-for-file (file &rest args)
   "Get the formatted icon for FILE.
