@@ -82,11 +82,10 @@
          (groups (centaur-tabs-get-groups))
          (group-name (or groupname (centaur-tabs-completing-read "Groups: " groups))) )
     (catch 'done
-      (mapc
-       #'(lambda (group)
-           (when (equal group-name (car (car (cdr (cdr group)))))
-             (throw 'done (switch-to-buffer (car (cdr group))))))
-       tab-buffer-list) )))
+      (mapc #'(lambda (group)
+                (when (equal group-name (car (car (cdr (cdr group)))))
+                  (throw 'done (switch-to-buffer (car (cdr group))))))
+            tab-buffer-list) )))
 
 (defun centaur-tabs-select-end-tab ()
   "Select end tab of current tabset."
@@ -188,8 +187,7 @@ move forward."
                (with-current-buffer buffer
                  (when (string-equal current-group-name (cdr (centaur-tabs-selected-tab (centaur-tabs-current-tabset t))))
                    (when (funcall ,match-rule buffer)
-                     (kill-buffer buffer))
-                   )))
+                     (kill-buffer buffer)))))
            (buffer-list))))
 
 (defun centaur-tabs-kill-all-buffers-in-current-group ()
