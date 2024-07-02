@@ -196,6 +196,7 @@ Run as `centaur-tabs-init-hook'."
     (set-face-attribute 'centaur-tabs-unselected-modified nil
                         :overline nil
                         :underline nil))
+  (add-function :after after-focus-change-function #'centaur-tabs-after-focus)
   (add-hook 'window-buffer-change-functions #'centaur-tabs-on-window-buffer-change)
   (add-hook 'after-save-hook #'centaur-tabs-on-saving-buffer)
   (add-hook 'first-change-hook #'centaur-tabs-on-modifying-buffer)
@@ -212,6 +213,7 @@ Run as `centaur-tabs-quit-hook'."
         centaur-tabs-current-tabset-function nil
         centaur-tabs-tab-label-function nil
         centaur-tabs-select-tab-function nil)
+  (remove-function after-focus-change-function #'centaur-tabs-after-focus)
   (remove-hook 'window-buffer-change-functions #'centaur-tabs-on-window-buffer-change)
   (remove-hook 'after-save-hook 'centaur-tabs-on-modifying-buffer)
   (remove-hook 'first-change-hook 'centaur-tabs-on-modifying-buffer)

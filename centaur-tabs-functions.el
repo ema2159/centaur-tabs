@@ -538,6 +538,12 @@ current cached copy."
   (centaur-tabs-set-template centaur-tabs-tabsets-tabset nil)
   centaur-tabs-tabsets-tabset)
 
+(defun centaur-tabs-after-focus (&rest _)
+  "Focus hook."
+  (when (frame-focus-state)
+    (centaur-tabs-buffer-update-groups)
+    (centaur-tabs-display-update)))
+
 (defun centaur-tabs-on-window-buffer-change (&rest _)
   "Function to be run after window buffer is changed."
   (centaur-tabs-buffer-update-groups))
