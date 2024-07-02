@@ -540,7 +540,8 @@ current cached copy."
 
 (defun centaur-tabs-after-focus (&rest _)
   "Focus hook."
-  (when (frame-focus-state)
+  (when (and (frame-focus-state)
+             (null (frame-parent)))  ; only the root frame
     (centaur-tabs-buffer-update-groups)
     (centaur-tabs-display-update)))
 
