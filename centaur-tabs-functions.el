@@ -545,7 +545,7 @@ current cached copy."
               ((frame-live-p frame))
               ((null (frame-parent frame))))  ; only the root frame
     (centaur-tabs-buffer-update-groups)
-    (centaur-tabs-display-update)))
+    (ignore-errors (centaur-tabs-display-update))))
 
 (defun centaur-tabs-on-window-buffer-change (&rest _)
   "Function to be run after window buffer is changed."
