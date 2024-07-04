@@ -541,12 +541,13 @@ current cached copy."
 (defun centaur-tabs-after-focus (&rest _)
   "Focus hook."
   (when (frame-focus-state)
-    (centaur-tabs-buffer-update-groups)
+    (ignore-errors (centaur-tabs-buffer-update-groups))
     (ignore-errors (centaur-tabs-display-update))))
 
-(defun centaur-tabs-on-window-buffer-change (&rest _)
-  "Function to be run after window buffer is changed."
-  (centaur-tabs-buffer-update-groups))
+(defun centaur-tabs-on-window-buffer-change (frame &rest _)
+  "Function to be run after window buffer is changed in FRAME."
+  (unless (frame-parent frame)
+    (ignore-errors (centaur-tabs-buffer-update-groups))))
 
 ;; Functions for modification hooks and advices
 (defun centaur-tabs-on-saving-buffer ()
@@ -1014,31 +1015,21 @@ Depend on the setting of the option `centaur-tabs-cycle-scope'."
   (let ((centaur-tabs-cycle-scope 'tabs))
     (centaur-tabs-cycle)))
 
-;;; Buffer tabs
 ;;
+;;; Buffer tabs
+
 (defgroup centaur-tabs-buffer nil
   "Display buffers in the tab bar."
   :group 'centaur-tabs)
 
-(defun centaur-tabs-filter-out (condp lst)
-  "Filter list LST with using CONDP as the filtering condition."
-  (delq nil (mapcar (lambda (x) (if (funcall condp x) nil x)) lst)))
-
 (defun centaur-tabs-buffer-list ()
   "Return the list of buffers to show in tabs.
 Exclude buffers whose name starts with a space, when they are not
-visiting a file.  The current buffer is always included."
-  (centaur-tabs-filter-out
-   'centaur-tabs-hide-tab-cached
-   (delq nil
-         (mapcar #'(lambda (b)
-                     (cond
-                      ;; Always include the current buffer.
-                      ((eq (current-buffer) b) b)
-                      ((buffer-file-name b) b)
-                      ((char-equal ?\  (aref (buffer-name b) 0)) nil)
+visiting a file."
+  (seq-filter (lambda (b)
+                (cond ((char-equal ?\  (aref (buffer-name b) 0)) nil)
                       ((buffer-live-p b) b)))
-                 (buffer-list)))))
+              (buffer-list)))
 
 (defun centaur-tabs-buffer-mode-derived-p (mode parents)
   "Return non-nil if MODE derives from a mode in PARENTS."
@@ -1411,8 +1402,7 @@ Operates over buffer BUF"
               (with-current-buffer buffer
                 (when (string-equal 'current-group-name (cdr (centaur-tabs-selected-tab (centaur-tabs-current-tabset t))))
                   (when (buffer-file-name buffer)
-                    (add-to-list 'extension-names (file-name-extension (buffer-file-name buffer))))
-                  )))
+                    (add-to-list 'extension-names (file-name-extension (buffer-file-name buffer)))))))
           (buffer-list))
     extension-names))
 
