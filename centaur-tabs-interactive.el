@@ -320,7 +320,7 @@ TAB has to be in the same group as the current tab."
 
 (defun centaur-tabs-ace-action (action)
   "Preform ACTION on a visible tab.  Ace-jump style.
-ACTION has to be one of value in `centuar-tabs-ace-dispatch-alist'"
+ACTION has to be one of value in `centaur-tabs-ace-dispatch-alist'"
   (when (centaur-tabs-current-tabset t)
     (when centaur-tabs-ace-jump-dim-buffer
       (centaur-tabs--dim-window))
@@ -351,7 +351,7 @@ ACTION has to be one of value in `centuar-tabs-ace-dispatch-alist'"
                        (centaur-tabs-swap-tab sel))))
               (throw 'done nil))
              ;; actions
-             ((setq action-cache (assoc char centuar-tabs-ace-dispatch-alist))
+             ((setq action-cache (assoc char centaur-tabs-ace-dispatch-alist))
               (setq action-cache (cadr action-cache))
               (cond ((eq action-cache 'exit)           ; exit
                      (message "Quit")
@@ -369,7 +369,7 @@ ACTION has to be one of value in `centuar-tabs-ace-dispatch-alist'"
                                     (lambda (elem) (format "%s: %s"
                                                            (key-description (vector (car elem)))
                                                            (caddr elem)))
-                                    centuar-tabs-ace-dispatch-alist
+                                    centaur-tabs-ace-dispatch-alist
                                     "\n")))
                     (t (setq action action-cache)      ; other actions
                        (cond ((eq action-cache 'jump-to-tab)

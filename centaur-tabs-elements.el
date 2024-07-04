@@ -313,7 +313,7 @@ It has 3 options:
   '(?1 ?2 ?3 ?4 ?5 ?6 ?7 ?8 ?9)
   "Buffer jump keys used by centaur-tabs-ace-jump.")
 
-(defvar centuar-tabs-ace-dispatch-alist
+(defvar centaur-tabs-ace-dispatch-alist
   '((?q exit "Exit")
     (?\C-g exit "Exit")
     (?j jump-to-tab "Jump to tab")
