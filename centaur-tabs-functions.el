@@ -113,6 +113,10 @@ Buffers that have names that start with any of these strings will be ignored."
   :type '(repeat string)
   :group 'centaur-tabs)
 
+(defvar centaur-tabs-hide-predicate #'ignore
+  "Predicate function to hide the entire tab line.
+Ths tab line will hide if this function returns t.")
+
 (defvar centaur-tabs-hide-tab-function 'centaur-tabs-hide-tab
   "Function to hide tabs.
 This function filters tabs.  The tab will hide if this function returns t.")
@@ -904,7 +908,9 @@ tabs COUNT."
   "Return the header line templates that represent the tab bar.
 Inhibit display of the tab bar in current window where
 `centaur-tabs-hide-tab-function' return t."
-  (cond ((centaur-tabs-hide-tab-cached (current-buffer))
+  (cond ((or (centaur-tabs-hide-tab-cached (current-buffer))
+             (and centaur-tabs-hide-predicate
+                  (funcall centaur-tabs-hide-predicate)))
          ;; Don't show the tab bar.
          (set centaur-tabs-display-line-format nil))
         ((centaur-tabs-current-tabset t)
