@@ -579,8 +579,8 @@ current cached copy."
 (defun centaur-tabs-buffer-close-tab (tab)
   "Function for closing TAB."
   (let ((buffer (centaur-tabs-tab-value tab)))
-    (with-current-buffer buffer
-      (kill-buffer buffer))
+    (kill-buffer buffer)
+    (centaur-tabs-buffer-update-groups)
     (centaur-tabs-display-update)))
 
 (defun centaur-tabs-get-tab-from-event (event)
