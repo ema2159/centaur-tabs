@@ -1033,7 +1033,9 @@ Depend on the setting of the option `centaur-tabs-cycle-scope'."
 Exclude buffers whose name starts with a space, when they are not
 visiting a file."
   (seq-filter (lambda (b)
-                (cond ((char-equal ?\  (aref (buffer-name b) 0)) nil)
+                (cond ((eq (current-buffer) b) b)
+                      ((buffer-file-name b) b)
+                      ((char-equal ?\  (aref (buffer-name b) 0)) nil)
                       ((buffer-live-p b) b)))
               (buffer-list)))
 
