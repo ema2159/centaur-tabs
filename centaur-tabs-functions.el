@@ -565,17 +565,15 @@ current cached copy."
   (centaur-tabs-set-template centaur-tabs-current-tabset nil)
   (centaur-tabs-display-update))
 
-(defun centaur-tabs-re-enable ()
-  "Re-enable `centaur-tabs-mode'."
-  (centaur-tabs-mode -1)
-  (centaur-tabs-mode 1))
-
 (defun centaur-tabs--after-load-theme (&rest _)
   "Function to be run after the theme changed."
-  (setq centaur-tabs-style-right nil
-        centaur-tabs-style-left nil)
-  ;; XXX: Dirty hack, is there a way to improve this?
-  (centaur-tabs-re-enable))
+  (dolist (buffer (and centaur-tabs-buffer-list-function
+                       (funcall centaur-tabs-buffer-list-function)))
+    (with-current-buffer buffer
+      (centaur-tabs-set-template centaur-tabs-current-tabset nil)
+      (setq centaur-tabs-style-right nil
+            centaur-tabs-style-left nil)))
+  (centaur-tabs-display-update))
 
 ;;
 ;;; Events and event functions
