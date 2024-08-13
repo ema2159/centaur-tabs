@@ -279,13 +279,14 @@ If icon gray out option enabled, gray out icon if not SELECTED."
                                (face-attribute face :underline)))
                (overline (and (eq (if (display-graphic-p) centaur-tabs-set-bar) 'over)
                               (face-attribute face :overline))))
-          (if (stringp icon)
-              (progn
-                (propertize icon 'face `(:inherit ,(get-text-property 0 'face icon)
-                                                  :foreground ,inactive
-                                                  :background ,background
-                                                  :underline ,underline
-                                                  :overline ,overline)))
+          (if-let* (((stringp icon))
+                    (icon-char (string-to-char icon))
+                    ((char-displayable-p icon-char)))
+              (propertize icon 'face `( :inherit ,(get-text-property 0 'face icon)
+                                        :foreground ,inactive
+                                        :background ,background
+                                        :underline ,underline
+                                        :overline ,overline))
             "")))
     ""))
 
