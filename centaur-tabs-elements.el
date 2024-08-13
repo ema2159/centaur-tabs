@@ -332,6 +332,15 @@ forward-group, show-help).")
 ;;
 ;;; Close buttons, modified marker and edges' margins
 
+(defun centaur-tabs-char-displayable-p (ch)
+  "Same as function `char-displayable-p' but accept CH as string."
+  (cond ((stringp ch) (char-displayable-p (string-to-char ch)))
+        (t            (char-displayable-p ch))))
+
+(defun centaur-tabs-choose-char (str1 str2)
+  "Use STR2 when STR1 is not displayable."
+  (if (centaur-tabs-char-displayable-p str1) str1 str2))
+
 (defcustom centaur-tabs-set-close-button t
   "When non nil, display a clickable close button on the right side of the tabs."
   :group 'centaur-tabs
@@ -342,7 +351,8 @@ forward-group, show-help).")
   :group 'centaur-tabs
   :type 'boolean)
 
-(defcustom centaur-tabs-close-button (make-string 1 #x00D7)
+(defcustom centaur-tabs-close-button
+  (centaur-tabs-choose-char (make-string 1 #x00D7) "x")
   "Display appearance of the close buttons, if enabled."
   :group 'centaur-tabs
   :type 'string)
@@ -352,7 +362,8 @@ forward-group, show-help).")
   :group 'centaur-tabs
   :type 'boolean)
 
-(defcustom centaur-tabs-modified-marker (make-string 1 #x23FA)
+(defcustom centaur-tabs-modified-marker
+  (centaur-tabs-choose-char (make-string 1 #x23FA) "*")
   "Display appearance of the modified marker, if enabled."
   :group 'centaur-tabs
   :type 'string)
