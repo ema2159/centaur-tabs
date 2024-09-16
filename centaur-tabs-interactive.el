@@ -421,7 +421,17 @@ Should be buffer local and speed up calculation of buffer groups.")
 
          (cond
           ((or (get-buffer-process (current-buffer)) (memq major-mode '(comint-mode compilation-mode))) '("Term"))
-          ((string-equal "*" (substring (buffer-name) 0 1)) '("Misc"))
+          ((or (string-equal "*" (substring (buffer-name) 0 1))
+               (memq major-mode '( magit-process-mode
+                             magit-status-mode
+                             magit-diff-mode
+                             magit-log-mode
+                             magit-file-mode
+                             magit-blob-mode
+                             magit-blame-mode)))
+           '("Misc"))
+          ((string-prefix-p " *Mini" (buffer-name))
+           `(,centaur-tabs-hidden-group-name))
           ((condition-case _err
                (projectile-project-root)
              (error nil))

@@ -75,6 +75,11 @@ name of this variable."
   :group 'centaur-tabs
   :type 'string)
 
+(defcustom centaur-tabs-hidden-group-name "Hidden"
+  "Group for hidden buffers (minibuffers)."
+  :group 'centaur-tabs
+  :type 'string)
+
 (defcustom centaur-tabs-label-fixed-length 0
   "Fixed length of label.  Set to 0 if dynamic."
   :group 'centaur-tabs
@@ -1335,6 +1340,8 @@ Other buffer group by `centaur-tabs-get-group-name' with project name."
                              magit-blob-mode
                              magit-blame-mode)))
      "Emacs")
+    ((string-prefix-p " *Mini" (buffer-name))
+     centaur-tabs-hidden-group-name)
     ((derived-mode-p 'shell-mode) "Shell")
     ((derived-mode-p 'eshell-mode) "EShell")
     ((derived-mode-p 'emacs-lisp-mode) "Elisp")
