@@ -136,11 +136,6 @@
   :group 'centaur-tabs
   :type 'string)
 
-(defcustom centaur-tabs-label-fixed-length 0
-  "Fixed length of label.  Set to 0 if dynamic."
-  :group 'centaur-tabs
-  :type 'int)
-
 (defcustom centaur-tabs-background-color
   (face-background 'centaur-tabs-default nil 'default)
   "*Background color of the tab bar.
@@ -153,12 +148,12 @@ background color of the `default' face otherwise."
 (defcustom centaur-tabs-height 22
   "The height of tab."
   :group 'centaur-tabs
-  :type 'int)
+  :type 'integer)
 
 (defcustom centaur-tabs-bar-height (+ 8 centaur-tabs-height)
   "The height of bar."
   :group 'centaur-tabs
-  :type 'int)
+  :type 'integer)
 
 (defcustom centaur-tabs-mouse-pointer 'hand
   "Cursor to display when hovering the tabs.
