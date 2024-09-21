@@ -78,7 +78,7 @@ name of this variable."
 (defcustom centaur-tabs-label-fixed-length 0
   "Fixed length of label.  Set to 0 if dynamic."
   :group 'centaur-tabs
-  :type 'int)
+  :type 'integer)
 
 (defcustom centaur-tabs-hide-tabs-hooks
   '(magit-status-mode-hook
