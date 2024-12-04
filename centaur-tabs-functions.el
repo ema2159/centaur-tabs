@@ -1343,8 +1343,10 @@ Other buffer group by `centaur-tabs-get-group-name' with project name."
     ((derived-mode-p 'emacs-lisp-mode) "Elisp")
     ((derived-mode-p 'dired-mode) "Dired")
     ((memq major-mode '( org-mode org-agenda-mode diary-mode)) "OrgMode")
-    (centaur-tabs-custom-buffer-groups
-     (funcall centaur-tabs-custom-buffer-groups))
+    ((and centaur-tabs-custom-buffer-groups
+          (funcall centaur-tabs-custom-buffer-groups)))
+    ((string-equal "*" (substring (buffer-name) 0 1))
+     "Emacs")
     (t
      (centaur-tabs-get-group-name (current-buffer))))))
 
