@@ -144,6 +144,10 @@ buffers.")
 It must return a list of group names, or nil if the buffer has no
 group.  Notice that it is better that a buffer belongs to one group.")
 
+(defvar centaur-tabs-custom-buffer-groups nil
+  "Function that runs before any grouping logic inside the function
+`centaur-tabs-buffer-groups-function'.")
+
 (defvar centaur-tabs-adjust-buffer-order-function 'centaur-tabs-adjust-buffer-order
   "Function to adjust buffer order after switch tab.
 Default is `centaur-tabs-adjust-buffer-order', you can write your own rule.")
@@ -1340,6 +1344,8 @@ Other buffer group by `centaur-tabs-get-group-name' with project name."
     ((derived-mode-p 'emacs-lisp-mode) "Elisp")
     ((derived-mode-p 'dired-mode) "Dired")
     ((memq major-mode '( org-mode org-agenda-mode diary-mode)) "OrgMode")
+    (centaur-tabs-custom-buffer-groups
+     (funcall centaur-tabs-custom-buffer-groups))
     (t
      (centaur-tabs-get-group-name (current-buffer))))))
 
