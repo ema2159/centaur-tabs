@@ -200,6 +200,10 @@ FAMILY is the font family and HEIGHT is the font height."
         #'(lambda () (force-window-update (selected-window)))
       'force-mode-line-update)))
 
+(defun centaur-tabs-2str (obj)
+  "Convert OBJ to string."
+  (format "%s" obj))
+
 ;;; Name truncation
 ;;
 ;; Copied from s.el
@@ -217,8 +221,8 @@ When not specified, ELLIPSIS defaults to ‘...’."
       (format "%s%s" (substring s 0 (- len (length ellipsis))) ellipsis)
     (concat s (make-string (- len (length s)) ? ))))
 
-;;; Keymaps
 ;;
+;;; Keymaps
 (defvar centaur-tabs-prefix-key ["C-c t"]
   "The common prefix key used in Centaur-Tabs mode.")
 
@@ -245,12 +249,12 @@ When not specified, ELLIPSIS defaults to ‘...’."
     ;; Optional keybord bindings
     (when centaur-tabs-enable-key-bindings
       (define-key map centaur-tabs-prefix-key centaur-tabs-prefix-map))
-    ;;; Use mouse wheel to switch between buffers of same group
+    ;; Use mouse wheel to switch between buffers of same group
     (define-key map (vector centaur-tabs-display-line 'mouse-5   ) 'centaur-tabs-forward )
     (define-key map (vector centaur-tabs-display-line 'mouse-4   ) 'centaur-tabs-backward)
     (define-key map (vector centaur-tabs-display-line 'wheel-down) 'centaur-tabs-forward )
     (define-key map (vector centaur-tabs-display-line 'wheel-up  ) 'centaur-tabs-backward)
-    ;;; Use right click to show the rest of groups
+    ;; Use right click to show the rest of groups
     (define-key map (vector centaur-tabs-display-line 'mouse-3) 'centaur-tabs--tab-menu )
     map)
   "Keymap to use in  Centaur-Tabs mode.")
@@ -759,8 +763,8 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
             (when centaur-tabs-show-jump-identifier
               (when (or (eq centaur-tabs-show-jump-identifier 'always)
                         centaur-tabs-ace-jump-active)
-                (when-let ((position (nth (cl-position tab (centaur-tabs-view (centaur-tabs-current-tabset t)))
-                                          centaur-tabs-ace-jump-keys)))
+                (when-let* ((position (nth (cl-position tab (centaur-tabs-view (centaur-tabs-current-tabset t)))
+                                           centaur-tabs-ace-jump-keys)))
                   (propertize
                    (format "%c" position)
                    'centaur-tabs-tab tab
@@ -1328,7 +1332,7 @@ All buffer name start with * will group to \"Emacs\".
 Other buffer group by `centaur-tabs-get-group-name' with project name."
   (list
    (cond
-    ((when-let ((project-name (centaur-tabs-project-name)))
+    ((when-let* ((project-name (centaur-tabs-project-name)))
        project-name))
     ((memq major-mode '( magit-process-mode
                          magit-status-mode

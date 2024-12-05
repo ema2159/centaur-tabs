@@ -535,15 +535,21 @@ Modified copy of `treemacs-visit-node-in-external-application`."
 
 (defun centaur-tabs--tab-submenu-groups-definition ()
   "Menu definition with a list of tab groups."
-  (mapcar (lambda (s) `[,s  ,s]) (sort (centaur-tabs-get-groups) #'string<)))
+  (let* ((tabset (centaur-tabs-2str (centaur-tabs-current-tabset)))
+         (tabs (cl-remove-if (lambda (name)
+                               (equal tabset name))
+                             (centaur-tabs-get-groups)))
+         (sorted-tabs (sort tabs #'string<)))
+    (mapcar (lambda (s) `[,s  ,s])
+            (cons tabset sorted-tabs))))
 
 (defun centaur-tabs--tab-submenu-tabs-definition ()
   "Menu definition with a list of tabs for the current group."
   (let* ((tabset (centaur-tabs-get-tabset centaur-tabs-last-focused-buffer-group))
          (tabs-in-group (centaur-tabs-tabs tabset))
          (buffers (mapcar #'centaur-tabs-tab-value tabs-in-group))
-         (sorted-tabnames (sort (mapcar #'buffer-name buffers) #'string<)))
-    (mapcar (lambda (s) `[,s  ,s]) sorted-tabnames)))
+         (sorted-tabs (sort (mapcar #'buffer-name buffers) #'string<)))
+    (mapcar (lambda (s) `[,s  ,s]) sorted-tabs)))
 
 (defvar centaur-tabs--groups-submenu-key "Tab groups")
 (defvar centaur-tabs--tabs-submenu-key "Go to tab of group")
@@ -581,8 +587,10 @@ Modified copy of `treemacs-visit-node-in-external-application`."
     ["Open directory externally" centaur-tabs-open-directory-in-external-application
      :active default-directory]
     "----"
-    ,( append (list centaur-tabs--groups-submenu-key) (centaur-tabs--tab-submenu-groups-definition))
-    ,( append (list centaur-tabs--tabs-submenu-key) (centaur-tabs--tab-submenu-tabs-definition))))
+    ,(append (list centaur-tabs--groups-submenu-key)
+             (centaur-tabs--tab-submenu-groups-definition))
+    ,(append (list centaur-tabs--tabs-submenu-key)
+             (centaur-tabs--tab-submenu-tabs-definition))))
 
 (defun centaur-tabs--one-window-p ()
   "Like `one-window-p`, but taking into account side windows like treemacs."
