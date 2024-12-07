@@ -1344,11 +1344,11 @@ Other buffer group by `centaur-tabs-get-group-name' with project name."
      "Magit")
     ((derived-mode-p 'shell-mode) "Shell")
     ((derived-mode-p 'eshell-mode) "EShell")
-    ((derived-mode-p 'emacs-lisp-mode) "Elisp")
     ((derived-mode-p 'dired-mode) "Dired")
     ((memq major-mode '( org-mode org-agenda-mode diary-mode)) "OrgMode")
     ((and centaur-tabs-custom-buffer-groups
           (funcall centaur-tabs-custom-buffer-groups)))
+    ((derived-mode-p 'emacs-lisp-mode) "Elisp")
     ((string-equal "*" (substring (buffer-name) 0 1))
      "Emacs")
     (t
