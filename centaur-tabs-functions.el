@@ -1336,11 +1336,13 @@ Other buffer group by `centaur-tabs-get-group-name' with project name."
        project-name))
     ((memq major-mode '( magit-process-mode
                          magit-status-mode
-                         magit-diff-mode
                          magit-log-mode
                          magit-file-mode
                          magit-blob-mode
-                         magit-blame-mode))
+                         magit-blame-mode
+                         magit-diff-mode
+                         magit-revision-mode
+                         magit-stash-mode))
      "Magit")
     ((derived-mode-p 'shell-mode) "Shell")
     ((derived-mode-p 'eshell-mode) "EShell")
