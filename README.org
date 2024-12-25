@@ -546,7 +546,7 @@ Other buffer group by `centaur-tabs-get-group-name' with project name."
 ** Icons not showing
 If the icons in your tabs are not showing, it is likely because of one of the two following reasons:
 ***  =all-the-icons= / =nerd-icons= not installed
-If [[https://github.com/domtronn/all-the-icons.el][all-the-icons]] or [[https://github.com/rainstormstudio/nerd-icons.el][nerd-icons]] is not installed properly, your mode icons won't show up. To solve this issue, you have to install all-the-icons and follow the instructions indicated in its repository.
+If [[https://github.com/domtronn/all-the-icons.el][all-the-icons]] or [[https://github.com/rainstormstudio/nerd-icons.el][nerd-icons]] is not installed properly, your mode icons won't show up. To solve this issue, you have to install all-the-icons or nerd-icons and follow the instructions indicated in its repository.
 *** Font with required unicode symbols missing
 If you get something like the following image in your tabs:
 
