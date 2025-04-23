@@ -1,3 +1,5 @@
+;; -*- mode: eask; lexical-binding: t -*-
+
 (package "centaur-tabs"
          "3.3"
          "Aesthetic, modern looking customizable tabs plugin")
