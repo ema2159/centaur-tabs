@@ -1042,7 +1042,7 @@ visiting a file."
                 (cond ((eq (current-buffer) b) b)
                       ((buffer-file-name b) b)
                       ((char-equal ?\  (aref (buffer-name b) 0)) nil)
-                      ((buffer-live-p b) b)))
+                      ((not (centaur-tabs-hide-tab-cached b)) b)))
               (buffer-list)))
 
 (defun centaur-tabs-buffer-mode-derived-p (mode parents)
