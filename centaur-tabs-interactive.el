@@ -1,4 +1,4 @@
-;;; centaur-tabs-interactive.el --- centaur-tabs interactive functions and plugins support lexical-binding: t; -*-
+;;; centaur-tabs-interactive.el --- centaur-tabs interactive functions and plugins support  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2019-2024  Emmanuel Bustos
 ;; Copyright (C) 2024-2025  Jen-Chieh Shen
@@ -212,8 +212,7 @@ move forward."
 (defun centaur-tabs-kill-unmodified-buffers-in-current-group ()
   "Kill all unmodified buffer in current group."
   (interactive)
-  (let* ((current-group-name (cdr (centaur-tabs-selected-tab (centaur-tabs-current-tabset t))))
-         (currentbuffer (current-buffer)))
+  (let* ((current-group-name (cdr (centaur-tabs-selected-tab (centaur-tabs-current-tabset t)))))
     ;; Kill all buffers in current group.
     (centaur-tabs-kill-buffer-match-rule
      (lambda (buffer) (not (buffer-modified-p buffer))))))
@@ -634,8 +633,7 @@ The clicked tab, identified by EVENT, is selected."
 (defun centaur-tabs--groups-menu ()
   "Show a popup menu with the centaur tabs groups."
   (interactive)
-  (let* ((sorted-groups (centaur-tabs--tab-submenu-groups-definition))
-         (menu (easy-menu-create-menu "Tab groups"
+  (let* ((menu (easy-menu-create-menu "Tab groups"
                                       (centaur-tabs--tab-submenu-groups-definition)))
          (choice (x-popup-menu t menu))
          (action (lookup-key menu (apply 'vector choice)))

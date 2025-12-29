@@ -1,4 +1,4 @@
-;;; centaur-tabs-elements.el --- centaur-tabs visual components and customizations -*- lexical-binding: t; -*-
+;;; centaur-tabs-elements.el --- centaur-tabs visual components and customizations  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2019-2024  Emmanuel Bustos
 ;; Copyright (C) 2024-2025  Jen-Chieh Shen
