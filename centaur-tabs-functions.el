@@ -1,7 +1,7 @@
 ;;; centaur-tabs-functions.el --- centaur-tabs logic components -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2019-2024  Emmanuel Bustos
-;; Copyright (C) 2024  Jen-Chieh Shen
+;; Copyright (C) 2024-2025  Jen-Chieh Shen
 
 ;; This file is not part of GNU Emacs.
 

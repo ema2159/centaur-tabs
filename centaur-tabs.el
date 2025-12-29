@@ -1,7 +1,7 @@
 ;;; centaur-tabs.el --- Aesthetic, modern looking customizable tabs plugin  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2019-2024  Emmanuel Bustos
-;; Copyright (C) 2024  Jen-Chieh Shen
+;; Copyright (C) 2024-2025  Jen-Chieh Shen
 
 ;; Filename: centaur-tabs.el
 ;; Description: Provide an out of box configuration to use highly customizable tabs.
