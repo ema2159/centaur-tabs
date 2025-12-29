@@ -34,8 +34,8 @@
 ;; Compiler pacifier
 (declare-function vterm "ext:vterm.el")
 
-(declare-function centaur-tabs-move-current-tab-to-right "nerd-icons.el")
-(declare-function centaur-tabs-move-current-tab-to-left "nerd-icons.el")
+(declare-function centaur-tabs-move-current-tab-to-right "centaur-tabs-interactive.el")
+(declare-function centaur-tabs-move-current-tab-to-left "centaur-tabs-interactive.el")
 
 (defvar centaur-tabs--buffer-show-groups)
 (defvar centaur-tabs-ace-jump-active)
