@@ -256,7 +256,13 @@ like in the normal icon inserting functions."
 ARGS should be a plist containining `:height', `:v-adjust' or `:face' properties
 like in the normal icon inserting functions."
   (pcase centaur-tabs-icon-type
-    ('all-the-icons (apply #'all-the-icons-icon-for-buffer))
+    ('all-the-icons
+     (or (ignore-errors
+           (apply #' centaur-tabs--icon-for-file
+                     (file-name-nondirectory (buffer-file-name))
+                     args))
+         (ignore-errors
+           (apply #'centaur-tabs--icon-for-mode major-mode args))))
     ('nerd-icons
      (let* ((icon-f (ignore-errors
                       (apply #'centaur-tabs--icon-for-file
