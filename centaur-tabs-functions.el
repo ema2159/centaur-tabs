@@ -744,7 +744,12 @@ Call `centaur-tabs-tab-label-function' to obtain a label for TAB."
                                   'centaur-tabs-tab tab
                                   'pointer centaur-tabs-mouse-pointer
                                   'local-map centaur-tabs-default-map)
-                      icon))
+                      icon
+                      (propertize centaur-tabs-icons-suffix
+                                  'face face
+                                  'centaur-tabs-tab tab
+                                  'pointer centaur-tabs-mouse-pointer
+                                  'local-map centaur-tabs-default-map)))
 
             ;; tab name
             (propertize (concat

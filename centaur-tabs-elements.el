@@ -234,6 +234,11 @@ the tab name."
   :group 'centaur-tabs
   :type 'string)
 
+(defcustom centaur-tabs-icons-suffix ""
+  "Suffix string after icons."
+  :group 'centaur-tabs
+  :type 'string)
+
 (defun centaur-tabs--icon-for-file (file &rest args)
   "Get the formatted icon for FILE.
 ARGS should be a plist containing `:height', `:v-adjust', or `:face' properties."
