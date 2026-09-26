@@ -267,8 +267,9 @@
    #+BEGIN_SRC emacs-lisp
      (setq centaur-tabs-hide-single-tab t)
    #+END_SRC
-   The line reappears when another buffer joins that group and disappears again
-   when the group returns to one tab. This option is off by default. It does not
+   Buffers without a tab group also hide the empty line. The line reappears
+   when the group gains another tab and disappears again with fewer than two.
+   This option is off by default. It does not
    override buffers whose tab lines were explicitly hidden with
    ~centaur-tabs-local-mode~.
 

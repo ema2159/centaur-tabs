@@ -948,21 +948,23 @@ Inhibit display of the tab bar in current window where
                   (funcall centaur-tabs-hide-predicate)))
          ;; Don't show the tab bar.
          (set centaur-tabs-display-line-format nil))
-        ((centaur-tabs-current-tabset t)
-         (if (and centaur-tabs-hide-single-tab
-                  (<= (length (centaur-tabs-tabs centaur-tabs-current-tabset)) 1))
-             (progn
-               (unless centaur-tabs--hidden-single-tab
-                 (setq centaur-tabs--single-tab-was-local
-                       (local-variable-p centaur-tabs-display-line-format)
-                       centaur-tabs--single-tab-prior-format
-                       (and centaur-tabs--single-tab-was-local
-                            (eval centaur-tabs-display-line-format))))
-               (setq centaur-tabs--hidden-single-tab t)
-               (set (make-local-variable centaur-tabs-display-line-format) nil))
-           ;; When available, use a cached tab bar value, else recompute it.
-           (or (centaur-tabs-template centaur-tabs-current-tabset)
-               (centaur-tabs-line-format centaur-tabs-current-tabset))))))
+        (t
+         (let ((tabset (centaur-tabs-current-tabset t)))
+           (cond ((and centaur-tabs-hide-single-tab
+                       (or (null tabset)
+                           (<= (length (centaur-tabs-tabs tabset)) 1)))
+                  (unless centaur-tabs--hidden-single-tab
+                    (setq centaur-tabs--single-tab-was-local
+                          (local-variable-p centaur-tabs-display-line-format)
+                          centaur-tabs--single-tab-prior-format
+                          (and centaur-tabs--single-tab-was-local
+                               (eval centaur-tabs-display-line-format))))
+                  (setq centaur-tabs--hidden-single-tab t)
+                  (set (make-local-variable centaur-tabs-display-line-format) nil))
+                 (tabset
+                  ;; When available, use a cached bar, else recompute it.
+                  (or (centaur-tabs-template tabset)
+                      (centaur-tabs-line-format tabset))))))))
 
 (defconst centaur-tabs-header-line-format '(:eval (centaur-tabs-line))
   "The tab bar header line format.")
