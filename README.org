@@ -261,6 +261,17 @@
      (setq centaur-tabs--buffer-show-groups t)
    #+END_SRC
    You can toggle between the two options interactively with the ~(centaur-tabs-toggle-groups)~ command.
+
+** Hide the tab line for a single tab
+   To save a row when the current buffer group has only one tab, enable:
+   #+BEGIN_SRC emacs-lisp
+     (setq centaur-tabs-hide-single-tab t)
+   #+END_SRC
+   The line reappears when another buffer joins that group and disappears again
+   when the group returns to one tab. This option is off by default. It does not
+   override buffers whose tab lines were explicitly hidden with
+   ~centaur-tabs-local-mode~.
+
 ** Enable Vim like tab motions
    To enable Vim like tab changing binds
    #+BEGIN_SRC emacs-lisp :tangle yes

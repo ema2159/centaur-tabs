@@ -117,6 +117,35 @@ Buffers that have names that start with any of these strings will be ignored."
   "Predicate function to hide the entire tab line.
 Ths tab line will hide if this function returns t.")
 
+(defcustom centaur-tabs-hide-single-tab nil
+  "Hide the tab line when the current group has fewer than two tabs.
+The tab line reappears when another buffer joins the group.  This
+does not affect tab lines hidden explicitly by the user."
+  :type 'boolean
+  :group 'centaur-tabs)
+
+(defvar-local centaur-tabs--hidden-single-tab nil
+  "Non-nil if this buffer's tab line was hidden for a single tab.")
+
+(defvar-local centaur-tabs--single-tab-prior-format nil
+  "Previous local tab line format, or nil if there was none.")
+
+(defvar-local centaur-tabs--single-tab-was-local nil
+  "Non-nil if the tab line format was local before auto-hiding.")
+
+(defun centaur-tabs--restore-single-tab (buffer)
+  "Restore BUFFER's tab line if it was hidden for a single tab."
+  (with-current-buffer buffer
+    (when centaur-tabs--hidden-single-tab
+      (setq centaur-tabs--hidden-single-tab nil)
+      (unless (bound-and-true-p centaur-tabs-local-mode)
+        (if centaur-tabs--single-tab-was-local
+            (set centaur-tabs-display-line-format
+                 centaur-tabs--single-tab-prior-format)
+          (kill-local-variable centaur-tabs-display-line-format)))
+      (setq centaur-tabs--single-tab-prior-format nil
+            centaur-tabs--single-tab-was-local nil))))
+
 (defvar centaur-tabs-hide-tab-function 'centaur-tabs-hide-tab
   "Function to hide tabs.
 This function filters tabs.  The tab will hide if this function returns t.")
@@ -920,9 +949,20 @@ Inhibit display of the tab bar in current window where
          ;; Don't show the tab bar.
          (set centaur-tabs-display-line-format nil))
         ((centaur-tabs-current-tabset t)
-         ;; When available, use a cached tab bar value, else recompute it.
-         (or (centaur-tabs-template centaur-tabs-current-tabset)
-             (centaur-tabs-line-format centaur-tabs-current-tabset)))))
+         (if (and centaur-tabs-hide-single-tab
+                  (<= (length (centaur-tabs-tabs centaur-tabs-current-tabset)) 1))
+             (progn
+               (unless centaur-tabs--hidden-single-tab
+                 (setq centaur-tabs--single-tab-was-local
+                       (local-variable-p centaur-tabs-display-line-format)
+                       centaur-tabs--single-tab-prior-format
+                       (and centaur-tabs--single-tab-was-local
+                            (eval centaur-tabs-display-line-format))))
+               (setq centaur-tabs--hidden-single-tab t)
+               (set (make-local-variable centaur-tabs-display-line-format) nil))
+           ;; When available, use a cached tab bar value, else recompute it.
+           (or (centaur-tabs-template centaur-tabs-current-tabset)
+               (centaur-tabs-line-format centaur-tabs-current-tabset))))))
 
 (defconst centaur-tabs-header-line-format '(:eval (centaur-tabs-line))
   "The tab bar header line format.")
@@ -1108,7 +1148,17 @@ Return the the first group where the current buffer is."
                  (unless (centaur-tabs-tabs tabset)
                    tabset))))
       ;; The new cache becomes the current one.
-      (setq centaur-tabs--buffers bl))))
+      (setq centaur-tabs--buffers bl)
+      ;; A hidden tab line cannot evaluate `centaur-tabs-line' to unhide
+      ;; itself.  Restore it when the current group gains another tab.
+      (dolist (entry bl)
+        (let* ((buffer (car entry))
+               (group (car (nth 2 entry)))
+               (tabset (and group (centaur-tabs-get-tabset group))))
+          (when (and (buffer-local-value 'centaur-tabs--hidden-single-tab buffer)
+                     (or (not centaur-tabs-hide-single-tab)
+                         (and tabset (> (length (centaur-tabs-tabs tabset)) 1))))
+            (centaur-tabs--restore-single-tab buffer)))))))
 
 (defun centaur-tabs-buffer-update-groups-cache ()
   "Don't call function `centaur-tabs-buffer-update-groups' too often."

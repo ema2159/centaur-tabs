@@ -145,6 +145,7 @@ Returns non-nil if the new state is enabled.
         (set-default centaur-tabs-display-line-format centaur-tabs-header-line-format))
 ;;; OFF
     (when (centaur-tabs-mode-on-p)
+      (mapc #'centaur-tabs--restore-single-tab (buffer-list))
       ;; Turn off Centaur-Tabs-Local mode globally.
       (mapc #'(lambda (b)
                 (condition-case nil
