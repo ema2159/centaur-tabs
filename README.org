@@ -269,6 +269,12 @@
    #+END_SRC
    Buffers without a tab group also hide the empty line. The line reappears
    when the group gains another tab and disappears again with fewer than two.
+   With multiple frames/perspectives, tab membership is recomputed for the
+   current frame rather than borrowed from the last active one. If the same
+   buffer is displayed in two frames and either frame needs multiple tabs,
+   its tab line remains visible in both: Emacs stores ~tab-line-format~ on
+   the shared buffer, so hiding it in one frame would also hide the needed
+   line in the other.
    This option is off by default. It does not
    override buffers whose tab lines were explicitly hidden with
    ~centaur-tabs-local-mode~.

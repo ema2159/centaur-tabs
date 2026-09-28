@@ -187,5 +187,98 @@
       (should (local-variable-p centaur-tabs-display-line-format))
       (should-not (eval centaur-tabs-display-line-format)))))
 
+(ert-deftest centaur-tabs-cache-rebuilds-on-perspective-membership-change ()
+  "A shared buffer in both lists must not make an old list appear current."
+  (centaur-tabs-test-with-buffers '("ct-shared" "ct-a")
+    (let ((shared (get-buffer "ct-shared"))
+          (a (get-buffer "ct-a"))
+          (b (get-buffer-create "ct-b")))
+      (unwind-protect
+          (progn
+            (with-current-buffer shared
+              (should (= 2 (length (centaur-tabs-tabs (centaur-tabs-buffer-tabs))))))
+            ;; Perspective B shares the selected buffer but not the other tab.
+            (setq buffers (list shared b))
+            (centaur-tabs-buffer-update-groups)
+            (setq buffers (list shared a))
+            ;; No focus/window-change hook: the cache fast path itself must
+            ;; notice that a second perspective has a different membership.
+            (with-current-buffer shared
+              (should (equal (sort (mapcar (lambda (tab)
+                                          (buffer-name (centaur-tabs-tab-value tab)))
+                                        (centaur-tabs-tabs (centaur-tabs-buffer-tabs)))
+                                   #'string-lessp)
+                             '("ct-a" "ct-shared")))))
+        (kill-buffer b)))))
+
+(ert-deftest centaur-tabs-restores-hidden-buffer-in-another-frame ()
+  "A perspective update restores a different frame's hidden shared buffer."
+  (skip-unless (display-graphic-p))
+  (let* ((a-frame (selected-frame))
+         (b-frame (make-frame))
+         (shared (generate-new-buffer "ct-frame-shared"))
+         (a (generate-new-buffer "ct-frame-a"))
+         (b (generate-new-buffer "ct-frame-b"))
+         (a-members (list shared))
+         (centaur-tabs-buffer-list-function
+          (lambda () (if (eq (selected-frame) a-frame) a-members (list b))))
+         (centaur-tabs-buffer-groups-function (lambda () '("main")))
+         (centaur-tabs-hide-single-tab t)
+         (centaur-tabs-hide-predicate #'ignore)
+         (centaur-tabs-set-icons nil)
+         (centaur-tabs-show-new-tab-button nil)
+         (centaur-tabs-show-navigation-buttons nil))
+    (unwind-protect
+        (progn
+          (centaur-tabs-mode 1)
+          (set-window-buffer (frame-selected-window a-frame) shared)
+          (set-window-buffer (frame-selected-window b-frame) b)
+          (with-selected-frame a-frame
+            (centaur-tabs-buffer-update-groups)
+            (with-current-buffer shared (centaur-tabs-line))
+            (should (buffer-local-value 'centaur-tabs--hidden-single-tab shared)))
+          (setq a-members (list shared a))
+          (with-selected-frame b-frame (centaur-tabs-buffer-update-groups))
+          (should-not (buffer-local-value 'centaur-tabs--hidden-single-tab shared))
+          (redisplay t)
+          (should (> (window-tab-line-height (frame-selected-window a-frame)) 0)))
+      (centaur-tabs-mode -1)
+      (when (frame-live-p b-frame) (delete-frame b-frame t))
+      (dolist (buf (list shared a b))
+        (when (buffer-live-p buf) (kill-buffer buf))))))
+
+(ert-deftest centaur-tabs-shared-buffer-preserves-needed-line ()
+  "A shared buffer must not hide the line needed by its two-tab frame."
+  (skip-unless (display-graphic-p))
+  (let* ((a-frame (selected-frame))
+         (b-frame (make-frame))
+         (shared (generate-new-buffer "ct-shared-frame"))
+         (other (generate-new-buffer "ct-other-frame"))
+         (centaur-tabs-buffer-list-function
+          (lambda () (if (eq (selected-frame) a-frame)
+                         (list shared other) (list shared))))
+         (centaur-tabs-buffer-groups-function (lambda () '("main")))
+         (centaur-tabs-hide-single-tab t)
+         (centaur-tabs-hide-predicate #'ignore)
+         (centaur-tabs-set-icons nil)
+         (centaur-tabs-show-new-tab-button nil)
+         (centaur-tabs-show-navigation-buttons nil))
+    (unwind-protect
+        (progn
+          (centaur-tabs-mode 1)
+          (set-window-buffer (frame-selected-window a-frame) shared)
+          (set-window-buffer (frame-selected-window b-frame) shared)
+          (with-selected-frame a-frame (centaur-tabs-buffer-update-groups))
+          (with-selected-frame b-frame
+            (centaur-tabs-buffer-update-groups)
+            (with-current-buffer shared (centaur-tabs-line)))
+          (should-not (buffer-local-value 'centaur-tabs--hidden-single-tab shared))
+          (redisplay t)
+          (should (> (window-tab-line-height (frame-selected-window a-frame)) 0)))
+      (centaur-tabs-mode -1)
+      (when (frame-live-p b-frame) (delete-frame b-frame t))
+      (dolist (buf (list shared other))
+        (when (buffer-live-p buf) (kill-buffer buf))))))
+
 (provide 'centaur-tabs-auto-hide-tests)
 ;;; centaur-tabs-auto-hide-tests.el ends here

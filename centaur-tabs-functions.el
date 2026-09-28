@@ -130,6 +130,9 @@ does not affect tab lines hidden explicitly by the user."
 (defvar-local centaur-tabs--single-tab-prior-format nil
   "Previous local tab line format, or nil if there was none.")
 
+(defvar centaur-tabs--auto-hidden-buffers nil
+  "Buffers whose tab line was hidden by `centaur-tabs-hide-single-tab'.")
+
 (defvar-local centaur-tabs--single-tab-was-local nil
   "Non-nil if the tab line format was local before auto-hiding.")
 
@@ -138,6 +141,8 @@ does not affect tab lines hidden explicitly by the user."
   (with-current-buffer buffer
     (when centaur-tabs--hidden-single-tab
       (setq centaur-tabs--hidden-single-tab nil)
+      (setq centaur-tabs--auto-hidden-buffers
+            (delq buffer centaur-tabs--auto-hidden-buffers))
       (unless (bound-and-true-p centaur-tabs-local-mode)
         (if centaur-tabs--single-tab-was-local
             (set centaur-tabs-display-line-format
@@ -145,6 +150,52 @@ does not affect tab lines hidden explicitly by the user."
           (kill-local-variable centaur-tabs-display-line-format)))
       (setq centaur-tabs--single-tab-prior-format nil
             centaur-tabs--single-tab-was-local nil))))
+
+(defvar centaur-tabs-buffer-list-function)
+(defvar centaur-tabs-buffer-groups-function)
+
+(defun centaur-tabs--displayed-buffer-needs-tabs-p (buffer)
+  "Return non-nil if a displayed instance of BUFFER needs multiple tabs.
+The same buffer can be shown in different frames with different buffer lists.
+Its tab-line format is buffer-local, so it must remain visible whenever any
+of those frames needs a tab line."
+  (cl-some
+   (lambda (frame)
+     (cl-some
+      (lambda (window)
+        (when (eq buffer (window-buffer window))
+          (with-selected-frame frame
+            (with-selected-window window
+              (let* ((group (and centaur-tabs-buffer-groups-function
+                                 (with-current-buffer buffer
+                                   (car (funcall centaur-tabs-buffer-groups-function)))))
+                     (count 0))
+                (and group centaur-tabs-buffer-list-function
+                     (cl-some
+                      (lambda (candidate)
+                        (when (and (buffer-live-p candidate)
+                                   (with-current-buffer candidate
+                                     (member group
+                                             (funcall centaur-tabs-buffer-groups-function))))
+                          (setq count (1+ count))
+                          (> count 1)))
+                      (funcall centaur-tabs-buffer-list-function))))))))
+      (window-list frame 'no-minibuf)))
+   (frame-list)))
+
+(defun centaur-tabs--restore-displayed-tabs ()
+  "Restore hidden tab lines now needed by other displayed frames."
+  (setq centaur-tabs--auto-hidden-buffers
+        (cl-remove-if-not #'buffer-live-p centaur-tabs--auto-hidden-buffers))
+  (when (and centaur-tabs-hide-single-tab centaur-tabs--auto-hidden-buffers)
+    (dolist (frame (frame-list))
+      (dolist (window (window-list frame 'no-minibuf))
+        (let ((buffer (window-buffer window)))
+          (when (and (buffer-live-p buffer)
+                     (buffer-local-value 'centaur-tabs--hidden-single-tab buffer)
+                     (centaur-tabs--displayed-buffer-needs-tabs-p buffer))
+            (centaur-tabs--restore-single-tab buffer)
+            (force-window-update window)))))))
 
 (defvar centaur-tabs-hide-tab-function 'centaur-tabs-hide-tab
   "Function to hide tabs.
@@ -950,9 +1001,14 @@ Inhibit display of the tab bar in current window where
          (set centaur-tabs-display-line-format nil))
         (t
          (let ((tabset (centaur-tabs-current-tabset t)))
+           (when (and centaur-tabs--hidden-single-tab
+                      (centaur-tabs--displayed-buffer-needs-tabs-p (current-buffer)))
+             (centaur-tabs--restore-single-tab (current-buffer)))
            (cond ((and centaur-tabs-hide-single-tab
                        (or (null tabset)
-                           (<= (length (centaur-tabs-tabs tabset)) 1)))
+                           (<= (length (centaur-tabs-tabs tabset)) 1))
+                       (not (centaur-tabs--displayed-buffer-needs-tabs-p
+                             (current-buffer))))
                   (unless centaur-tabs--hidden-single-tab
                     (setq centaur-tabs--single-tab-was-local
                           (local-variable-p centaur-tabs-display-line-format)
@@ -960,6 +1016,7 @@ Inhibit display of the tab bar in current window where
                           (and centaur-tabs--single-tab-was-local
                                (eval centaur-tabs-display-line-format))))
                   (setq centaur-tabs--hidden-single-tab t)
+                  (cl-pushnew (current-buffer) centaur-tabs--auto-hidden-buffers)
                   (set (make-local-variable centaur-tabs-display-line-format) nil))
                  (tabset
                   ;; When available, use a cached bar, else recompute it.
@@ -1160,13 +1217,24 @@ Return the the first group where the current buffer is."
           (when (and (buffer-local-value 'centaur-tabs--hidden-single-tab buffer)
                      (or (not centaur-tabs-hide-single-tab)
                          (and tabset (> (length (centaur-tabs-tabs tabset)) 1))))
-            (centaur-tabs--restore-single-tab buffer)))))))
+            (centaur-tabs--restore-single-tab buffer)))))
+    ;; A hidden buffer in another frame cannot evaluate its own tab line.
+    ;; A perspective change must restore it even when it is absent from BL.
+    (centaur-tabs--restore-displayed-tabs)))
 
 (defun centaur-tabs-buffer-update-groups-cache ()
   "Don't call function `centaur-tabs-buffer-update-groups' too often."
-  (let ((result (centaur-tabs-buffer-groups-result)))
+  (let* ((result (centaur-tabs-buffer-groups-result))
+         (buffers (and centaur-tabs-buffer-list-function
+                       (funcall centaur-tabs-buffer-list-function))))
+    ;; A buffer shared by two perspectives may occur in both cache lists.
+    ;; Its cached group alone cannot tell which perspective is current.
     (when (or (null result)
-              (null centaur-tabs--buffers))
+              (null centaur-tabs--buffers)
+              (/= (length buffers) (length centaur-tabs--buffers))
+              (cl-some (lambda (buffer)
+                         (not (assq buffer centaur-tabs--buffers)))
+                       buffers))
       (centaur-tabs-buffer-update-groups))
     (centaur-tabs-buffer-groups-result)))
 
