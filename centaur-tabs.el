@@ -145,6 +145,8 @@ Returns non-nil if the new state is enabled.
         (set-default centaur-tabs-display-line-format centaur-tabs-header-line-format))
 ;;; OFF
     (when (centaur-tabs-mode-on-p)
+      (mapc #'centaur-tabs--restore-single-tab (buffer-list))
+      (setq centaur-tabs--auto-hidden-buffers nil)
       ;; Turn off Centaur-Tabs-Local mode globally.
       (mapc #'(lambda (b)
                 (condition-case nil
@@ -166,6 +168,7 @@ Returns non-nil if the new state is enabled.
   "Initialize tab bar buffer data.
 Run as `centaur-tabs-init-hook'."
   (setq centaur-tabs--buffers nil
+        centaur-tabs--auto-hidden-buffers nil
         centaur-tabs-current-tabset-function 'centaur-tabs-buffer-tabs
         centaur-tabs-tab-label-function 'centaur-tabs-buffer-tab-label
         centaur-tabs-select-tab-function 'centaur-tabs-buffer-select-tab)
