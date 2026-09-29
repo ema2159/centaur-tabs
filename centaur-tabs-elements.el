@@ -274,35 +274,45 @@ like in the normal icon inserting functions."
            (or icon-m icon-f)
          (or icon-f icon-m))))))
 
+(defun centaur-tabs--display-background (face)
+  "Background for FACE in the buffer displaying the Centaur tab line.
+Respect a buffer-local face remap when present, without changing the
+frame's globally themed face."
+  (or (cl-loop for spec in (cdr (assq face face-remapping-alist))
+               when (and (consp spec) (keywordp (car spec))
+                         (stringp (plist-get spec :background)))
+               return (plist-get spec :background))
+      (face-background face nil 'default)))
+
 (defun centaur-tabs-icon (tab face selected)
   "Generate icon for TAB using FACE's background.
 If icon gray out option enabled, gray out icon if not SELECTED."
-  (if centaur-tabs-icon-type
-      (with-current-buffer (car tab)
-        (let* ((icon (centaur-tabs--icon-for-buffer
-                      :v-adjust centaur-tabs-icon-v-adjust
-                      :height centaur-tabs-icon-scale-factor))
-               (background (face-background face nil 'default))
-               (inactive (cond ((and (not selected)
-                                     (eq centaur-tabs-gray-out-icons 'buffer))
-                                (face-foreground 'mode-line-inactive nil 'default))
-                               (centaur-tabs-plain-icons
-                                (face-foreground 'centaur-tabs-selected nil 'default))
-                               (t 'unspecified)))
-               (underline (and (eq (if (display-graphic-p) centaur-tabs-set-bar) 'under)
-                               (face-attribute face :underline)))
-               (overline (and (eq (if (display-graphic-p) centaur-tabs-set-bar) 'over)
-                              (face-attribute face :overline))))
-          (if-let* (((stringp icon))
-                    (icon-char (string-to-char icon))
-                    ((char-displayable-p icon-char)))
-              (propertize icon 'face `( :inherit ,(get-text-property 0 'face icon)
-                                        :foreground ,inactive
-                                        :background ,background
-                                        :underline ,underline
-                                        :overline ,overline))
-            "")))
-    ""))
+  (let ((background (centaur-tabs--display-background face)))
+    (if centaur-tabs-icon-type
+        (with-current-buffer (car tab)
+          (let* ((icon (centaur-tabs--icon-for-buffer
+                        :v-adjust centaur-tabs-icon-v-adjust
+                        :height centaur-tabs-icon-scale-factor))
+                 (inactive (cond ((and (not selected)
+                                       (eq centaur-tabs-gray-out-icons 'buffer))
+                                  (face-foreground 'mode-line-inactive nil 'default))
+                                 (centaur-tabs-plain-icons
+                                  (face-foreground 'centaur-tabs-selected nil 'default))
+                                 (t 'unspecified)))
+                 (underline (and (eq (if (display-graphic-p) centaur-tabs-set-bar) 'under)
+                                 (face-attribute face :underline)))
+                 (overline (and (eq (if (display-graphic-p) centaur-tabs-set-bar) 'over)
+                                (face-attribute face :overline))))
+            (if-let* (((stringp icon))
+                      (icon-char (string-to-char icon))
+                      ((char-displayable-p icon-char)))
+                (propertize icon 'face `(:inherit ,(get-text-property 0 'face icon)
+                                                   :foreground ,inactive
+                                                   :background ,background
+                                                   :underline ,underline
+                                                   :overline ,overline))
+              "")))
+      "")))
 
 ;;
 ;;; Ace-window style tab switching
