@@ -574,13 +574,14 @@ current cached copy."
   (centaur-tabs-display-update))
 
 (defun centaur-tabs--after-load-theme (&rest _)
-  "Function to be run after the theme changed."
-  (dolist (buffer (and centaur-tabs-buffer-list-function
-                       (funcall centaur-tabs-buffer-list-function)))
-    (with-current-buffer buffer
-      (centaur-tabs-set-template centaur-tabs-current-tabset nil)
-      (setq centaur-tabs-style-right nil
-            centaur-tabs-style-left nil)))
+  "Invalidate every cached tabset and separator after a theme change."
+  (when centaur-tabs-tabsets
+    (centaur-tabs-map-tabsets (lambda (tabset)
+                                (centaur-tabs-set-template tabset nil)))
+    (when centaur-tabs-tabsets-tabset
+      (centaur-tabs-set-template centaur-tabs-tabsets-tabset nil)))
+  (setq centaur-tabs-style-right nil
+        centaur-tabs-style-left nil)
   (centaur-tabs-display-update))
 
 ;;
